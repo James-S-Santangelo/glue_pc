@@ -12,6 +12,8 @@ configfile: "../config/config.yaml"
 SAMPLES = pd.read_table(config['samples'])['Sample'].tolist()
 RAW_READ_DIR = config['paths']['raw_reads']
 TRIMMED_READ_DIR = config['paths']['trimmed_reads']
+TMPDIR = config['paths']['temp_dir']
+
 RAW_READ_FASTQC_DIR = '../results/qc/fastqc_raw_reads'
 
 
@@ -45,7 +47,7 @@ rule fastqc_raw_reads:
 	output:
 		fastqc_target_files()
 	shell:
-		"fastqc --outdir {0} --noextract --quiet".format(RAW_READ_FASTQC_DIR)
+		"fastqc --outdir {0} --noextract --quiet --dir {1}".format(RAW_READ_FASTQC_DIR, TMPDIR)
 
 
 rule fastp_trim:
