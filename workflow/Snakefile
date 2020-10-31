@@ -46,8 +46,10 @@ rule fastqc_raw_reads:
 		get_raw_reads()
 	output:
 		fastqc_target_files()
+	conda: "envs/fastqc.yaml"
+	log: "logs/fastqc_raw_reads/fastqc_raw_reads.log"
 	shell:
-		"fastqc --outdir {0} --noextract --quiet --dir {1}".format(RAW_READ_FASTQC_DIR, TMPDIR)
+		"fastqc --outdir {0} --noextract --quiet --dir {1} 2> {log}".format(RAW_READ_FASTQC_DIR, TMPDIR)
 
 
 rule fastp_trim:
