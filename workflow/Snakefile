@@ -1,3 +1,4 @@
+import os
 import glob
 import pandas as pd
 from snakemake.utils import min_version
@@ -14,12 +15,11 @@ TRIMMED_READ_DIR = config['paths']['raw_reads']
 
 rule all:
     input:
-        expand('{trimmed_read_dir}/{sample}/{sample}_{read}.fq.gz', trimmed_read_dir=TRIMMED_READ_DIR, sample=SAMPLES, read=['trimmed_1', 'trimmed_2', 'unpaired'])
+        expand('{trimmed_read_dir}/{sample}/{sample}_{read}.fq.gz', trimmed_read_dir=TRIMMED_READ_DIR, sample=SAMPLES, read=['trimmed_1', 'trimmed_2', 'unpaired']),
+        expand('../results/fastp_trim_reports/{sample}_fastp.html', sample=SAMPLES)
 
 rule fastp_trim:
     input:
-        #r1 = get_raw_fwd_read,
-        #r2 = get_raw_rev_read
         r1 = lambda wc: str(glob.glob('{0}/{1}/{1}_*_1.fq.gz'.format(RAW_READ_DIR, wc.sample))[0]),
         r2 = lambda wc: str(glob.glob('{0}/{1}/{1}_*_2.fq.gz'.format(RAW_READ_DIR, wc.sample))[0])
     output:
