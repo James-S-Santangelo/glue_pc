@@ -15,6 +15,7 @@ TRIMMED_READ_DIR = config['paths']['trimmed_reads']
 TMPDIR = config['paths']['temp_dir']
 
 RAW_READ_FASTQC_DIR = '../results/qc/fastqc_raw_reads'
+TRIMMED_READ_FASTQC_DIR = '../results/qc/fastqc_trimmed_reads'
 
 def get_raw_reads():
     all_raw_reads = []
@@ -37,6 +38,9 @@ def fastqc_target_files():
 rule all:
     input:
         fastqc_target_files(),
+        expand(['{0}/{{sample}}/{{sample}}_trimmed_1.{{ext}}'.format(TRIMMED_READ_FASTQC_DIR), 
+                '{0}/{{sample}}/{{sample}}_trimmed_2.{{ext}}'.format(TRIMMED_READ_FASTQC_DIR)],
+                sample=SAMPLES, ext=['_fastqc.html', '_fastqc.zip']),
         expand('{trimmed_read_dir}/{sample}/{sample}_{read}.fq.gz', trimmed_read_dir=TRIMMED_READ_DIR, sample=SAMPLES, read=['trimmed_1', 'trimmed_2', 'unpaired']),
         expand('../results/fastp_trim_reports/{sample}_fastp.html', sample=SAMPLES)
 
@@ -51,6 +55,22 @@ rule fastqc_raw_reads:
     shell:
         "touch {output}"
         #"fastqc --threads {threads} --outdir {0} --noextract --quiet --dir {1} 2> {log}".format(RAW_READ_FASTQC_DIR, TMPDIR)
+
+rule fastqc_trimmed_reads:
+    input:
+        expand(['{0}/{{sample}}/{{sample}}_trimmed_1.fq.gz'.format(TRIMMED_READ_DIR), 
+                '{0}/{{sample}}/{{sample}}_trimmed_2.fq.gz'.format(TRIMMED_READ_DIR)], 
+                sample=SAMPLES)
+    output:
+        expand(['{0}/{{sample}}/{{sample}}_trimmed_1.{{ext}}'.format(TRIMMED_READ_FASTQC_DIR), 
+                '{0}/{{sample}}/{{sample}}_trimmed_2.{{ext}}'.format(TRIMMED_READ_FASTQC_DIR)],
+                sample=SAMPLES, ext=['_fastqc.html', '_fastqc.zip'])
+    conda: "envs/fastqc.yaml"
+    log: "logs/fastqc_trimmed_reads/fastqc_trimmed_reads.log"
+    threads: 12
+    shell:
+        "touch {output}"
+        #"fastqc --threads {threads} --outdir {0} --noextract --quiet --dir {1} 2> {log}".format(TRIMMED_READ_FASTQC_DIR, TMPDIR)
 
 rule fastp_trim:
     input:
