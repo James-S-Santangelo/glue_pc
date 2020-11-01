@@ -17,23 +17,23 @@ TMPDIR = config['paths']['temp_dir']
 RAW_READ_FASTQC_DIR = '../results/qc/fastqc_raw_reads'
 
 def get_raw_reads():
-	all_raw_reads = []
-	reads = [1, 2]
-	for sample in SAMPLES:
-		for read in reads:
-			read_path = str(glob.glob('{0}/{1}/{1}_*_{2}.fq.gz'.format(RAW_READ_DIR, sample, read))[0])
-			all_raw_reads.append(read_path)
-	return all_raw_reads
+    all_raw_reads = []
+    reads = [1, 2]
+    for sample in SAMPLES:
+        for read in reads:
+            read_path = str(glob.glob('{0}/{1}/{1}_*_{2}.fq.gz'.format(RAW_READ_DIR, sample, read))[0])
+            all_raw_reads.append(read_path)
+    return all_raw_reads
 
 def get_basename(filename):
     basename = os.path.basename(filename).split(os.extsep)[0]
     return basename 
 
 def fastqc_target_files():
-	html_files = ['{0}/{1}{2}'.format(RAW_READ_FASTQC_DIR, get_basename(f), '_fastqc.html') for f in get_raw_reads()]
-	zip_files = ['{0}/{1}{2}'.format(RAW_READ_FASTQC_DIR, get_basename(f), '_fastqc.zip') for f in get_raw_reads()]
-	return html_files + zip_files
-	
+    html_files = ['{0}/{1}{2}'.format(RAW_READ_FASTQC_DIR, get_basename(f), '_fastqc.html') for f in get_raw_reads()]
+    zip_files = ['{0}/{1}{2}'.format(RAW_READ_FASTQC_DIR, get_basename(f), '_fastqc.zip') for f in get_raw_reads()]
+    return html_files + zip_files
+    
 rule all:
     input:
         fastqc_target_files(),
@@ -41,31 +41,31 @@ rule all:
         expand('../results/fastp_trim_reports/{sample}_fastp.html', sample=SAMPLES)
 
 rule fastqc_raw_reads:
-	input:
-		get_raw_reads()
-	output:
-		fastqc_target_files()
-	conda: "envs/fastqc.yaml"
-	log: "logs/fastqc_raw_reads/fastqc_raw_reads.log"
-	shell:
-		"touch {output}"
-		#"fastqc --outdir {0} --noextract --quiet --dir {1} 2> {log}".format(RAW_READ_FASTQC_DIR, TMPDIR)
-
+    input:
+        get_raw_reads()
+    output:
+        fastqc_target_files()
+    conda: "envs/fastqc.yaml"
+    log: "logs/fastqc_raw_reads/fastqc_raw_reads.log"
+    threads: 12
+    shell:
+        "touch {output}"
+        #"fastqc --threads {threads} --outdir {0} --noextract --quiet --dir {1} 2> {log}".format(RAW_READ_FASTQC_DIR, TMPDIR)
 
 rule fastp_trim:
     input:
         r1 = lambda wc: str(glob.glob('{0}/{1}/{1}_*_1.fq.gz'.format(RAW_READ_DIR, wc.sample))[0]),
         r2 = lambda wc: str(glob.glob('{0}/{1}/{1}_*_2.fq.gz'.format(RAW_READ_DIR, wc.sample))[0])
     output:
-        r1_trim = temp("{0}/{{sample}}/{{sample}}_trimmed_1.fq.gz".format(TRIMMED_READ_DIR)),
-        r2_trim = temp("{0}/{{sample}}/{{sample}}_trimmed_2.fq.gz".format(TRIMMED_READ_DIR)),
-        unp = temp("{0}/{{sample}}/{{sample}}_unpaired.fq.gz".format(TRIMMED_READ_DIR)),
+        r1_trim = "{0}/{{sample}}/{{sample}}_trimmed_1.fq.gz".format(TRIMMED_READ_DIR),
+        r2_trim = "{0}/{{sample}}/{{sample}}_trimmed_2.fq.gz".format(TRIMMED_READ_DIR),
+        unp = "{0}/{{sample}}/{{sample}}_unpaired.fq.gz".format(TRIMMED_READ_DIR),
         html = "../results/fastp_trim_reports/{sample}_fastp.html"
     conda: "envs/fastp.yaml"
     log: "logs/fastp_trim/{sample}_fastp.log"  
     shell:
         "touch {output}"
-		#"fastp --in1 {input.r1} \
+        #"fastp --in1 {input.r1} \
         #    --in2 {input.r2} \
         #    --out1 {output.r1_trim} \
         #    --out2 {output.r2_trim} \
