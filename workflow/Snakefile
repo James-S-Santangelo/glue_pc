@@ -112,8 +112,6 @@ rule bwa_map_unpaired:
     shell:
         "touch {output}"
         #"bwa mem {0} {{input.unp}} {{params}} |\
-        #    samtools collate -O {1}/{{sample}}_unpaired |\
-        #    samtools fixmate -m -O bam - - |\
         #    samtools sort > {{output}} 2> {{log}}".format(REFERENCE_GENOME, TMPDIR)
 
 rule bwa_map_paired:
@@ -129,9 +127,9 @@ rule bwa_map_paired:
     shell:
         "touch {output}"
         #"bwa mem {0} {{input.r1}} {{input.r2}} {{params}} |\
-        #    samtools collate -O {1}/{{sample}}_paired |\
-        #    samtools fixmate -m -O bam - - |\
         #    samtools sort > {{output}} 2> {{log}}".format(REFERENCE_GENOME, TMPDIR)
+
+
 
 rule clean:
     params:
