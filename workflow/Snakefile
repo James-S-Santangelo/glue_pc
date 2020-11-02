@@ -145,6 +145,20 @@ rule merge_bams:
         """
         samtools merge -c - {{input.pair}} {{input.unp}} | samtools sort -O bam -o {{output}} -T {0}/{{sample}}_merged 2> {{log}}
         """.format(TMPDIR)
+        
+
+rule samtools_markdup:
+    input:
+        rules.merge_bams.output
+    output:
+        bam = "../results/bams/final/{sample}_merged_sorted_dupsMarked.bam",
+        stats = "../results/duplication_stats/{sample}_dupStats.txt"
+    conda: "envs/bwa_mapping.yaml"
+    log: "logs/samtools_markdup/{sample}_samtools_markdup.log"
+    shell:
+        """
+        samtools markdup -T {0} -f {{output.stats}} {{input}} {{output.bam}} 2> {{log}}
+        """.format(TMPDIR)
 
 rule clean:
     params:
