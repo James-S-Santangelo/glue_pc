@@ -46,7 +46,9 @@ rule all:
         expand('{trimmed_read_dir}/{sample}/{sample}_{read}.fq.gz', trimmed_read_dir=TRIMMED_READ_DIR, sample=SAMPLES, read=['trimmed_1', 'trimmed_2', 'unpaired']),
         expand('../results/fastp_trim_reports/{sample}_fastp.html', sample=SAMPLES),
         expand('../results/bams/unpaired/{sample}_unpaired_sorted.bam', sample=SAMPLES),
-        expand('../results/bams/paired/{sample}_paired_sorted.bam', sample=SAMPLES)
+        expand('../results/bams/paired/{sample}_paired_sorted.bam', sample=SAMPLES),
+        expand('../results/bams/merged/{sample}_merged_sorted.bam', sample=SAMPLES),
+        expand('../results/bams/merged/{sample}_merged_sorted.bai', sample=SAMPLES)
 
 rule fastqc_raw_reads:
     input:
@@ -112,8 +114,8 @@ rule bwa_map_unpaired:
     shell:
         "touch {output}"
         #"bwa mem {0} {{input.unp}} {{params}} |\
-        #    samtools view -b |\
-        #    samtools sort > {{output}} 2> {{log}}".format(REFERENCE_GENOME, TMPDIR)
+		#	 samtools collate -O - {1}/{{sample}}_unpaired |\
+        #    samtools view -b > {{output}} 2> {{log}}".format(REFERENCE_GENOME, TMPDIR)
 
 rule bwa_map_paired:
     input:
@@ -128,10 +130,21 @@ rule bwa_map_paired:
     shell:
         "touch {output}"
         #"bwa mem {0} {{input.r1}} {{input.r2}} {{params}} |\
-        #    samtools view -b |\
-        #    samtools sort > {{output}} 2> {{log}}".format(REFERENCE_GENOME, TMPDIR)
+		#	 samtools collate -O - {1}/{{sample}}_paired |\
+        #    samtools view -b > {{output}} 2> {{log}}".format(REFERENCE_GENOME, TMPDIR)
 
-
+rule merge_bams:
+    input:
+        unp = rules.bwa_map_unpaired.output,
+        pair = rules.bwa_map_paired.output
+    output:
+        "../results/bams/merged/{sample}_merged_sorted.bam"
+    conda: "envs/bwa_mapping.yaml"
+    log: "logs/merge_bams/{sample}_merge_bams.log"
+    shell:
+        """
+        samtools merge -c - {{input.pair}} {{input.unp}} | samtools sort -O bam -o {{output}} -T {0}/{{sample}}_merged 2> {{log}}
+        """.format(TMPDIR)
 
 rule clean:
     params:
