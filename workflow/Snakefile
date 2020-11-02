@@ -45,8 +45,8 @@ rule all:
                 sample=SAMPLES, ext=['_fastqc.html', '_fastqc.zip']),
         expand('{trimmed_read_dir}/{sample}/{sample}_{read}.fq.gz', trimmed_read_dir=TRIMMED_READ_DIR, sample=SAMPLES, read=['trimmed_1', 'trimmed_2', 'unpaired']),
         expand('../results/fastp_trim_reports/{sample}_fastp.html', sample=SAMPLES),
-        expand('../results/bams/unpaired/{sample}_unpaired.bam', sample=SAMPLES)
-
+        expand('../results/bams/unpaired/{sample}_unpaired_sorted.bam', sample=SAMPLES),
+        expand('../results/bams/paired/{sample}_paired_sorted.bam', sample=SAMPLES)
 
 rule fastqc_raw_reads:
     input:
@@ -104,7 +104,7 @@ rule bwa_map_unpaired:
     input:
         unp = rules.fastp_trim.output.unp
     output:
-        "../results/bams/unpaired/{sample}_unpaired.bam"
+        "../results/bams/unpaired/{sample}_unpaired_sorted.bam"
     params:
         "-R @RG\tID:${sample}\tCN:NOVOGENE\tPL:ILLUMINA\tPM:NOVASEQ.S4\tSM:${sample}"
     conda: "envs/bwa_mapping.yaml"
@@ -112,7 +112,24 @@ rule bwa_map_unpaired:
     shell:
         "touch {output}"
         #"bwa mem {0} {{input.unp}} {{params}} |\
-        #    samtools collate -O {1}/{{sample}} |\
+        #    samtools collate -O {1}/{{sample}}_unpaired |\
+        #    samtools fixmate -m -O bam - - |\
+        #    samtools sort > {{output}} 2> {{log}}".format(REFERENCE_GENOME, TMPDIR)
+
+rule bwa_map_paired:
+    input:
+        r1 = rules.fastp_trim.output.r1_trim,
+        r2 = rules.fastp_trim.output.r2_trim
+    output:
+        "../results/bams/paired/{sample}_paired_sorted.bam"
+    params:
+        "-R @RG\tID:${sample}\tCN:NOVOGENE\tPL:ILLUMINA\tPM:NOVASEQ.S4\tSM:${sample}"
+    conda: "envs/bwa_mapping.yaml"
+    log: "logs/bwa_map_paired/{sample}_bwa_map.paired.log"
+    shell:
+        "touch {output}"
+        #"bwa mem {0} {{input.r1}} {{input.r2}} {{params}} |\
+        #    samtools collate -O {1}/{{sample}}_paired |\
         #    samtools fixmate -m -O bam - - |\
         #    samtools sort > {{output}} 2> {{log}}".format(REFERENCE_GENOME, TMPDIR)
 
