@@ -11,7 +11,8 @@ rule fastp_trim:
     log: "logs/fastp_trim/{sample}_fastp.log"  
     shell:
         #"touch {output}"
-        "fastp --in1 {input.r1} \
+        """
+        fastp --in1 {input.r1} \
             --in2 {input.r2} \
             --out1 {output.r1_trim} \
             --out2 {output.r2_trim} \
@@ -20,6 +21,5 @@ rule fastp_trim:
             --html {output.html} \
             --detect_adapter_pe \
             --trim_poly_g \
-            --overrepresentation_analysis 2> {log}" 
-
-
+            --overrepresentation_analysis 2> {log}
+        """ 

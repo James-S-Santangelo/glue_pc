@@ -12,6 +12,8 @@ rule fastqc_trimmed_reads:
     threads: 12
     shell:
         #"touch {output}"
-        "fastqc --threads {{threads}} --outdir {0} --noextract --quiet --dir {1} {{input}} 2> {{log}}".format(TRIMMED_READ_FASTQC_DIR, TMPDIR)
+        """
+        fastqc --threads {{threads}} --outdir {0} --noextract --quiet --dir {1} {{input}} 2> {{log}}
+        """.format(TRIMMED_READ_FASTQC_DIR, TMPDIR)
 
 

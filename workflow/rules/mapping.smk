@@ -9,9 +9,11 @@ rule bwa_map_unpaired:
     log: "logs/bwa_map_unpaired/{sample}_bwa_map.unpaired.log"
     shell:
         #"touch {output}"
-        "bwa mem {0} {{input.unp}} {{params}} |\
+        """
+        bwa mem {0} {{input.unp}} {{params}} |\
 			 samtools collate -O - {1}/{{wildcards.sample}}_unpaired |\
-            samtools view -b > {{output}} 2> {{log}}".format(REFERENCE_GENOME, TMPDIR)
+            samtools view -b > {{output}} 2> {{log}}
+        """.format(REFERENCE_GENOME, TMPDIR)
 
 rule bwa_map_paired:
     input:
@@ -25,9 +27,10 @@ rule bwa_map_paired:
     log: "logs/bwa_map_paired/{sample}_bwa_map.paired.log"
     shell:
         #"touch {output}"
-        "bwa mem {0} {{input.r1}} {{input.r2}} {{params}} |\
+        """bwa mem {0} {{input.r1}} {{input.r2}} {{params}} |\
 			 samtools collate -O - {1}/{{wildcards.sample}}_paired |\
-            samtools view -b > {{output}} 2> {{log}}".format(REFERENCE_GENOME, TMPDIR)
+            samtools view -b > {{output}} 2> {{log}}
+        """.format(REFERENCE_GENOME, TMPDIR)
 
 rule merge_bams:
     input:
