@@ -112,6 +112,7 @@ rule bwa_map_unpaired:
     shell:
         "touch {output}"
         #"bwa mem {0} {{input.unp}} {{params}} |\
+        #    samtools view -b |\
         #    samtools sort > {{output}} 2> {{log}}".format(REFERENCE_GENOME, TMPDIR)
 
 rule bwa_map_paired:
@@ -127,6 +128,7 @@ rule bwa_map_paired:
     shell:
         "touch {output}"
         #"bwa mem {0} {{input.r1}} {{input.r2}} {{params}} |\
+        #    samtools view -b |\
         #    samtools sort > {{output}} 2> {{log}}".format(REFERENCE_GENOME, TMPDIR)
 
 
