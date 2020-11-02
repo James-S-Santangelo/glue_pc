@@ -23,15 +23,16 @@ include: "rules/common.smk"
     
 rule all:
     input:
+        # QC of raw reads
         fastqc_target_files(),
+        # Trim reads
+        expand('{trimmed_read_dir}/{sample}/{sample}_{read}.fq.gz', trimmed_read_dir=TRIMMED_READ_DIR, sample=SAMPLES, read=['trimmed_1', 'trimmed_2', 'unpaired']),
+        expand('../results/fastp_trim_reports/{sample}_fastp.html', sample=SAMPLES),
+        # QC of trimmed reads
         expand(['{0}/{{sample}}/{{sample}}_trimmed_1.{{ext}}'.format(TRIMMED_READ_FASTQC_DIR), 
                 '{0}/{{sample}}/{{sample}}_trimmed_2.{{ext}}'.format(TRIMMED_READ_FASTQC_DIR)],
                 sample=SAMPLES, ext=['_fastqc.html', '_fastqc.zip']),
-        expand('{trimmed_read_dir}/{sample}/{sample}_{read}.fq.gz', trimmed_read_dir=TRIMMED_READ_DIR, sample=SAMPLES, read=['trimmed_1', 'trimmed_2', 'unpaired']),
-        expand('../results/fastp_trim_reports/{sample}_fastp.html', sample=SAMPLES),
-        expand('../results/bams/unpaired/{sample}_unpaired_sorted.bam', sample=SAMPLES),
-        expand('../results/bams/paired/{sample}_paired_sorted.bam', sample=SAMPLES),
-        expand('../results/bams/merged/{sample}_merged_sorted.bam', sample=SAMPLES),
+        # Mapping reads
         expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.bam', sample=SAMPLES),
         expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.bai', sample=SAMPLES)
 
