@@ -107,20 +107,13 @@ rule bwa_map_unpaired:
         "../results/bams/unpaired/{sample}_unpaired.bam"
     params:
         "-R @RG\tID:${sample}\tCN:NOVOGENE\tPL:ILLUMINA\tPM:NOVASEQ.S4\tSM:${sample}"
-    conda:
-        "envs/bwa.yaml",
-        "envs/samtools.yaml"
+    conda: "envs/bwa_mapping.yaml"
     log: "logs/bwa_map_unpaired/bwa_map.unpaired.log"
     shell:
         "touch {output}"
         #"bwa mem {0} {{input.unp}} {{params}} |\
         #    samtools view -b |\
         #    samtools sort > {{output}} 2> {{log}}".format(REFERENCE_GENOME)
-
-            
-
-
-
 
 rule clean:
     params:
