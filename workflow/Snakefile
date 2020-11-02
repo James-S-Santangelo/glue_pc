@@ -108,7 +108,7 @@ rule bwa_map_unpaired:
     params:
         "-R @RG\tID:${sample}\tCN:NOVOGENE\tPL:ILLUMINA\tPM:NOVASEQ.S4\tSM:${sample}"
     conda: "envs/bwa_mapping.yaml"
-    log: "logs/bwa_map_unpaired/bwa_map.unpaired.log"
+    log: "logs/bwa_map_unpaired/{sample}_bwa_map.unpaired.log"
     shell:
         "touch {output}"
         #"bwa mem {0} {{input.unp}} {{params}} |\
