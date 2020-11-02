@@ -5,3 +5,6 @@ paths:
   raw_reads: /node1nfs/archive/data/trifolium/toronto_gwsd/128.120.88.251/X202SC20030702-Z01-F001/raw_data 
   trimmed_reads: /node1nfs/archive/data/trifolium/toronto_gwsd/trimmed_reads
   temp_dir: /node1nfs/archive/data/trifolium/toronto_gwsd/tmp
+
+files:
+  reference_genome: /scratch/research/references/trifolium/repens/GCA_005869975.1_AgR_To_v5/GCA_005869975.1_AgR_To_v5_genomic.fna

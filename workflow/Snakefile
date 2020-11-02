@@ -14,6 +14,8 @@ RAW_READ_DIR = config['paths']['raw_reads']
 TRIMMED_READ_DIR = config['paths']['trimmed_reads']
 TMPDIR = config['paths']['temp_dir']
 
+REFERENCE_GENOME = config['files']['reference_genome']
+
 RAW_READ_FASTQC_DIR = '../results/qc/fastqc_raw_reads'
 TRIMMED_READ_FASTQC_DIR = '../results/qc/fastqc_trimmed_reads'
 
@@ -42,7 +44,9 @@ rule all:
                 '{0}/{{sample}}/{{sample}}_trimmed_2.{{ext}}'.format(TRIMMED_READ_FASTQC_DIR)],
                 sample=SAMPLES, ext=['_fastqc.html', '_fastqc.zip']),
         expand('{trimmed_read_dir}/{sample}/{sample}_{read}.fq.gz', trimmed_read_dir=TRIMMED_READ_DIR, sample=SAMPLES, read=['trimmed_1', 'trimmed_2', 'unpaired']),
-        expand('../results/fastp_trim_reports/{sample}_fastp.html', sample=SAMPLES)
+        expand('../results/fastp_trim_reports/{sample}_fastp.html', sample=SAMPLES),
+        expand('../results/bams/unpaired/{sample}_unpaired.bam', sample=SAMPLES)
+
 
 rule fastqc_raw_reads:
     input:
@@ -95,6 +99,23 @@ rule fastp_trim:
         #    --detect_adapter_pe \
         #    --trim_poly_g \
         #    --overrepresentation_analysis 2> {log}" 
+
+rule bwa_map_unpaired:
+    input:
+        unp = rules.fastp_trim.output.unp
+    output:
+        "../results/bams/unpaired/{sample}_unpaired.bam"
+    params:
+        "-R @RG\tID:${sample}\tCN:NOVOGENE\tPL:ILLUMINA\tPM:NOVASEQ.S4\tSM:${sample}"
+    shell:
+        "bwa mem {0} {{input.unp}} {{params}} |\
+            samtools view -b |\
+            samtools sort > {{output}}".format(REFERENCE_GENOME)
+
+            
+
+
+
 
 rule clean:
     params:
