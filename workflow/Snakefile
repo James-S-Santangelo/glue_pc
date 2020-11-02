@@ -91,17 +91,17 @@ rule fastp_trim:
     conda: "envs/fastp.yaml"
     log: "logs/fastp_trim/{sample}_fastp.log"  
     shell:
-        "touch {output}"
-        #"fastp --in1 {input.r1} \
-        #    --in2 {input.r2} \
-        #    --out1 {output.r1_trim} \
-        #    --out2 {output.r2_trim} \
-        #    --unpaired1 {output.unp} \
-        #    --unpaired2 {output.unp} \
-        #    --html {output.html} \
-        #    --detect_adapter_pe \
-        #    --trim_poly_g \
-        #    --overrepresentation_analysis 2> {log}" 
+        #"touch {output}"
+        "fastp --in1 {input.r1} \
+            --in2 {input.r2} \
+            --out1 {output.r1_trim} \
+            --out2 {output.r2_trim} \
+            --unpaired1 {output.unp} \
+            --unpaired2 {output.unp} \
+            --html {output.html} \
+            --detect_adapter_pe \
+            --trim_poly_g \
+            --overrepresentation_analysis 2> {log}" 
 
 rule bwa_map_unpaired:
     input:
@@ -113,10 +113,10 @@ rule bwa_map_unpaired:
     conda: "envs/bwa_mapping.yaml"
     log: "logs/bwa_map_unpaired/{sample}_bwa_map.unpaired.log"
     shell:
-        "touch {output}"
-        #"bwa mem {0} {{input.unp}} {{params}} |\
-		#	 samtools collate -O - {1}/{{sample}}_unpaired |\
-        #    samtools view -b > {{output}} 2> {{log}}".format(REFERENCE_GENOME, TMPDIR)
+        #"touch {output}"
+        "bwa mem {0} {{input.unp}} {{params}} |\
+			 samtools collate -O - {1}/{{wildcards.sample}}_unpaired |\
+            samtools view -b > {{output}} 2> {{log}}".format(REFERENCE_GENOME, TMPDIR)
 
 rule bwa_map_paired:
     input:
@@ -129,10 +129,10 @@ rule bwa_map_paired:
     conda: "envs/bwa_mapping.yaml"
     log: "logs/bwa_map_paired/{sample}_bwa_map.paired.log"
     shell:
-        "touch {output}"
-        #"bwa mem {0} {{input.r1}} {{input.r2}} {{params}} |\
-		#	 samtools collate -O - {1}/{{sample}}_paired |\
-        #    samtools view -b > {{output}} 2> {{log}}".format(REFERENCE_GENOME, TMPDIR)
+        #"touch {output}"
+        "bwa mem {0} {{input.r1}} {{input.r2}} {{params}} |\
+			 samtools collate -O - {1}/{{wildcards.sample}}_paired |\
+            samtools view -b > {{output}} 2> {{log}}".format(REFERENCE_GENOME, TMPDIR)
 
 rule merge_bams:
     input:
@@ -143,10 +143,10 @@ rule merge_bams:
     conda: "envs/bwa_mapping.yaml"
     log: "logs/merge_bams/{sample}_merge_bams.log"
     shell:
-        "touch {output}"
-        #"""
-        #samtools merge -c - {{input.pair}} {{input.unp}} | samtools sort -O bam -o {{output}} -T {0}/{{sample}}_merged 2> {{log}}
-        #""".format(TMPDIR)
+        #"touch {output}"
+        """
+        samtools merge -c - {{input.pair}} {{input.unp}} | samtools sort -O bam -o {{output}} -T {0}/{{wildcards.sample}}_merged 2> {{log}}
+        """.format(TMPDIR)
         
 
 rule samtools_markdup:
