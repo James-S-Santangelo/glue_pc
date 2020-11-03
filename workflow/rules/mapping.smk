@@ -2,7 +2,7 @@ rule bwa_map_unpaired:
     input:
         unp = rules.fastp_trim.output.unp
     output:
-        "../results/bams/unpaired/{sample}_unpaired_sorted.bam"
+        temp("../results/bams/unpaired/{sample}_unpaired_sorted.bam")
     params:
         r"-R '@RG\tID:${sample}\tCN:NOVOGENE\tPL:ILLUMINA\tPM:NOVASEQ.S4\tSM:${sample}'"
     conda: "../envs/bwa_mapping.yaml"
@@ -19,7 +19,7 @@ rule bwa_map_paired:
         r1 = rules.fastp_trim.output.r1_trim,
         r2 = rules.fastp_trim.output.r2_trim
     output:
-        "../results/bams/paired/{sample}_paired_sorted.bam"
+        temp("../results/bams/paired/{sample}_paired_sorted.bam")
     params:
         r"-R '@RG\tID:${sample}\tCN:NOVOGENE\tPL:ILLUMINA\tPM:NOVASEQ.S4\tSM:${sample}'"
     conda: "../envs/bwa_mapping.yaml"
@@ -36,7 +36,7 @@ rule merge_bams:
         unp = rules.bwa_map_unpaired.output,
         pair = rules.bwa_map_paired.output
     output:
-        "../results/bams/merged/{sample}_merged_sorted.bam"
+        temp("../results/bams/merged/{sample}_merged_sorted.bam")
     conda: "../envs/bwa_mapping.yaml"
     log: "logs/merge_bams/{sample}_merge_bams.log"
     shell:
@@ -45,18 +45,13 @@ rule merge_bams:
         ( samtools cat {{input.pair}} {{input.unp}} |\
             samtools collate -o {{output}} - {0}/{{wildcards.sample}}_merged ) 2> {{log}}
         """.format(TMPDIR)
-        #"""
-        #( samtools cat {{input.pair}} {{input.unp}} |\
-        #    samtools sort -n -T {0}/{{wildcards.sample}}_merged -O bam -o {{output}} ) 2> {{log}}
-        #""".format(TMPDIR)
-        
 
 rule samtools_markdup:
     input:
         rules.merge_bams.output
     output:
-        bam = "../results/bams/final/{sample}_merged_sorted_dupsMarked.bam",
-        stats = "../results/duplication_stats/{sample}_dupStats.txt"
+        bam = protected("../results/bams/final/{sample}_merged_sorted_dupsMarked.bam"),
+        stats = protected("../results/duplication_stats/{sample}_dupStats.txt")
     conda: "../envs/bwa_mapping.yaml"
     log: "logs/samtools_markdup/{sample}_samtools_markdup.log"
     shell:
@@ -70,7 +65,7 @@ rule index_bam:
     input:
         rules.samtools_markdup.output.bam
     output:
-        "../results/bams/final/{sample}_merged_sorted_dupsMarked.bam.bai"
+        protected("../results/bams/final/{sample}_merged_sorted_dupsMarked.bam.bai")
     conda: "../envs/bwa_mapping.yaml"
     log: "logs/index_bam/{sample}_index_bam.log"
     shell:

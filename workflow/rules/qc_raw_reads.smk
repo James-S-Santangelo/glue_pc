@@ -3,7 +3,7 @@ rule fastqc_raw_reads:
         tmp = rules.create_tmp_dir.output,
         reads = get_raw_reads()
     output:
-        fastqc_target_files(),
+        protected(fastqc_target_files()),
         touch('fastqc_raw_reads.done')
     conda: "../envs/fastqc.yaml"
     log: "logs/fastqc_raw_reads/fastqc_raw_reads.log"
