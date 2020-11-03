@@ -34,8 +34,7 @@ rule all:
                 '{0}/{{sample}}_trimmed_2{{ext}}'.format(TRIMMED_READ_FASTQC_DIR)],
                 sample=SAMPLES, ext=['_fastqc.html', '_fastqc.zip']),
         # Mapping reads
-        expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.bam', sample=SAMPLES),
-        expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.bai', sample=SAMPLES)
+        expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.{ext}', sample=SAMPLES, ext=['bam', 'bam.bai'])
         
 rule create_tmp_dir:
     output: directory(TMPDIR)
