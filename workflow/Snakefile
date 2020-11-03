@@ -25,16 +25,21 @@ rule all:
     input:
         # QC of raw reads
         fastqc_target_files(),
+        'fastqc_raw_reads.done',
         # Trim reads
         expand('{trimmed_read_dir}/{sample}/{sample}_{read}.fq.gz', trimmed_read_dir=TRIMMED_READ_DIR, sample=SAMPLES, read=['trimmed_1', 'trimmed_2', 'unpaired']),
         expand('../results/fastp_trim_reports/{sample}_fastp.html', sample=SAMPLES),
         # QC of trimmed reads
-        expand(['{0}/{{sample}}/{{sample}}_trimmed_1.{{ext}}'.format(TRIMMED_READ_FASTQC_DIR), 
-                '{0}/{{sample}}/{{sample}}_trimmed_2.{{ext}}'.format(TRIMMED_READ_FASTQC_DIR)],
+        expand(['{0}/{{sample}}_trimmed_1{{ext}}'.format(TRIMMED_READ_FASTQC_DIR), 
+                '{0}/{{sample}}_trimmed_2{{ext}}'.format(TRIMMED_READ_FASTQC_DIR)],
                 sample=SAMPLES, ext=['_fastqc.html', '_fastqc.zip']),
         # Mapping reads
-        expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.bam', sample=SAMPLES),
-        expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.bai', sample=SAMPLES)
+        #expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.bam', sample=SAMPLES),
+        #expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.bai', sample=SAMPLES)
+        
+rule create_tmp_dir:
+    output: directory(TMPDIR)
+    shell: "mkdir {output}"
 
 include: "rules/qc_raw_reads.smk"
 include: "rules/trimming.smk"
@@ -43,6 +48,11 @@ include: "rules/mapping.smk"
 
 rule clean:
     params:
-        "logs ../results {0}/* {1}/*".format(TRIMMED_READ_DIR, TMPDIR)
+        "logs "
+        "../results "
+        "{0}/* ".format(TRIMMED_READ_DIR)
+        "{1}/* ".format(TMPDIR)
+        "fastp.json "
+        "*.done"
     shell:
         "rm -rfv {params}"
