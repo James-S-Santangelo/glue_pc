@@ -5,7 +5,7 @@ rule bwa_map_unpaired:
         "../results/bams/unpaired/{sample}_unpaired_sorted.bam"
     params:
         "-R @RG\tID:${sample}\tCN:NOVOGENE\tPL:ILLUMINA\tPM:NOVASEQ.S4\tSM:${sample}"
-    conda: "envs/bwa_mapping.yaml"
+    conda: "../envs/bwa_mapping.yaml"
     log: "logs/bwa_map_unpaired/{sample}_bwa_map.unpaired.log"
     shell:
         #"touch {output}"
@@ -23,7 +23,7 @@ rule bwa_map_paired:
         "../results/bams/paired/{sample}_paired_sorted.bam"
     params:
         "-R @RG\tID:${sample}\tCN:NOVOGENE\tPL:ILLUMINA\tPM:NOVASEQ.S4\tSM:${sample}"
-    conda: "envs/bwa_mapping.yaml"
+    conda: "../envs/bwa_mapping.yaml"
     log: "logs/bwa_map_paired/{sample}_bwa_map.paired.log"
     shell:
         #"touch {output}"
@@ -38,7 +38,7 @@ rule merge_bams:
         pair = rules.bwa_map_paired.output
     output:
         "../results/bams/merged/{sample}_merged_sorted.bam"
-    conda: "envs/bwa_mapping.yaml"
+    conda: "../envs/bwa_mapping.yaml"
     log: "logs/merge_bams/{sample}_merge_bams.log"
     shell:
         #"touch {output}"
@@ -53,7 +53,7 @@ rule samtools_markdup:
     output:
         bam = "../results/bams/final/{sample}_merged_sorted_dupsMarked.bam",
         stats = "../results/duplication_stats/{sample}_dupStats.txt"
-    conda: "envs/bwa_mapping.yaml"
+    conda: "../envs/bwa_mapping.yaml"
     log: "logs/samtools_markdup/{sample}_samtools_markdup.log"
     shell:
         """
@@ -65,7 +65,7 @@ rule index_bam:
         rules.samtools_markdup.output.bam
     output:
         "../results/bams/final/{sample}_merged_sorted_dupsMarked.bai"
-    conda: "envs/bwa_mapping.yaml"
+    conda: "../envs/bwa_mapping.yaml"
     log: "logs/index_bam/{sample}_index_bam.log"
     shell:
         """

@@ -3,7 +3,7 @@ rule fastqc_raw_reads:
         get_raw_reads()
     output:
         fastqc_target_files()
-    conda: "envs/fastqc.yaml"
+    conda: "../envs/fastqc.yaml"
     log: "logs/fastqc_raw_reads/fastqc_raw_reads.log"
     threads: 12
     shell:

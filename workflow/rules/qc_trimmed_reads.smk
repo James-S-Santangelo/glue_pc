@@ -7,7 +7,7 @@ rule fastqc_trimmed_reads:
         expand(['{0}/{{sample}}/{{sample}}_trimmed_1.{{ext}}'.format(TRIMMED_READ_FASTQC_DIR), 
                 '{0}/{{sample}}/{{sample}}_trimmed_2.{{ext}}'.format(TRIMMED_READ_FASTQC_DIR)],
                 sample=SAMPLES, ext=['_fastqc.html', '_fastqc.zip'])
-    conda: "envs/fastqc.yaml"
+    conda: "../envs/fastqc.yaml"
     log: "logs/fastqc_trimmed_reads/fastqc_trimmed_reads.log"
     threads: 12
     shell:
