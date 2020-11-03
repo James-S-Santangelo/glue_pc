@@ -37,7 +37,7 @@ rule all:
         expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.bai', sample=SAMPLES)
 
 include: "rules/qc_raw_reads.smk"
-include: "rules/trim_reads.smk"
+include: "rules/trimming.smk"
 include: "rules/qc_trimmed_reads.smk"
 include: "rules/mapping.smk"
 

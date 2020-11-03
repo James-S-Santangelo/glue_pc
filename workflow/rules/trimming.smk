@@ -19,7 +19,7 @@ rule fastp_trim:
             --unpaired1 {output.unp} \
             --unpaired2 {output.unp} \
             --html {output.html} \
-            --detect_adapter_pe \
+            --detect_adapter_for_pe \
             --trim_poly_g \
             --overrepresentation_analysis 2> {log}
         """ 
