@@ -34,8 +34,8 @@ rule all:
                 '{0}/{{sample}}_trimmed_2{{ext}}'.format(TRIMMED_READ_FASTQC_DIR)],
                 sample=SAMPLES, ext=['_fastqc.html', '_fastqc.zip']),
         # Mapping reads
-        #expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.bam', sample=SAMPLES),
-        #expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.bai', sample=SAMPLES)
+        expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.bam', sample=SAMPLES),
+        expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.bai', sample=SAMPLES)
         
 rule create_tmp_dir:
     output: directory(TMPDIR)
@@ -48,11 +48,6 @@ include: "rules/mapping.smk"
 
 rule clean:
     params:
-        "logs "
-        "../results "
-        "{0}/* ".format(TRIMMED_READ_DIR)
-        "{1}/* ".format(TMPDIR)
-        "fastp.json "
-        "*.done"
+        "logs ../results {0}/* {1}/* fastp.json *.done".format(TRIMMED_READ_DIR, TMPDIR)
     shell:
         "rm -rfv {params}"
