@@ -1,8 +1,10 @@
 # Sample IDs as list
-samples: ../resources/sequencedPlants_phenotypesHabitat.txt
+# samples: ../resources/sequencedPlants_phenotypesHabitat.txt
+samples: ../resources/testSamples.txt
 
 paths:
-  raw_reads: /node1nfs/archive/data/trifolium/toronto_gwsd/128.120.88.251/X202SC20030702-Z01-F001/raw_data 
+  # raw_reads: /node1nfs/archive/data/trifolium/toronto_gwsd/128.120.88.251/X202SC20030702-Z01-F001/raw_data 
+  raw_reads: /scratch/research/projects/trifolium/toronto_gwsd/test 
   trimmed_reads: /node1nfs/archive/data/trifolium/toronto_gwsd/trimmed_reads
   temp_dir: /node1nfs/archive/data/trifolium/toronto_gwsd/tmp
 

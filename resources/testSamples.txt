@@ -1,0 +1,6 @@
+Sample	Habitat	Population	Plant	HCN_Result	Locus.Li	Locus.Ac
+s_100_13	Rural	100	13	0	NA	1
+s_117_6	Suburban	117	6	0	0	NA
+s_40_6	Urban	40	6	0	NA	0
+s_83_14	Rural	83	14	0	0	NA
+
