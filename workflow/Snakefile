@@ -30,6 +30,7 @@ rule all:
         expand('{trimmed_read_dir}/{sample}/{sample}_{read}.fq.gz', trimmed_read_dir=TRIMMED_READ_DIR, sample=SAMPLES, read=['trimmed_1', 'trimmed_2', 'unpaired']),
         expand('../results/fastp_trim_reports/{sample}_fastp.html', sample=SAMPLES),
         # QC of trimmed reads
+        'fastqc_trimmed_reads.done',
         expand(['{0}/{{sample}}_trimmed_1{{ext}}'.format(TRIMMED_READ_FASTQC_DIR), 
                 '{0}/{{sample}}_trimmed_2{{ext}}'.format(TRIMMED_READ_FASTQC_DIR)],
                 sample=SAMPLES, ext=['_fastqc.html', '_fastqc.zip']),
@@ -47,6 +48,6 @@ include: "rules/mapping.smk"
 
 rule clean:
     params:
-        "logs ../results {0}/* {1}/* fastp.json *.done".format(TRIMMED_READ_DIR, TMPDIR)
+        "logs ../results {0}/* {1} fastp.json".format(TRIMMED_READ_DIR, TMPDIR)
     shell:
         "rm -rfv {params}"

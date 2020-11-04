@@ -1,5 +1,6 @@
 rule bwa_map_unpaired:
     input:
+        trimmed_reads_done_file = 'fastqc_trimmed_reads.done',
         unp = rules.fastp_trim.output.unp
     output:
         temp("../results/bams/unpaired/{sample}_unpaired_sorted.bam")
@@ -16,6 +17,7 @@ rule bwa_map_unpaired:
 
 rule bwa_map_paired:
     input:
+        trimmed_reads_done_file = 'fastqc_trimmed_reads.done',
         r1 = rules.fastp_trim.output.r1_trim,
         r2 = rules.fastp_trim.output.r2_trim
     output:

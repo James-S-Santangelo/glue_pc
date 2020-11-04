@@ -4,7 +4,7 @@ rule fastqc_raw_reads:
         reads = get_raw_reads()
     output:
         protected(fastqc_target_files()),
-        touch('fastqc_raw_reads.done')
+        temp(touch('fastqc_raw_reads.done'))
     conda: "../envs/fastqc.yaml"
     log: "logs/fastqc_raw_reads/fastqc_raw_reads.log"
     threads: 12
