@@ -10,3 +10,7 @@ paths:
 
 files:
   reference_genome: /scratch/research/references/trifolium/repens/GCA_005869975.1_AgR_To_v5/GCA_005869975.1_AgR_To_v5_genomic.fna
+
+variant_calling:
+    sample: s_117_6  # Name of representative sample (i.e., with 'average' genome-wide coverage)
+    chrom_prefix: ^CM*  # Prefix enabling regex match of chromosome IDs

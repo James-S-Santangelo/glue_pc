@@ -19,23 +19,26 @@ REFERENCE_GENOME = config['files']['reference_genome']
 RAW_READ_FASTQC_DIR = '../results/qc/fastqc_raw_reads'
 TRIMMED_READ_FASTQC_DIR = '../results/qc/fastqc_trimmed_reads'
 
+REPRESENTATIVE_SAMPLE = config['variant_calling']['sample']
+CHROM_PREFIX = config['variant_calling']['chrom_prefix']
+
 include: "rules/common.smk"
     
 rule all:
     input:
         # QC of raw reads
         fastqc_target_files(),
-        'fastqc_raw_reads.done',
         # Trim reads
         expand('{trimmed_read_dir}/{sample}/{sample}_{read}.fq.gz', trimmed_read_dir=TRIMMED_READ_DIR, sample=SAMPLES, read=['trimmed_1', 'trimmed_2', 'unpaired']),
         expand('../results/fastp_trim_reports/{sample}_fastp.html', sample=SAMPLES),
         # QC of trimmed reads
-        'fastqc_trimmed_reads.done',
         expand(['{0}/{{sample}}_trimmed_1{{ext}}'.format(TRIMMED_READ_FASTQC_DIR), 
                 '{0}/{{sample}}_trimmed_2{{ext}}'.format(TRIMMED_READ_FASTQC_DIR)],
                 sample=SAMPLES, ext=['_fastqc.html', '_fastqc.zip']),
         # Mapping reads
-        expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.{ext}', sample=SAMPLES, ext=['bam', 'bam.bai'])
+        expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.{ext}', sample=SAMPLES, ext=['bam', 'bam.bai']),
+        # Variant calling
+        '../resources/chromosome_file.txt'
         
 rule create_tmp_dir:
     output: directory(TMPDIR)
@@ -45,6 +48,7 @@ include: "rules/qc_raw_reads.smk"
 include: "rules/trimming.smk"
 include: "rules/qc_trimmed_reads.smk"
 include: "rules/mapping.smk"
+include: "rules/variant_calling.smk"
 
 rule clean:
     params:
