@@ -3,8 +3,8 @@ rule fastqc_raw_reads:
         tmp = rules.create_tmp_dir.output,
         reads = get_raw_reads()
     output:
-        protected(fastqc_target_files()),
-        temp(touch('fastqc_raw_reads.done'))
+        fastqc_target_files(),
+        touch('fastqc_raw_reads.done')
     conda: "../envs/fastqc.yaml"
     log: "logs/fastqc_raw_reads/fastqc_raw_reads.log"
     threads: 12
