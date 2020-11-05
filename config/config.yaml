@@ -14,3 +14,4 @@ files:
 variant_calling:
     sample: s_117_6  # Name of representative sample (i.e., with 'average' genome-wide coverage)
     chrom_prefix: ^CM*  # Prefix enabling regex match of chromosome IDs
+    num_regions_per_chrom: 100

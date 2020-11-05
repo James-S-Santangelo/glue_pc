@@ -21,7 +21,8 @@ TRIMMED_READ_FASTQC_DIR = '../results/qc/fastqc_trimmed_reads'
 
 REPRESENTATIVE_SAMPLE = config['variant_calling']['sample']
 CHROM_PREFIX = config['variant_calling']['chrom_prefix']
-
+NUM_REGIONS_PER_CHROM = config['variant_calling']['num_regions_per_chrom']
+print('{0}.fai, {1}'.format(REFERENCE_GENOME, NUM_REGIONS_PER_CHROM))
 include: "rules/common.smk"
     
 rule all:
@@ -38,7 +39,8 @@ rule all:
         # Mapping reads
         expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.{ext}', sample=SAMPLES, ext=['bam', 'bam.bai']),
         # Variant calling
-        '../resources/chromosome_file.txt'
+        '../resources/chromosome_file.txt',
+        expand('../resources/{chrom}_forFreebayes.regions', chrom=get_chrom_list())
         
 rule create_tmp_dir:
     output: directory(TMPDIR)

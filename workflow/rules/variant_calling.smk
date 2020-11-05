@@ -1,5 +1,5 @@
 rule create_chrom_file:
-    input: glob.glob('../results/bams/final/{0}_*.bam'.format(REPRESENTATIVE_SAMPLE))[0]
+    input: get_representative_bam()
     output:
         "../resources/chromosome_file.txt"
     log: "logs/create_chrom_file/create_chrom_file.log"
@@ -8,3 +8,18 @@ rule create_chrom_file:
         """
         samtools idxstats {{input}} | cut -f1 | grep {0} > {{output}} 
         """.format(CHROM_PREFIX)
+
+rule create_regions_equal_coverage:
+    input: 
+        chrom_file = '../resources/chromosome_file.txt',
+        bam = get_representative_bam()
+    output:
+        "../resources/{chrom}_forFreebayes.regions"
+    log: "logs/create_regions_equal_cov/{chrom}_create_regions_equal_cov.log"
+    conda: "../envs/variant_calling.yaml"
+    shell:
+        """
+        ( samtools view -b -s 0.20 {{input.bam}} {{wildcards.chrom}} |\
+            bamtools coverage |\
+            coverage_to_regions.py {0}.fai {1} > {{output}} ) 2> {{log}} 
+        """.format(REFERENCE_GENOME, NUM_REGIONS_PER_CHROM)
