@@ -22,7 +22,7 @@ TRIMMED_READ_FASTQC_DIR = '../results/qc/fastqc_trimmed_reads'
 REPRESENTATIVE_SAMPLE = config['variant_calling']['sample']
 CHROM_PREFIX = config['variant_calling']['chrom_prefix']
 NUM_REGIONS_PER_CHROM = config['variant_calling']['num_regions_per_chrom']
-print('{0}.fai, {1}'.format(REFERENCE_GENOME, NUM_REGIONS_PER_CHROM))
+
 include: "rules/common.smk"
     
 rule all:
