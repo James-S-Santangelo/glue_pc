@@ -23,3 +23,15 @@ rule create_regions_equal_coverage:
             bamtools coverage |\
             coverage_to_regions.py {0}.fai {1} > {{output}} ) 2> {{log}} 
         """.format(REFERENCE_GENOME, NUM_REGIONS_PER_CHROM)
+
+rule concat_regions_forFreebayes:
+    input:
+        expand('../resources/{chrom}_forFreebayes.regions', chrom=get_chrom_list())
+    output:
+        "../resources/wholeGenome_forFreebayes.regions"
+    log: "logs/concat_regions_forFreebayes/concat_regions_forFreebayes.log"
+    conda: "../envs/variant_calling.yaml"
+    shell:
+        """
+        cat {input} >> {output} 2> {log}
+        """

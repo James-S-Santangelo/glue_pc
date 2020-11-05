@@ -40,8 +40,8 @@ rule all:
         expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.{ext}', sample=SAMPLES, ext=['bam', 'bam.bai']),
         # Variant calling
         '../resources/chromosome_file.txt',
-        expand('../resources/{chrom}_forFreebayes.regions', chrom=get_chrom_list())
-        
+        expand('../resources/{chrom}_forFreebayes.regions', chrom=get_chrom_list()),
+        '../resources/wholeGenome_forFreebayes.regions' 
 rule create_tmp_dir:
     output: directory(TMPDIR)
     shell: "mkdir {output}"
