@@ -1,6 +1,7 @@
 # Sample IDs as list
 # samples: ../resources/sequencedPlants_phenotypesHabitat.txt
 samples: ../resources/testSamples.txt
+chromosomes: ../resources/chromosome_file.txt
 
 paths:
   # raw_reads: /node1nfs/archive/data/trifolium/toronto_gwsd/128.120.88.251/X202SC20030702-Z01-F001/raw_data 
@@ -13,5 +14,4 @@ files:
 
 variant_calling:
     sample: s_117_6  # Name of representative sample (i.e., with 'average' genome-wide coverage)
-    chrom_prefix: ^CM*  # Prefix enabling regex match of chromosome IDs
     num_regions_per_chrom: 100

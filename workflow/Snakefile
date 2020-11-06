@@ -10,6 +10,8 @@ min_version("5.26.1")
 configfile: "../config/config.yaml"
 
 SAMPLES = pd.read_table(config['samples'])['Sample'].tolist()
+CHROMOSOMES = pd.read_table(config['chromosomes'], header=None).iloc[:,0].tolist()
+
 RAW_READ_DIR = config['paths']['raw_reads']
 TRIMMED_READ_DIR = config['paths']['trimmed_reads']
 TMPDIR = config['paths']['temp_dir']
@@ -20,8 +22,10 @@ RAW_READ_FASTQC_DIR = '../results/qc/fastqc_raw_reads'
 TRIMMED_READ_FASTQC_DIR = '../results/qc/fastqc_trimmed_reads'
 
 REPRESENTATIVE_SAMPLE = config['variant_calling']['sample']
-CHROM_PREFIX = config['variant_calling']['chrom_prefix']
 NUM_REGIONS_PER_CHROM = config['variant_calling']['num_regions_per_chrom']
+
+wildcard_constraints:
+    chrom='|'.join([x for x in CHROMOSOMES])
 
 include: "rules/common.smk"
     
@@ -39,9 +43,9 @@ rule all:
         # Mapping reads
         expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.{ext}', sample=SAMPLES, ext=['bam', 'bam.bai']),
         # Variant calling
-        '../resources/chromosome_file.txt',
-        expand('../resources/{chrom}_forFreebayes.regions', chrom=get_chrom_list()),
+        #expand('../resources/{chrom}_forFreebayes.regions', chrom=CHROMOSOMES),
         '../resources/wholeGenome_forFreebayes.regions' 
+
 rule create_tmp_dir:
     output: directory(TMPDIR)
     shell: "mkdir {output}"
