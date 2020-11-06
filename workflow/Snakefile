@@ -44,7 +44,8 @@ rule all:
         expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.{ext}', sample=SAMPLES, ext=['bam', 'bam.bai']),
         # Variant calling
         '../resources/wholeGenome_forFreebayes.regions',
-        '../resources/freebayes_bams.list'
+        '../resources/freebayes_bams.list',
+        '../results/vcf/wholeGenome_allSamples.vcf'
 
 rule create_tmp_dir:
     output: directory(TMPDIR)

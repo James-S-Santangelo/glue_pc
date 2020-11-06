@@ -33,3 +33,25 @@ rule create_bam_list:
         with open(output[0], 'w') as f:
             for bam in input:
                 f.write('{0}\n'.format(bam))
+
+rule freebayes_call_variants:
+    input:
+        bams = rules.create_bam_list.output,
+        #regions = rules.concat_regions_forFreebayes.output
+        regions = '../resources/test.regions'
+    output:
+        '../results/vcf/wholeGenome_allSamples.vcf'
+    log: 'logs/freebayes/freebayes.log'
+    conda: '../envs/variant_calling.yaml'
+    threads: 5
+    shell:
+        """
+        ( freebayes-parallel {{input.regions}} {{threads}} \
+            --fasta-reference {0} \
+            --bam-list {{input.bams}} \
+            --use-best-n-alleles 4 \
+            --report-monomorphic \
+            --max-complex-gap 1 \
+            --haplotype-length 1 \
+            --genotype-qualities > {{output}} ) 2> {{log}}
+        """.format(REFERENCE_GENOME)
