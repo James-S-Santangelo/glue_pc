@@ -22,3 +22,14 @@ rule concat_regions_forFreebayes:
         """
         cat {input} >> {output} 2> {log}
         """
+
+rule create_bam_list:
+    input:
+        expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.bam', sample=SAMPLES)
+    output:
+        '../resources/freebayes_bams.list'
+    log: 'logs/create_bam_list/create_bam_list.log'
+    run:
+        with open(output[0], 'w') as f:
+            for bam in input:
+                f.write('{0}\n'.format(bam))
