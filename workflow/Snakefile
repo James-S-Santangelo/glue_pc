@@ -45,7 +45,7 @@ rule all:
         # Variant calling
         '../resources/wholeGenome_forFreebayes.regions',
         '../resources/freebayes_bams.list',
-        '../results/vcf/wholeGenome_allSamples.vcf'
+        '../results/vcf/wholeGenome_allSamples.vcf.gz.tbi'
 
 rule create_tmp_dir:
     output: directory(TMPDIR)

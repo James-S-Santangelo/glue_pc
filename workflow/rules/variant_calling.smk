@@ -55,3 +55,27 @@ rule freebayes_call_variants:
             --haplotype-length 1 \
             --genotype-qualities > {{output}} ) 2> {{log}}
         """.format(REFERENCE_GENOME)
+
+rule bgzip_vcf:
+    input:
+        rules.freebayes_call_variants.output
+    output:
+        '../results/vcf/wholeGenome_allSamples.vcf.gz'
+    log: 'logs/bgzip/bgzip.log'
+    conda: '../envs/variant_calling.yaml'
+    shell:
+        """
+        bgzip {input}
+        """
+
+rule tabix_vcf:
+    input:
+        rules.bgzip_vcf.output
+    output:
+        '../results/vcf/wholeGenome_allSamples.vcf.gz.tbi'
+    log: 'logs/tabix/tabix.log'
+    conda: '../envs/variant_calling.yaml'
+    shell:
+        """
+        tabix {input}
+        """
