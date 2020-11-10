@@ -43,7 +43,7 @@ rule freebayes_call_variants:
         '../results/vcf/wholeGenome_allSamples.vcf'
     log: 'logs/freebayes/freebayes.log'
     conda: '../envs/variant_calling.yaml'
-    threads: 5
+    threads: 10 
     shell:
         """
         ( freebayes-parallel {{input.regions}} {{threads}} \
@@ -68,11 +68,23 @@ rule bgzip_vcf:
         bgzip {input}
         """
 
-rule tabix_vcf:
+rule bcftools_sort:
     input:
         rules.bgzip_vcf.output
     output:
-        '../results/vcf/wholeGenome_allSamples.vcf.gz.tbi'
+        '../results/vcf/wholeGenome_allSamples_sorted.vcf.gz'
+    log: 'logs/bcftools_sort/bcftools_sort.log'
+    conda: '../envs/variant_calling.yaml'
+    shell:
+        """
+        bcftools sort -O z -o {{output}} -T {0} {{input}} 2> {{log}}
+        """.format(TMPDIR)
+
+rule tabix_vcf:
+    input:
+        rules.bcftools_sort.output
+    output:
+        '../results/vcf/wholeGenome_allSamples_sorted.vcf.gz.tbi'
     log: 'logs/tabix/tabix.log'
     conda: '../envs/variant_calling.yaml'
     shell:

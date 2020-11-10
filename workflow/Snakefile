@@ -43,10 +43,9 @@ rule all:
         # Mapping reads
         expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.{ext}', sample=SAMPLES, ext=['bam', 'bam.bai']),
         # Variant calling
-        expand("../results/program_resources/{chrom}_forFreebayes.regions", chrom=CHROMOSOMES),
         '../results/program_resources/wholeGenome_forFreebayes.regions',
         '../results/program_resources/freebayes_bams.list',
-        '../results/vcf/wholeGenome_allSamples.vcf.gz.tbi'
+        '../results/vcf/wholeGenome_allSamples_sorted.vcf.gz.tbi'
 
 rule create_tmp_dir:
     output: directory(TMPDIR)

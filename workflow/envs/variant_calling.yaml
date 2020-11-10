@@ -6,3 +6,4 @@ dependencies:
     - freebayes=1.3.2
     - bamtools=2.5.1
     - vcflib=1.0.1
+    - bcftools=1.10.2
