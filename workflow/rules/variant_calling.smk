@@ -40,7 +40,7 @@ rule freebayes_call_variants:
         #regions = rules.concat_regions_forFreebayes.output
         regions = '../resources/test.regions'
     output:
-        '../results/vcf/wholeGenome_allSamples.vcf'
+        '../results/vcf/wholeGenome_allSamples_allSites.vcf'
     log: 'logs/freebayes/freebayes.log'
     conda: '../envs/variant_calling.yaml'
     threads: 10 
@@ -60,7 +60,7 @@ rule bgzip_vcf:
     input:
         rules.freebayes_call_variants.output
     output:
-        '../results/vcf/wholeGenome_allSamples.vcf.gz'
+        '../results/vcf/wholeGenome_allSamples_allSites.vcf.gz'
     log: 'logs/bgzip/bgzip.log'
     conda: '../envs/variant_calling.yaml'
     shell:
@@ -72,7 +72,7 @@ rule bcftools_sort:
     input:
         rules.bgzip_vcf.output
     output:
-        '../results/vcf/wholeGenome_allSamples_sorted.vcf.gz'
+        '../results/vcf/wholeGenome_allSamples_allSites_sorted.vcf.gz'
     log: 'logs/bcftools_sort/bcftools_sort.log'
     conda: '../envs/variant_calling.yaml'
     shell:
@@ -80,34 +80,33 @@ rule bcftools_sort:
         bcftools sort -O z -o {{output}} -T {0} {{input}} 2> {{log}}
         """.format(TMPDIR)
 
-rule tabix_vcf:
+rule bcftools_split_variants:
     input:
-        rules.bcftools_sort.output
+        vcf = rules.bcftools_sort.output
     output:
-        '../results/vcf/wholeGenome_allSamples_sorted.vcf.gz.tbi',
-        touch('tabix.done')
-    log: 'logs/tabix/tabix.log'
+        '../results/vcf/wholeGenome_allSamples_{site_type}_sorted.vcf.gz'
+    log: 'logs/bcftools_split_variants/bcftools_split_variants_{site_type}.log'
+    #conda: '../envs/variant_calling.yaml'
+    wildcard_constraints:
+        site_type='snps|indels|invariant|mnps|other'
+    run:
+        if wildcards.site_type == 'invariant':
+            shell("bcftools view -O z --include 'N_ALT = 0' {input} > {output} 2> {log}")
+        elif wildcards.site_type == 'snps':
+            shell("( bcftools view -O v --types {{wildcards.site_type}} {{input}} |\
+                vcfallelicprimitives --keep-info --keep-geno |\
+                bcftools view --types {{wildcards.site_type}} --min-alleles 2 --max-alleles 2 |\
+                bcftools sort -O z -T {0} -o {{output}} ) 2> {{log}}".format(TMPDIR))
+        else:
+            shell("bcftools view -O z --types {wildcards.site_type} {input} > {output} 2> {log}")
+
+rule tabix_vcf:
+    input: get_tabix_files
+    output:
+        '../results/vcf/wholeGenome_allSamples_{site_type}_sorted.vcf.gz.tbi'
+    log: 'logs/tabix/tabix_{site_type}.log'
     conda: '../envs/variant_calling.yaml'
     shell:
         """
         tabix {input}
         """
-
-rule bcftools_split_variants:
-    input:
-        tabix_done_file = 'tabix.done',
-        vcf = rules.bcftools_sort.output
-    output:
-        '../results/vcf/wholeGenome_allSamples_sorted_{site_type}.vcf.gz'
-    log: 'logs/bcftools_split_variants/bcftools_split_variants_{site_type}.log'
-    #conda: '../envs/variant_calling.yaml'
-    run:
-        if wildcards.site_type == 'invariant':
-            shell("bcftools view -O z --include 'N_ALT = 0' {input.vcf} > {output} 2> {log}")
-        elif wildcards.site_type == 'snps':
-            shell("( bcftools view -O v --types {{wildcards.site_type}} {{input.vcf}} |\
-                vcfallelicprimitives --keep-info --keep-geno |\
-                bcftools view --types {{wildcards.site_type}} --min-alleles 2 --max-alleles 2 |\
-                bcftools sort -O z -T {0} -o {{output}} ) 2> {{log}}".format(TMPDIR))
-        else:
-            shell("bcftools view -O z --types {wildcards.site_type} {input.vcf} > {output} 2> {log}")

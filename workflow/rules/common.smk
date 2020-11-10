@@ -23,3 +23,9 @@ def get_representative_bam(wildcards):
     bam = os.path.splitext(bam_index)[0]
     return bam
 
+def get_tabix_files(wildcards):
+    if wildcards.site_type == 'allSites':
+        vcf_in = rules.bcftools_sort.output
+    else:
+        vcf_in = rules.bcftools_split_variants.output
+    return vcf_in

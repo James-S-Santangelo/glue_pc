@@ -25,8 +25,7 @@ REPRESENTATIVE_SAMPLE = config['variant_calling']['sample']
 NUM_REGIONS_PER_CHROM = config['variant_calling']['num_regions_per_chrom']
 
 wildcard_constraints:
-    chrom='|'.join([x for x in CHROMOSOMES]),
-    site_type='snps|indels|invariant|mnps|other'
+    chrom='|'.join([x for x in CHROMOSOMES])
 
 include: "rules/common.smk"
     
@@ -46,8 +45,7 @@ rule all:
         # Variant calling
         '../results/program_resources/wholeGenome_forFreebayes.regions',
         '../results/program_resources/freebayes_bams.list',
-        #'../results/vcf/wholeGenome_allSamples_sorted.vcf.gz.tbi'
-        expand('../results/vcf/wholeGenome_allSamples_sorted_{site_type}.vcf.gz', site_type=['snps', 'indels', 'invariant', 'mnps', 'other'])
+        expand('../results/vcf/wholeGenome_allSamples_{site_type}_sorted.vcf.{ext}', site_type=['snps', 'indels', 'invariant', 'mnps', 'other', 'allSites'], ext = ['gz', 'gz.tbi'])
 
 rule create_tmp_dir:
     output: directory(TMPDIR)
