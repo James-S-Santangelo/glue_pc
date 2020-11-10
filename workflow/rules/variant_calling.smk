@@ -2,7 +2,7 @@ rule create_regions_equal_coverage:
     input: 
         get_representative_bam
     output:
-        "../resources/{chrom}_forFreebayes.regions"
+        "../results/program_resources/{chrom}_forFreebayes.regions"
     log: "logs/create_regions_equal_cov/{chrom}_create_regions_equal_cov.log"
     conda: "../envs/variant_calling.yaml"
     shell:
@@ -14,9 +14,9 @@ rule create_regions_equal_coverage:
 
 rule concat_regions_forFreebayes:
     input:
-        expand("../resources/{chrom}_forFreebayes.regions", chrom=CHROMOSOMES)
+        expand("../results/program_resources/{chrom}_forFreebayes.regions", chrom=CHROMOSOMES)
     output:
-        "../resources/wholeGenome_forFreebayes.regions"
+        "../results/program_resources/wholeGenome_forFreebayes.regions"
     log: "logs/concat_regions_forFreebayes/concat_regions_forFreebayes.log"
     shell:
         """
@@ -27,7 +27,7 @@ rule create_bam_list:
     input:
         expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.bam', sample=SAMPLES)
     output:
-        '../resources/freebayes_bams.list'
+        '../results/program_resources/freebayes_bams.list'
     log: 'logs/create_bam_list/create_bam_list.log'
     run:
         with open(output[0], 'w') as f:
