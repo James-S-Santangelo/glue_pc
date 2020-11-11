@@ -10,6 +10,8 @@ min_version("5.26.1")
 configfile: "../config/config.yaml"
 
 SAMPLES = pd.read_table(config['samples'])['Sample'].tolist()
+CHROMOSOMES = pd.read_table(config['chromosomes'], header=None).iloc[:,0].tolist()
+
 RAW_READ_DIR = config['paths']['raw_reads']
 TRIMMED_READ_DIR = config['paths']['trimmed_reads']
 TMPDIR = config['paths']['temp_dir']
@@ -19,24 +21,33 @@ REFERENCE_GENOME = config['files']['reference_genome']
 RAW_READ_FASTQC_DIR = '../results/qc/fastqc_raw_reads'
 TRIMMED_READ_FASTQC_DIR = '../results/qc/fastqc_trimmed_reads'
 
+REPRESENTATIVE_SAMPLE = config['variant_calling']['sample']
+NUM_REGIONS_PER_CHROM = config['variant_calling']['num_regions_per_chrom']
+
+wildcard_constraints:
+    chrom='|'.join([x for x in CHROMOSOMES])
+
 include: "rules/common.smk"
     
 rule all:
     input:
         # QC of raw reads
         fastqc_target_files(),
-        'fastqc_raw_reads.done',
         # Trim reads
         expand('{trimmed_read_dir}/{sample}/{sample}_{read}.fq.gz', trimmed_read_dir=TRIMMED_READ_DIR, sample=SAMPLES, read=['trimmed_1', 'trimmed_2', 'unpaired']),
         expand('../results/fastp_trim_reports/{sample}_fastp.html', sample=SAMPLES),
         # QC of trimmed reads
-        'fastqc_trimmed_reads.done',
         expand(['{0}/{{sample}}_trimmed_1{{ext}}'.format(TRIMMED_READ_FASTQC_DIR), 
                 '{0}/{{sample}}_trimmed_2{{ext}}'.format(TRIMMED_READ_FASTQC_DIR)],
                 sample=SAMPLES, ext=['_fastqc.html', '_fastqc.zip']),
         # Mapping reads
-        expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.{ext}', sample=SAMPLES, ext=['bam', 'bam.bai'])
-        
+        expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.{ext}', sample=SAMPLES, ext=['bam', 'bam.bai']),
+        # Variant calling
+        '../results/program_resources/wholeGenome_forFreebayes.regions',
+        '../results/program_resources/freebayes_bams.list',
+        expand('../results/vcf/wholeGenome_allSamples_{site_type}_sorted.vcf.{ext}', site_type=['snps', 'indels', 'invariant', 'mnps', 'other', 'allSites'], ext = ['gz', 'gz.tbi']),
+        expand('../results/zarr_db/wholeGenome_allSamples_{site_type}_sorted.zarr', site_type=['snps', 'invariant'])
+
 rule create_tmp_dir:
     output: directory(TMPDIR)
     shell: "mkdir {output}"
@@ -45,6 +56,7 @@ include: "rules/qc_raw_reads.smk"
 include: "rules/trimming.smk"
 include: "rules/qc_trimmed_reads.smk"
 include: "rules/mapping.smk"
+include: "rules/variant_calling.smk"
 
 rule clean:
     params:

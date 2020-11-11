@@ -63,11 +63,11 @@ rule samtools_markdup:
             samtools markdup -T {0} -f {{output.stats}} - {{output.bam}} ) 2> {{log}}
         """.format(TMPDIR)
 
-rule index_bam:
+checkpoint index_bam:
     input:
         rules.samtools_markdup.output.bam
     output:
-        "../results/bams/final/{sample}_merged_sorted_dupsMarked.bam.bai"
+        "../results/bams/final/{sample}_merged_sorted_dupsMarked.bam.bai",
     conda: "../envs/bwa_mapping.yaml"
     log: "logs/index_bam/{sample}_index_bam.log"
     shell:
