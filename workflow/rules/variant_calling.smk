@@ -2,7 +2,7 @@ rule create_regions_equal_coverage:
     input: 
         get_representative_bam
     output:
-        "../results/program_resources/{chrom}_forFreebayes.regions"
+        temp("../results/program_resources/{chrom}_forFreebayes.regions")
     log: "logs/create_regions_equal_cov/{chrom}_create_regions_equal_cov.log"
     conda: "../envs/variant_calling.yaml"
     shell:
@@ -37,10 +37,10 @@ rule create_bam_list:
 rule freebayes_call_variants:
     input:
         bams = rules.create_bam_list.output,
-        #regions = rules.concat_regions_forFreebayes.output
-        regions = '../resources/test.regions'
+        regions = rules.concat_regions_forFreebayes.output
+        #regions = '../resources/test.regions'
     output:
-        '../results/vcf/wholeGenome_allSamples_allSites.vcf'
+        temp('../results/vcf/wholeGenome_allSamples_allSites.vcf')
     log: 'logs/freebayes/freebayes.log'
     conda: '../envs/variant_calling.yaml'
     threads: 10 
@@ -60,7 +60,7 @@ rule bgzip_vcf:
     input:
         rules.freebayes_call_variants.output
     output:
-        '../results/vcf/wholeGenome_allSamples_allSites.vcf.gz'
+        temp('../results/vcf/wholeGenome_allSamples_allSites.vcf.gz')
     log: 'logs/bgzip/bgzip.log'
     conda: '../envs/variant_calling.yaml'
     shell:
