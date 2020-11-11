@@ -110,3 +110,16 @@ rule tabix_vcf:
         """
         tabix {input}
         """
+
+rule vcf_to_zarr:
+    input:
+        rules.bcftools_split_variants.output
+    output:
+        directory("../results/zarr_db/wholeGenome_allSamples_{site_type}_sorted.zarr")
+    log: 'logs/vcf_to_zarr/vcf_to_zarr_{site_type}.log'
+    conda: '../envs/vcf_to_zarr.yaml'
+    wildcard_constraints:
+        site_type='snps|invariant'
+    script:
+        #"../scripts/python/test.py"
+        "../scripts/python/vcf_to_zarr.py"
