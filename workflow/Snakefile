@@ -43,10 +43,11 @@ rule all:
         # Mapping reads
         expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.{ext}', sample=SAMPLES, ext=['bam', 'bam.bai']),
         # Variant calling
-        '../results/program_resources/wholeGenome_forFreebayes.regions',
-        '../results/program_resources/freebayes_bams.list',
-        expand('../results/vcf/wholeGenome_allSamples_{site_type}_sorted.vcf.{ext}', site_type=['snps', 'indels', 'invariant', 'mnps', 'other', 'allSites'], ext = ['gz', 'gz.tbi']),
-        expand('../results/zarr_db/wholeGenome_allSamples_{site_type}_sorted.zarr', site_type=['snps', 'invariant'])
+        #'../results/program_resources/wholeGenome_forFreebayes.regions',
+        #'../results/program_resources/freebayes_bams.list',
+        #expand('../results/vcf/wholeGenome_allSamples_{site_type}_sorted.vcf.{ext}', site_type=['snps', 'indels', 'invariant', 'mnps', 'other', 'allSites'], ext = ['gz', 'gz.tbi']),
+        #expand('../results/zarr_db/wholeGenome_allSamples_{site_type}_sorted.zarr', site_type=['snps', 'invariant'])
+        expand('{sample}_test.txt', sample = SAMPLES)
 
 rule create_tmp_dir:
     output: directory(TMPDIR)
@@ -56,7 +57,8 @@ include: "rules/qc_raw_reads.smk"
 include: "rules/trimming.smk"
 include: "rules/qc_trimmed_reads.smk"
 include: "rules/mapping.smk"
-include: "rules/variant_calling.smk"
+include: "rules/qc_bams.smk"
+#include: "rules/variant_calling.smk"
 
 rule clean:
     params:
