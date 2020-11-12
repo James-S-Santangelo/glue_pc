@@ -63,7 +63,7 @@ rule samtools_markdup:
             samtools markdup -T {0} -f {{output.stats}} - {{output.bam}} ) 2> {{log}}
         """.format(TMPDIR)
 
-checkpoint index_bam:
+rule index_bam:
     input:
         rules.samtools_markdup.output.bam
     output:

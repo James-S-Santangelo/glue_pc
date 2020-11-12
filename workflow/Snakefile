@@ -47,7 +47,7 @@ rule all:
         #'../results/program_resources/freebayes_bams.list',
         #expand('../results/vcf/wholeGenome_allSamples_{site_type}_sorted.vcf.{ext}', site_type=['snps', 'indels', 'invariant', 'mnps', 'other', 'allSites'], ext = ['gz', 'gz.tbi']),
         #expand('../results/zarr_db/wholeGenome_allSamples_{site_type}_sorted.zarr', site_type=['snps', 'invariant'])
-        expand('{sample}_test.txt', sample = SAMPLES)
+        expand('../results/qualimap_bamqc/{sample}_qualimap_bamqc', sample=SAMPLES)
 
 rule create_tmp_dir:
     output: directory(TMPDIR)
