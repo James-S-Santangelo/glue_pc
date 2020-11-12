@@ -43,3 +43,17 @@ rule qualimap_multiqc:
             -outdir ../results/qualimap/qualimap_multiqc \
             -outformat html >> {log} 2>&1
         """
+
+rule bamutil_validate:
+    input:
+        get_bam
+    output:
+        "../results/bamutil_validate/{sample}_validation.txt"
+    log: "logs/bamutil_validate/{sample}_validation.log"
+    conda: "../envs/bamutil.yaml"
+    shell:
+        """
+        bam validate --in {input} \
+            --so_coord \
+            --verbose 2> {output}
+        """

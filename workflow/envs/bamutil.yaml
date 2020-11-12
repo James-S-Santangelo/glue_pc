@@ -1,0 +1,5 @@
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - bamutil=1.0.14
