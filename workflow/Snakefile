@@ -47,7 +47,8 @@ rule all:
         #'../results/program_resources/freebayes_bams.list',
         #expand('../results/vcf/wholeGenome_allSamples_{site_type}_sorted.vcf.{ext}', site_type=['snps', 'indels', 'invariant', 'mnps', 'other', 'allSites'], ext = ['gz', 'gz.tbi']),
         #expand('../results/zarr_db/wholeGenome_allSamples_{site_type}_sorted.zarr', site_type=['snps', 'invariant'])
-        '../results/program_resources/bamqcPaths_forQualimap_multiQC.txt'
+        #'../results/program_resources/bamqcPaths_forQualimap_multiQC.txt'
+        '../results/qualimap/qualimap_multiqc'
 
 rule create_tmp_dir:
     output: directory(TMPDIR)
