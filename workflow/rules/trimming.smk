@@ -1,6 +1,6 @@
 rule fastp_trim:
     input:
-        raw_read_qc_done = 'fastqc_raw_reads.done',
+        raw_read_qc_done = '../results/flag_files/fastqc_raw_reads.done',
         r1 = lambda wc: str(glob.glob('{0}/{1}/{1}_*_1.fq.gz'.format(RAW_READ_DIR, wc.sample))[0]),
         r2 = lambda wc: str(glob.glob('{0}/{1}/{1}_*_2.fq.gz'.format(RAW_READ_DIR, wc.sample))[0])
     output:
@@ -9,9 +9,10 @@ rule fastp_trim:
         unp = "{0}/{{sample}}/{{sample}}_unpaired.fq.gz".format(TRIMMED_READ_DIR),
         html = "../results/fastp_trim_reports/{sample}_fastp.html"
     conda: "../envs/fastp.yaml"
-    log: "logs/fastp_trim/{sample}_fastp.log"  
+    log: "logs/fastp_trim/{sample}_fastp.log"
+    resources:
+        cpus = 4
     shell:
-        #"touch {output}"
         """
         fastp --in1 {input.r1} \
             --in2 {input.r2} \
@@ -20,6 +21,7 @@ rule fastp_trim:
             --unpaired1 {output.unp} \
             --unpaired2 {output.unp} \
             --html {output.html} \
+            --thread {resources.cpus} \
             --detect_adapter_for_pe \
             --trim_poly_g \
             --overrepresentation_analysis 2> {log}

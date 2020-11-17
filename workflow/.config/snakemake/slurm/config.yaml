@@ -1,0 +1,8 @@
+jobs: 180
+use-conda: True
+keep-going: True
+rerun-incomplete: True
+latency-wait: 60
+printshellcmds: True
+cluster: "sbatch --mem={resources.mem_mb} -c {resources.cpus} -o logs_slurm/{rule}_{wildcards}.out -e logs_slurm/{rule}_{wildcards}.err --mail-type=FAIL --mail-user=james.santangelo@mail.utoronto.ca"
+default-resources: [cpus=1, mem_mb=4000]

@@ -5,16 +5,19 @@ rule qualimap_bam_qc:
         temp(directory('../results/qualimap/{sample}_qualimap_bamqc'))
     log: 'logs/qualimap/{sample}_bamqc.log'
     conda: '../envs/qualimap.yaml'
-    threads: 2
+    resources:
+        cpus = 4,
+        mem_mb = lambda wildcards, input: 4 * int(input.size_mb)
     shell:
         """
         unset DISPLAY;
         qualimap bamqc -bam {input} \
             --paint-chromosome-limits \
             --collect-overlap-pairs \
-            -nt {threads} \
+            -nt {resources.cpus} \
             -outdir ../results/qualimap/{wildcards.sample}_qualimap_bamqc \
-            -outformat html >> {log} 2>&1
+            -outformat html \
+            --java-mem-size={resources.mem_mb}M >> {log} 2>&1
         """
 
 rule write_qualimap_multiqc_file:

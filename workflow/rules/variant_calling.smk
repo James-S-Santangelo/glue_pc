@@ -5,9 +5,11 @@ rule create_regions_equal_coverage:
         temp("../results/program_resources/{chrom}_forFreebayes.regions")
     log: "logs/create_regions_equal_cov/{chrom}_create_regions_equal_cov.log"
     conda: "../envs/variant_calling.yaml"
+    resources:
+        cpus = 4
     shell:
         """
-        ( samtools view -b -s 0.20 {{input}} {{wildcards.chrom}} |\
+        ( samtools view --threads {{resources.cpus}} -b -s 0.20 {{input}} {{wildcards.chrom}} |\
             bamtools coverage |\
             coverage_to_regions.py {0}.fai {1} > {{output}} ) 2> {{log}} 
         """.format(REFERENCE_GENOME, NUM_REGIONS_PER_CHROM)
@@ -43,10 +45,12 @@ rule freebayes_call_variants:
         temp('../results/vcf/wholeGenome_allSamples_allSites.vcf')
     log: 'logs/freebayes/freebayes.log'
     conda: '../envs/variant_calling.yaml'
-    threads: 10 
+    resources:
+        cpus = 120,
+        mem_mb = 500000
     shell:
         """
-        ( freebayes-parallel {{input.regions}} {{threads}} \
+        ( freebayes-parallel {{input.regions}} {{resources.cpus}} \
             --fasta-reference {0} \
             --bam-list {{input.bams}} \
             --use-best-n-alleles 4 \
@@ -63,9 +67,11 @@ rule bgzip_vcf:
         temp('../results/vcf/wholeGenome_allSamples_allSites.vcf.gz')
     log: 'logs/bgzip/bgzip.log'
     conda: '../envs/variant_calling.yaml'
+    resources:
+        cpus = 4
     shell:
         """
-        bgzip {input}
+        bgzip -@ {resources.cpus} {input}
         """
 
 rule bcftools_sort:
@@ -75,6 +81,8 @@ rule bcftools_sort:
         '../results/vcf/wholeGenome_allSamples_allSites_sorted.vcf.gz'
     log: 'logs/bcftools_sort/bcftools_sort.log'
     conda: '../envs/variant_calling.yaml'
+    resources:
+        mem_mb = 500000
     shell:
         """
         bcftools sort -O z -o {{output}} -T {0} {{input}} 2> {{log}}
@@ -89,16 +97,18 @@ rule bcftools_split_variants:
     #conda: '../envs/variant_calling.yaml'
     wildcard_constraints:
         site_type='snps|indels|invariant|mnps|other'
+    resources:
+        cpus = 4
     run:
         if wildcards.site_type == 'invariant':
-            shell("bcftools view -O z --include 'N_ALT = 0' {input} > {output} 2> {log}")
+            shell("bcftools view --threads {resources.cpus} -O z --include 'N_ALT = 0' {input} > {output} 2> {log}")
         elif wildcards.site_type == 'snps':
-            shell("( bcftools view -O v --types {{wildcards.site_type}} {{input}} |\
+            shell("( bcftools view --threads {{resources.cpus}} -O v --types {{wildcards.site_type}} {{input}} |\
                 vcfallelicprimitives --keep-info --keep-geno |\
-                bcftools view --types {{wildcards.site_type}} --min-alleles 2 --max-alleles 2 |\
+                bcftools view --threads {{resources.cpus}} --types {{wildcards.site_type}} --min-alleles 2 --max-alleles 2 |\
                 bcftools sort -O z -T {0} -o {{output}} ) 2> {{log}}".format(TMPDIR))
         else:
-            shell("bcftools view -O z --types {wildcards.site_type} {input} > {output} 2> {log}")
+            shell("bcftools view --threads {resources.cpus} -O z --types {wildcards.site_type} {input} > {output} 2> {log}")
 
 rule tabix_vcf:
     input: get_tabix_files
@@ -121,5 +131,4 @@ rule vcf_to_zarr:
     wildcard_constraints:
         site_type='snps|invariant'
     script:
-        #"../scripts/python/test.py"
         "../scripts/python/vcf_to_zarr.py"
