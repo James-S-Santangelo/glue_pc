@@ -19,7 +19,7 @@ def fastqc_target_files():
     return html_files + zip_files
 
 def get_bam(wildcards):
-    bam_index = rules.index_bam.output[0]
+    bam_index = checkpoints.index_bam.get(**wildcards).output[0]
     bam = os.path.splitext(bam_index)[0]
     return bam
 

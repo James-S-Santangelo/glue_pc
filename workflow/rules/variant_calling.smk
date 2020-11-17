@@ -37,8 +37,8 @@ rule create_bam_list:
 rule freebayes_call_variants:
     input:
         bams = rules.create_bam_list.output,
-        regions = rules.concat_regions_forFreebayes.output
-        #regions = '../resources/test.regions'
+        #regions = rules.concat_regions_forFreebayes.output
+        regions = '../resources/test.regions'
     output:
         temp('../results/vcf/wholeGenome_allSamples_allSites.vcf')
     log: 'logs/freebayes/freebayes.log'
