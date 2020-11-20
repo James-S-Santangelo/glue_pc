@@ -7,7 +7,7 @@ rule fastp_trim:
         r1_trim = "{0}/{{sample}}/{{sample}}_trimmed_1.fq.gz".format(TRIMMED_READ_DIR),
         r2_trim = "{0}/{{sample}}/{{sample}}_trimmed_2.fq.gz".format(TRIMMED_READ_DIR),
         unp = "{0}/{{sample}}/{{sample}}_unpaired.fq.gz".format(TRIMMED_READ_DIR),
-        html = "../results/fastp_trim_reports/{sample}_fastp.html"
+        html = "{0}/fastp_trim_reports/{{sample}}_fastp.html".format(QC_DIR)
     conda: "../envs/fastp.yaml"
     log: "logs/fastp_trim/{sample}_fastp.log"
     resources:

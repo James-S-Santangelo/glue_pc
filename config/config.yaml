@@ -3,15 +3,15 @@
 samples: ../resources/testSamples.txt
 chromosomes: ../resources/chromosome_file.txt
 
+results_prefix: ../results
+data_prefix: /scratch/research/projects/trifolium/toronto_gwsd/data
+
 paths:
-  # raw_reads: /node1nfs/archive/data/trifolium/toronto_gwsd/128.120.88.251/X202SC20030702-Z01-F001/raw_data 
-  raw_reads: /scratch/research/projects/trifolium/toronto_gwsd/test 
-  trimmed_reads: /node1nfs/archive/data/trifolium/toronto_gwsd/trimmed_reads
   temp_dir: /node1nfs/archive/data/trifolium/toronto_gwsd/tmp
 
 files:
   reference_genome: /scratch/research/references/trifolium/repens/GCA_005869975.1_AgR_To_v5/GCA_005869975.1_AgR_To_v5_genomic.fna
 
 variant_calling:
-    sample: s_117_6  # Name of representative sample (i.e., with 'average' genome-wide coverage)
-    num_regions_per_chrom: 100
+  sample: s_117_6  # Name of representative sample (i.e., with 'average' genome-wide coverage)
+  num_regions_per_chrom: 100

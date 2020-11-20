@@ -3,10 +3,10 @@ rule fastqc_trimmed_reads:
         reads = expand(['{0}/{{sample}}/{{sample}}_trimmed_1.fq.gz'.format(TRIMMED_READ_DIR), 
             '{0}/{{sample}}/{{sample}}_trimmed_2.fq.gz'.format(TRIMMED_READ_DIR)], sample=SAMPLES)
     output:
-        expand(['{0}/{{sample}}_trimmed_1{{ext}}'.format(TRIMMED_READ_FASTQC_DIR), 
-            '{0}/{{sample}}_trimmed_2{{ext}}'.format(TRIMMED_READ_FASTQC_DIR)],
+        expand(['{0}/fastqc_trimmed_reads/{{sample}}_trimmed_1{{ext}}'.format(QC_DIR), 
+            '{0}/fastqc_trimmed_reads/{{sample}}_trimmed_2{{ext}}'.format(QC_DIR)],
             sample=SAMPLES, ext=['_fastqc.html', '_fastqc.zip']),
-        touch('../results/flag_files/fastqc_trimmed_reads.done')
+        touch('{0}/fastqc_trimmed_reads.done'.format(FLAG_FILES_DIR))
     conda: "../envs/fastqc.yaml"
     log: "logs/fastqc_trimmed_reads/fastqc_trimmed_reads.log"
     resources:
@@ -14,7 +14,7 @@ rule fastqc_trimmed_reads:
         mem_mb = lambda wildcards, input: len(input.reads) * 300
     shell:
         """
-        fastqc --threads {{resources.cpus}} --outdir {0} --noextract --quiet --dir {1} {{input.reads}} 2> {{log}}
-        """.format(TRIMMED_READ_FASTQC_DIR, TMPDIR)
+        fastqc --threads {{resources.cpus}} --outdir {0}/fastqc_trimmed_reads --noextract --quiet --dir {1} {{input.reads}} 2> {{log}}
+        """.format(QC_DIR, TMPDIR)
 
 

@@ -12,17 +12,19 @@ configfile: "../config/config.yaml"
 SAMPLES = pd.read_table(config['samples'])['Sample'].tolist()
 CHROMOSOMES = pd.read_table(config['chromosomes'], header=None).iloc[:,0].tolist()
 
-RAW_READ_DIR = config['paths']['raw_reads']
-TRIMMED_READ_DIR = config['paths']['trimmed_reads']
-TMPDIR = config['paths']['temp_dir']
+TMPDIR = config["paths"]["temp_dir"]
+RAW_READ_DIR = "{0}/test".format(config["data_prefix"])
+TRIMMED_READ_DIR = "{0}/trimmed_reads".format(config["data_prefix"])
+QC_DIR = "{0}/qc".format(config["results_prefix"])
+BAM_DIR = "{0}/bam".format(config["results_prefix"])
+VARIANT_DIR = "{0}/variants".format(config["results_prefix"])
+PROGRAM_RESOURCE_DIR = "{0}/program_resources".format(config["results_prefix"])
+FLAG_FILES_DIR = "{0}/flag_files".format(config["results_prefix"])
 
-REFERENCE_GENOME = config['files']['reference_genome']
+REFERENCE_GENOME = config["files"]["reference_genome"]
 
-RAW_READ_FASTQC_DIR = '../results/qc/fastqc_raw_reads'
-TRIMMED_READ_FASTQC_DIR = '../results/qc/fastqc_trimmed_reads'
-
-REPRESENTATIVE_SAMPLE = config['variant_calling']['sample']
-NUM_REGIONS_PER_CHROM = config['variant_calling']['num_regions_per_chrom']
+REPRESENTATIVE_SAMPLE = config["variant_calling"]["sample"]
+NUM_REGIONS_PER_CHROM = config["variant_calling"]["num_regions_per_chrom"]
 
 wildcard_constraints:
     chrom='|'.join([x for x in CHROMOSOMES])
@@ -34,23 +36,23 @@ rule all:
         # QC of raw reads
         fastqc_target_files(),
         # Trim reads
-        expand('{trimmed_read_dir}/{sample}/{sample}_{read}.fq.gz', trimmed_read_dir=TRIMMED_READ_DIR, sample=SAMPLES, read=['trimmed_1', 'trimmed_2', 'unpaired']),
-        expand('../results/fastp_trim_reports/{sample}_fastp.html', sample=SAMPLES),
+        expand('{0}/{{sample}}/{{sample}}_{{read}}.fq.gz'.format(TRIMMED_READ_DIR), sample=SAMPLES, read=['trimmed_1', 'trimmed_2', 'unpaired']),
+        expand('{0}/fastp_trim_reports/{{sample}}_fastp.html'.format(QC_DIR), sample=SAMPLES),
         # QC of trimmed reads
-        expand(['{0}/{{sample}}_trimmed_1{{ext}}'.format(TRIMMED_READ_FASTQC_DIR), 
-                '{0}/{{sample}}_trimmed_2{{ext}}'.format(TRIMMED_READ_FASTQC_DIR)],
+        expand(['{0}/fastqc_trimmed_reads/{{sample}}_trimmed_1{{ext}}'.format(QC_DIR), 
+                '{0}/fastqc_trimmed_reads/{{sample}}_trimmed_2{{ext}}'.format(QC_DIR)],
                 sample=SAMPLES, ext=['_fastqc.html', '_fastqc.zip']),
         # Mapping reads
-        expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.{ext}', sample=SAMPLES, ext=['bam', 'bam.bai']),
+        expand('{0}/final/{{sample}}_merged_sorted_dupsMarked.{{ext}}'.format(BAM_DIR), sample=SAMPLES, ext=['bam', 'bam.bai']),
         # BAM QC
-        '../results/qualimap/qualimap_multiqc',
-        expand('../results/bamutil_validate/{sample}_validation.txt', sample=SAMPLES),
+        '{0}/qualimap/qualimap_multiqc'.format(QC_DIR),
+        expand('{0}/bamutil_validate/{{sample}}_validation.txt'.format(QC_DIR), sample=SAMPLES),
         # Variant calling
-        '../results/program_resources/wholeGenome_forFreebayes.regions',
-        '../results/program_resources/freebayes_bams.list',
-        expand('../results/vcf/wholeGenome_allSamples_{site_type}_sorted.vcf.{ext}', site_type=['snps', 'indels', 'invariant', 'mnps', 'other', 'allSites'], ext = ['gz', 'gz.tbi']),
-        expand('../results/zarr_db/wholeGenome_allSamples_{site_type}_sorted.zarr', site_type=['snps', 'invariant']),
-        '../results/program_resources/bamqcPaths_forQualimap_multiQC.txt'
+        '{0}/wholeGenome_forFreebayes.regions'.format(PROGRAM_RESOURCE_DIR),
+        '{0}/freebayes_bams.list'.format(PROGRAM_RESOURCE_DIR),
+        expand('{0}/vcf/wholeGenome_allSamples_{{site_type}}_sorted.vcf.{{ext}}'.format(VARIANT_DIR), site_type=['snps', 'indels', 'invariant', 'mnps', 'other', 'allSites'], ext = ['gz', 'gz.tbi']),
+        expand('{0}/zarr_db/wholeGenome_allSamples_{{site_type}}_sorted.zarr'.format(VARIANT_DIR), site_type=['snps', 'invariant']),
+        '{0}/bamqcPaths_forQualimap_multiQC.txt'.format(PROGRAM_RESOURCE_DIR)
 
 rule create_tmp_dir:
     output: directory(TMPDIR)

@@ -4,7 +4,7 @@ rule fastqc_raw_reads:
         reads = get_raw_reads()
     output:
         fastqc_target_files(),
-        touch('../results/flag_files/fastqc_raw_reads.done')
+        touch('{0}/fastqc_raw_reads.done'.format(FLAG_FILES_DIR))
     conda: "../envs/fastqc.yaml"
     log: "logs/fastqc_raw_reads/fastqc_raw_reads.log"
     resources: 
@@ -12,6 +12,6 @@ rule fastqc_raw_reads:
         mem_mb = lambda wildcards, input: len(input.reads) * 300        
     shell:
         """
-        fastqc --threads {{resources.cpus}} --outdir {0} --noextract --quiet --dir {{input.tmp}} {{input.reads}} 2> {{log}}
-        """.format(RAW_READ_FASTQC_DIR)
+        fastqc --threads {{resources.cpus}} --outdir {0}/fastqc_raw_reads --noextract --quiet --dir {{input.tmp}} {{input.reads}} 2> {{log}}
+        """.format(QC_DIR)
 

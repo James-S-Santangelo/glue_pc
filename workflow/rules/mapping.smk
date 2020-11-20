@@ -3,7 +3,7 @@ rule bwa_map_unpaired:
         trimmed_reads_done_file = '../results/flag_files/fastqc_trimmed_reads.done',
         unp = rules.fastp_trim.output.unp
     output:
-        temp("../results/bams/unpaired/{sample}_unpaired_sorted.bam")
+        temp("{0}/unpaired/{{sample}}_unpaired_sorted.bam".format(BAM_DIR))
     params:
         r"-R '@RG\tID:${sample}\tCN:NOVOGENE\tPL:ILLUMINA\tPM:NOVASEQ.S4\tSM:${sample}'"
     conda: "../envs/bwa_mapping.yaml"
@@ -19,11 +19,11 @@ rule bwa_map_unpaired:
 
 rule bwa_map_paired:
     input:
-        trimmed_reads_done_file = '../results/flag_files/fastqc_trimmed_reads.done',
+        trimmed_reads_done_file = '{0}/fastqc_trimmed_reads.done'.format(FLAG_FILES_DIR),
         r1 = rules.fastp_trim.output.r1_trim,
         r2 = rules.fastp_trim.output.r2_trim
     output:
-        temp("../results/bams/paired/{sample}_paired_sorted.bam")
+        temp("{0}/paired/{{sample}}_paired_sorted.bam".format(BAM_DIR))
     params:
         r"-R '@RG\tID:${sample}\tCN:NOVOGENE\tPL:ILLUMINA\tPM:NOVASEQ.S4\tSM:${sample}'"
     conda: "../envs/bwa_mapping.yaml"
@@ -42,7 +42,7 @@ rule merge_bams:
         unp = rules.bwa_map_unpaired.output,
         pair = rules.bwa_map_paired.output
     output:
-        temp("../results/bams/merged/{sample}_merged_sorted.bam")
+        temp("{0}/merged/{{sample}}_merged_sorted.bam".format(BAM_DIR))
     conda: "../envs/bwa_mapping.yaml"
     log: "logs/merge_bams/{sample}_merge_bams.log"
     resources:
@@ -57,8 +57,8 @@ rule samtools_markdup:
     input:
         rules.merge_bams.output
     output:
-        bam = "../results/bams/final/{sample}_merged_sorted_dupsMarked.bam",
-        stats = "../results/duplication_stats/{sample}_dupStats.txt"
+        bam = "{0}/final/{{sample}}_merged_sorted_dupsMarked.bam".format(BAM_DIR),
+        stats = "{0}/duplication_stats/{{sample}}_dupStats.txt".format(QC_DIR)
     conda: "../envs/bwa_mapping.yaml"
     log: "logs/samtools_markdup/{sample}_samtools_markdup.log"
     resources:
@@ -75,13 +75,13 @@ checkpoint index_bam:
     input:
         rules.samtools_markdup.output.bam
     output:
-        "../results/bams/final/{sample}_merged_sorted_dupsMarked.bam.bai",
+        "{0}/final/{{sample}}_merged_sorted_dupsMarked.bam.bai".format(BAM_DIR),
     conda: "../envs/bwa_mapping.yaml"
     log: "logs/index_bam/{sample}_index_bam.log"
     resources:
         cpus = 4
     shell:
         """
-        samtools index --threads {resources.cpus} {input} 2> {log}
+        samtools index -@ {resources.cpus} {input} 2> {log}
         """
 

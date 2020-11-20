@@ -1,5 +1,5 @@
 .snakemake
-test/
+data/
 *.done
 *.json
 results/

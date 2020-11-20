@@ -2,7 +2,7 @@ rule create_regions_equal_coverage:
     input: 
         get_representative_bam
     output:
-        temp("../results/program_resources/{chrom}_forFreebayes.regions")
+        temp("{0}/{{chrom}}_forFreebayes.regions".format(PROGRAM_RESOURCE_DIR))
     log: "logs/create_regions_equal_cov/{chrom}_create_regions_equal_cov.log"
     conda: "../envs/variant_calling.yaml"
     resources:
@@ -16,9 +16,9 @@ rule create_regions_equal_coverage:
 
 rule concat_regions_forFreebayes:
     input:
-        expand("../results/program_resources/{chrom}_forFreebayes.regions", chrom=CHROMOSOMES)
+        expand("{0}/{{chrom}}_forFreebayes.regions".format(PROGRAM_RESOURCE_DIR), chrom=CHROMOSOMES)
     output:
-        "../results/program_resources/wholeGenome_forFreebayes.regions"
+        "{0}/wholeGenome_forFreebayes.regions".format(PROGRAM_RESOURCE_DIR)
     log: "logs/concat_regions_forFreebayes/concat_regions_forFreebayes.log"
     shell:
         """
@@ -27,9 +27,9 @@ rule concat_regions_forFreebayes:
 
 rule create_bam_list:
     input:
-        expand('../results/bams/final/{sample}_merged_sorted_dupsMarked.bam', sample=SAMPLES)
+        expand('{0}/final/{{sample}}_merged_sorted_dupsMarked.bam'.format(BAM_DIR), sample=SAMPLES)
     output:
-        '../results/program_resources/freebayes_bams.list'
+        '{0}/freebayes_bams.list'.format(PROGRAM_RESOURCE_DIR)
     log: 'logs/create_bam_list/create_bam_list.log'
     run:
         with open(output[0], 'w') as f:
@@ -42,7 +42,7 @@ rule freebayes_call_variants:
         #regions = rules.concat_regions_forFreebayes.output
         regions = '../resources/test.regions'
     output:
-        temp('../results/vcf/wholeGenome_allSamples_allSites.vcf')
+        temp('{0}/vcf/wholeGenome_allSamples_allSites.vcf'.format(VARIANT_DIR))
     log: 'logs/freebayes/freebayes.log'
     conda: '../envs/variant_calling.yaml'
     resources:
@@ -64,7 +64,7 @@ rule bgzip_vcf:
     input:
         rules.freebayes_call_variants.output
     output:
-        temp('../results/vcf/wholeGenome_allSamples_allSites.vcf.gz')
+        temp('{0}/vcf/wholeGenome_allSamples_allSites.vcf.gz'.format(VARIANT_DIR))
     log: 'logs/bgzip/bgzip.log'
     conda: '../envs/variant_calling.yaml'
     resources:
@@ -78,7 +78,7 @@ rule bcftools_sort:
     input:
         rules.bgzip_vcf.output
     output:
-        '../results/vcf/wholeGenome_allSamples_allSites_sorted.vcf.gz'
+        '{0}/vcf/wholeGenome_allSamples_allSites_sorted.vcf.gz'.format(VARIANT_DIR)
     log: 'logs/bcftools_sort/bcftools_sort.log'
     conda: '../envs/variant_calling.yaml'
     resources:
@@ -92,28 +92,31 @@ rule bcftools_split_variants:
     input:
         vcf = rules.bcftools_sort.output
     output:
-        '../results/vcf/wholeGenome_allSamples_{site_type}_sorted.vcf.gz'
+        '{0}/vcf/wholeGenome_allSamples_{{site_type}}_sorted.vcf.gz'.format(VARIANT_DIR)
     log: 'logs/bcftools_split_variants/bcftools_split_variants_{site_type}.log'
-    #conda: '../envs/variant_calling.yaml'
+    conda: '../envs/variant_calling.yaml'
     wildcard_constraints:
         site_type='snps|indels|invariant|mnps|other'
     resources:
         cpus = 4
-    run:
-        if wildcards.site_type == 'invariant':
-            shell("bcftools view --threads {resources.cpus} -O z --include 'N_ALT = 0' {input} > {output} 2> {log}")
-        elif wildcards.site_type == 'snps':
-            shell("( bcftools view --threads {{resources.cpus}} -O v --types {{wildcards.site_type}} {{input}} |\
-                vcfallelicprimitives --keep-info --keep-geno |\
-                bcftools view --threads {{resources.cpus}} --types {{wildcards.site_type}} --min-alleles 2 --max-alleles 2 |\
-                bcftools sort -O z -T {0} -o {{output}} ) 2> {{log}}".format(TMPDIR))
-        else:
-            shell("bcftools view --threads {resources.cpus} -O z --types {wildcards.site_type} {input} > {output} 2> {log}")
+    shell:
+        """
+        if [ {{wildcards.site_type}} = 'invariant' ]; then
+            bcftools view --threads {{resources.cpus}} -O z --include 'N_ALT = 0' {{input}} > {{output}} 2> {{log}}
+        elif [ {{wildcards.site_type}} = 'snps' ]; then
+            ( bcftools view --threads {{resources.cpus}} -O v --types {{wildcards.site_type}} {{input}} |\
+            vcfallelicprimitives --keep-info --keep-geno |\
+            bcftools view --threads {{resources.cpus}} --types {{wildcards.site_type}} --min-alleles 2 --max-alleles 2 |\
+            bcftools sort -O z -T {0} -o {{output}} ) 2> {{log}}
+        else
+            bcftools view --threads {{resources.cpus}} -O z --types {{wildcards.site_type}} {{input}} > {{output}} 2> {{log}}
+        fi
+        """.format(TMPDIR)
 
 rule tabix_vcf:
     input: get_tabix_files
     output:
-        '../results/vcf/wholeGenome_allSamples_{site_type}_sorted.vcf.gz.tbi'
+        '{0}/vcf/wholeGenome_allSamples_{{site_type}}_sorted.vcf.gz.tbi'.format(VARIANT_DIR)
     log: 'logs/tabix/tabix_{site_type}.log'
     conda: '../envs/variant_calling.yaml'
     shell:
@@ -125,7 +128,7 @@ rule vcf_to_zarr:
     input:
         rules.bcftools_split_variants.output
     output:
-        directory("../results/zarr_db/wholeGenome_allSamples_{site_type}_sorted.zarr")
+        directory("{0}/zarr_db/wholeGenome_allSamples_{{site_type}}_sorted.zarr".format(VARIANT_DIR))
     log: 'logs/vcf_to_zarr/vcf_to_zarr_{site_type}.log'
     conda: '../envs/vcf_to_zarr.yaml'
     wildcard_constraints:

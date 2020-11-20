@@ -14,8 +14,8 @@ def get_basename(filename):
     return basename 
 
 def fastqc_target_files():
-    html_files = ['{0}/{1}{2}'.format(RAW_READ_FASTQC_DIR, get_basename(f), '_fastqc.html') for f in get_raw_reads()]
-    zip_files = ['{0}/{1}{2}'.format(RAW_READ_FASTQC_DIR, get_basename(f), '_fastqc.zip') for f in get_raw_reads()]
+    html_files = ['{0}/fastqc_raw_reads/{1}{2}'.format(QC_DIR, get_basename(f), '_fastqc.html') for f in get_raw_reads()]
+    zip_files = ['{0}/fastqc_raw_reads/{1}{2}'.format(QC_DIR, get_basename(f), '_fastqc.zip') for f in get_raw_reads()]
     return html_files + zip_files
 
 def get_bam(wildcards):
