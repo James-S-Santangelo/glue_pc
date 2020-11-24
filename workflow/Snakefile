@@ -13,7 +13,7 @@ SAMPLES = pd.read_table(config['samples'])['Sample'].tolist()
 CHROMOSOMES = pd.read_table(config['chromosomes'], header=None).iloc[:,0].tolist()
 
 TMPDIR = config['paths']['temp_dir']
-RAW_READ_DIR = '{0}/test'.format(config['data_prefix'])
+RAW_READ_DIR = '{0}/raw_fastq'.format(config['data_prefix'])
 TRIMMED_READ_DIR = '{0}/trimmed_reads'.format(config['data_prefix'])
 QC_DIR = '{0}/qc'.format(config['results_prefix'])
 BAM_DIR = '{0}/bam'.format(config['results_prefix'])
@@ -28,6 +28,8 @@ NUM_REGIONS_PER_CHROM = config['variant_calling']['num_regions_per_chrom']
 
 wildcard_constraints:
     chrom='|'.join([x for x in CHROMOSOMES])
+
+localrules: create_tmp_dir
 
 include: 'rules/common.smk'
     
@@ -67,6 +69,6 @@ include: 'rules/variant_calling.smk'
 
 rule clean:
     params:
-        'logs ../results {0}/* {1} fastp.json'.format(TRIMMED_READ_DIR, TMPDIR)
+        'logs {0} {1}/* {2} fastp.json'.format(config['results_prefix'], TRIMMED_READ_DIR, TMPDIR)
     shell:
         'rm -rfv {params}'

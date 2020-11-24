@@ -101,7 +101,7 @@ rule bcftools_split_variants:
         site_type='snps|indels|invariant|mnps|other'
     resources:
         cpus = 8,
-        time: '12:00:00'
+        time = '12:00:00'
     shell:
         """
         if [ {{wildcards.site_type}} = 'invariant' ]; then

@@ -1,6 +1,6 @@
 rule fastp_trim:
     input:
-        raw_read_qc_done = '../results/flag_files/fastqc_raw_reads.done',
+        raw_read_qc_done = '{0}/fastqc_raw_reads.done'.format(FLAG_FILES_DIR),
         r1 = lambda wc: str(glob.glob('{0}/{1}/{1}_*_1.fq.gz'.format(RAW_READ_DIR, wc.sample))[0]),
         r2 = lambda wc: str(glob.glob('{0}/{1}/{1}_*_2.fq.gz'.format(RAW_READ_DIR, wc.sample))[0])
     output:

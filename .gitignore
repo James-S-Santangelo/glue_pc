@@ -3,7 +3,8 @@ data/
 *.done
 *.json
 results/
-logs/
+*log*/
 *.pdf
 notebooks/
 resources/
+__pycache__/

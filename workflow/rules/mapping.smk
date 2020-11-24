@@ -1,6 +1,6 @@
 rule bwa_map_unpaired:
     input:
-        trimmed_reads_done_file = '../results/flag_files/fastqc_trimmed_reads.done',
+        trimmed_reads_done_file = '{0}/fastqc_trimmed_reads.done'.format(FLAG_FILES_DIR),
         unp = rules.fastp_trim.output.unp
     output:
         temp('{0}/unpaired/{{sample}}_unpaired_sorted.bam'.format(BAM_DIR))
