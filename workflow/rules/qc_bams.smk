@@ -51,9 +51,9 @@ rule bamutil_validate:
     input:
         get_bam
     output:
-        "{0}/bamutil_validate/{{sample}}_validation.txt".format(QC_DIR)
-    log: "logs/bamutil_validate/{sample}_validation.log"
-    conda: "../envs/bamutil.yaml"
+        '{0}/bamutil_validate/{{sample}}_validation.txt'.format(QC_DIR)
+    log: 'logs/bamutil_validate/{sample}_validation.log'
+    conda: '../envs/bamutil.yaml'
     shell:
         """
         bam validate --in {input} \

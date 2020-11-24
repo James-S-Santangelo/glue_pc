@@ -5,8 +5,8 @@ rule fastqc_raw_reads:
     output:
         fastqc_target_files(),
         touch('{0}/fastqc_raw_reads.done'.format(FLAG_FILES_DIR))
-    conda: "../envs/fastqc.yaml"
-    log: "logs/fastqc_raw_reads/fastqc_raw_reads.log"
+    conda: '../envs/fastqc.yaml'
+    log: 'logs/fastqc_raw_reads/fastqc_raw_reads.log'
     resources: 
         cpus = lambda wildcards, input: len(input.reads),
         mem_mb = lambda wildcards, input: len(input.reads) * 300        

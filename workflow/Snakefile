@@ -3,33 +3,33 @@ import glob
 import pandas as pd
 from snakemake.utils import min_version
 
-min_version("5.26.1")
+min_version('5.26.1')
 
-#container: "continuumio/miniconda3:4.9.1"
+#container: 'continuumio/miniconda3:4.9.1'
 
-configfile: "../config/config.yaml"
+configfile: '../config/config.yaml'
 
 SAMPLES = pd.read_table(config['samples'])['Sample'].tolist()
 CHROMOSOMES = pd.read_table(config['chromosomes'], header=None).iloc[:,0].tolist()
 
-TMPDIR = config["paths"]["temp_dir"]
-RAW_READ_DIR = "{0}/test".format(config["data_prefix"])
-TRIMMED_READ_DIR = "{0}/trimmed_reads".format(config["data_prefix"])
-QC_DIR = "{0}/qc".format(config["results_prefix"])
-BAM_DIR = "{0}/bam".format(config["results_prefix"])
-VARIANT_DIR = "{0}/variants".format(config["results_prefix"])
-PROGRAM_RESOURCE_DIR = "{0}/program_resources".format(config["results_prefix"])
-FLAG_FILES_DIR = "{0}/flag_files".format(config["results_prefix"])
+TMPDIR = config['paths']['temp_dir']
+RAW_READ_DIR = '{0}/test'.format(config['data_prefix'])
+TRIMMED_READ_DIR = '{0}/trimmed_reads'.format(config['data_prefix'])
+QC_DIR = '{0}/qc'.format(config['results_prefix'])
+BAM_DIR = '{0}/bam'.format(config['results_prefix'])
+VARIANT_DIR = '{0}/variants'.format(config['results_prefix'])
+PROGRAM_RESOURCE_DIR = '{0}/program_resources'.format(config['results_prefix'])
+FLAG_FILES_DIR = '{0}/flag_files'.format(config['results_prefix'])
 
-REFERENCE_GENOME = config["files"]["reference_genome"]
+REFERENCE_GENOME = config['files']['reference_genome']
 
-REPRESENTATIVE_SAMPLE = config["variant_calling"]["sample"]
-NUM_REGIONS_PER_CHROM = config["variant_calling"]["num_regions_per_chrom"]
+REPRESENTATIVE_SAMPLE = config['variant_calling']['sample']
+NUM_REGIONS_PER_CHROM = config['variant_calling']['num_regions_per_chrom']
 
 wildcard_constraints:
     chrom='|'.join([x for x in CHROMOSOMES])
 
-include: "rules/common.smk"
+include: 'rules/common.smk'
     
 rule all:
     input:
@@ -56,17 +56,17 @@ rule all:
 
 rule create_tmp_dir:
     output: directory(TMPDIR)
-    shell: "mkdir {output}"
+    shell: 'mkdir {output}'
 
-include: "rules/qc_raw_reads.smk"
-include: "rules/trimming.smk"
-include: "rules/qc_trimmed_reads.smk"
-include: "rules/mapping.smk"
-include: "rules/qc_bams.smk"
-include: "rules/variant_calling.smk"
+include: 'rules/qc_raw_reads.smk'
+include: 'rules/trimming.smk'
+include: 'rules/qc_trimmed_reads.smk'
+include: 'rules/mapping.smk'
+include: 'rules/qc_bams.smk'
+include: 'rules/variant_calling.smk'
 
 rule clean:
     params:
-        "logs ../results {0}/* {1} fastp.json".format(TRIMMED_READ_DIR, TMPDIR)
+        'logs ../results {0}/* {1} fastp.json'.format(TRIMMED_READ_DIR, TMPDIR)
     shell:
-        "rm -rfv {params}"
+        'rm -rfv {params}'

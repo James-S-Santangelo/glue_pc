@@ -7,8 +7,8 @@ rule fastqc_trimmed_reads:
             '{0}/fastqc_trimmed_reads/{{sample}}_trimmed_2{{ext}}'.format(QC_DIR)],
             sample=SAMPLES, ext=['_fastqc.html', '_fastqc.zip']),
         touch('{0}/fastqc_trimmed_reads.done'.format(FLAG_FILES_DIR))
-    conda: "../envs/fastqc.yaml"
-    log: "logs/fastqc_trimmed_reads/fastqc_trimmed_reads.log"
+    conda: '../envs/fastqc.yaml'
+    log: 'logs/fastqc_trimmed_reads/fastqc_trimmed_reads.log'
     resources:
         cpus = lambda wildcards, input: len(input.reads),
         mem_mb = lambda wildcards, input: len(input.reads) * 300

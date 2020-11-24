@@ -4,12 +4,12 @@ rule fastp_trim:
         r1 = lambda wc: str(glob.glob('{0}/{1}/{1}_*_1.fq.gz'.format(RAW_READ_DIR, wc.sample))[0]),
         r2 = lambda wc: str(glob.glob('{0}/{1}/{1}_*_2.fq.gz'.format(RAW_READ_DIR, wc.sample))[0])
     output:
-        r1_trim = "{0}/{{sample}}/{{sample}}_trimmed_1.fq.gz".format(TRIMMED_READ_DIR),
-        r2_trim = "{0}/{{sample}}/{{sample}}_trimmed_2.fq.gz".format(TRIMMED_READ_DIR),
-        unp = "{0}/{{sample}}/{{sample}}_unpaired.fq.gz".format(TRIMMED_READ_DIR),
-        html = "{0}/fastp_trim_reports/{{sample}}_fastp.html".format(QC_DIR)
-    conda: "../envs/fastp.yaml"
-    log: "logs/fastp_trim/{sample}_fastp.log"
+        r1_trim = '{0}/{{sample}}/{{sample}}_trimmed_1.fq.gz'.format(TRIMMED_READ_DIR),
+        r2_trim = '{0}/{{sample}}/{{sample}}_trimmed_2.fq.gz'.format(TRIMMED_READ_DIR),
+        unp = '{0}/{{sample}}/{{sample}}_unpaired.fq.gz'.format(TRIMMED_READ_DIR),
+        html = '{0}/fastp_trim_reports/{{sample}}_fastp.html'.format(QC_DIR)
+    conda: '../envs/fastp.yaml'
+    log: 'logs/fastp_trim/{sample}_fastp.log'
     resources:
         cpus = 4
     shell:

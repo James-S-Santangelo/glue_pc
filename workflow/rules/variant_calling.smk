@@ -2,9 +2,9 @@ rule create_regions_equal_coverage:
     input: 
         get_representative_bam
     output:
-        temp("{0}/{{chrom}}_forFreebayes.regions".format(PROGRAM_RESOURCE_DIR))
-    log: "logs/create_regions_equal_cov/{chrom}_create_regions_equal_cov.log"
-    conda: "../envs/variant_calling.yaml"
+        temp('{0}/{{chrom}}_forFreebayes.regions'.format(PROGRAM_RESOURCE_DIR))
+    log: 'logs/create_regions_equal_cov/{chrom}_create_regions_equal_cov.log'
+    conda: '../envs/variant_calling.yaml'
     resources:
         cpus = 4
     shell:
@@ -16,10 +16,10 @@ rule create_regions_equal_coverage:
 
 rule concat_regions_forFreebayes:
     input:
-        expand("{0}/{{chrom}}_forFreebayes.regions".format(PROGRAM_RESOURCE_DIR), chrom=CHROMOSOMES)
+        expand('{0}/{{chrom}}_forFreebayes.regions'.format(PROGRAM_RESOURCE_DIR), chrom=CHROMOSOMES)
     output:
-        "{0}/wholeGenome_forFreebayes.regions".format(PROGRAM_RESOURCE_DIR)
-    log: "logs/concat_regions_forFreebayes/concat_regions_forFreebayes.log"
+        '{0}/wholeGenome_forFreebayes.regions'.format(PROGRAM_RESOURCE_DIR)
+    log: 'logs/concat_regions_forFreebayes/concat_regions_forFreebayes.log'
     shell:
         """
         cat {input} >> {output} 2> {log}
@@ -128,7 +128,7 @@ rule vcf_to_zarr:
     input:
         rules.bcftools_split_variants.output
     output:
-        directory("{0}/zarr_db/wholeGenome_allSamples_{{site_type}}_sorted.zarr".format(VARIANT_DIR))
+        directory('{0}/zarr_db/wholeGenome_allSamples_{{site_type}}_sorted.zarr'.format(VARIANT_DIR))
     log: 'logs/vcf_to_zarr/vcf_to_zarr_{site_type}.log'
     conda: '../envs/vcf_to_zarr.yaml'
     wildcard_constraints:
