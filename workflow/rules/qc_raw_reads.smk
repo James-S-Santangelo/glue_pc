@@ -9,7 +9,8 @@ rule fastqc_raw_reads:
     log: 'logs/fastqc_raw_reads/fastqc_raw_reads.log'
     resources: 
         cpus = lambda wildcards, input: len(input.reads),
-        mem_mb = lambda wildcards, input: len(input.reads) * 300        
+        mem_mb = lambda wildcards, input: len(input.reads) * 300
+        time = '04:00:00'
     shell:
         """
         fastqc --threads {{resources.cpus}} --outdir {0}/fastqc_raw_reads --noextract --quiet --dir {{input.tmp}} {{input.reads}} 2> {{log}}

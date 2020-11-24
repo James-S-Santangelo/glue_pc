@@ -11,7 +11,9 @@ rule fastp_trim:
     conda: '../envs/fastp.yaml'
     log: 'logs/fastp_trim/{sample}_fastp.log'
     resources:
-        cpus = 4
+        cpus = 8,
+        mem_mb = lambda wildcards, input: int(input.size_mb),
+        time = '04:00:00'
     shell:
         """
         fastp --in1 {input.r1} \
@@ -24,5 +26,6 @@ rule fastp_trim:
             --thread {resources.cpus} \
             --detect_adapter_for_pe \
             --trim_poly_g \
+            --thread {resources.cpus} \
             --overrepresentation_analysis 2> {log}
         """ 

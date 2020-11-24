@@ -11,7 +11,8 @@ rule fastqc_trimmed_reads:
     log: 'logs/fastqc_trimmed_reads/fastqc_trimmed_reads.log'
     resources:
         cpus = lambda wildcards, input: len(input.reads),
-        mem_mb = lambda wildcards, input: len(input.reads) * 300
+        mem_mb = lambda wildcards, input: len(input.reads) * 300,
+        time = '04:00:00'
     shell:
         """
         fastqc --threads {{resources.cpus}} --outdir {0}/fastqc_trimmed_reads --noextract --quiet --dir {1} {{input.reads}} 2> {{log}}

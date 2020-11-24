@@ -6,7 +6,8 @@ rule create_regions_equal_coverage:
     log: 'logs/create_regions_equal_cov/{chrom}_create_regions_equal_cov.log'
     conda: '../envs/variant_calling.yaml'
     resources:
-        cpus = 4
+        cpus = 8,
+        time = '06:00:00'
     shell:
         """
         ( samtools view --threads {{resources.cpus}} -b -s 0.20 {{input}} {{wildcards.chrom}} |\
@@ -46,8 +47,8 @@ rule freebayes_call_variants:
     log: 'logs/freebayes/freebayes.log'
     conda: '../envs/variant_calling.yaml'
     resources:
-        cpus = 120,
-        mem_mb = 500000
+        cpus = 400,
+        time = '24:00:00'
     shell:
         """
         ( freebayes-parallel {{input.regions}} {{resources.cpus}} \
@@ -68,7 +69,8 @@ rule bgzip_vcf:
     log: 'logs/bgzip/bgzip.log'
     conda: '../envs/variant_calling.yaml'
     resources:
-        cpus = 4
+        cpus = 8,
+        time = '01:00:00'
     shell:
         """
         bgzip -@ {resources.cpus} {input}
@@ -82,7 +84,7 @@ rule bcftools_sort:
     log: 'logs/bcftools_sort/bcftools_sort.log'
     conda: '../envs/variant_calling.yaml'
     resources:
-        mem_mb = 500000
+        time = '12:00:00'
     shell:
         """
         bcftools sort -O z -o {{output}} -T {0} {{input}} 2> {{log}}
@@ -98,7 +100,8 @@ rule bcftools_split_variants:
     wildcard_constraints:
         site_type='snps|indels|invariant|mnps|other'
     resources:
-        cpus = 4
+        cpus = 8,
+        time: '12:00:00'
     shell:
         """
         if [ {{wildcards.site_type}} = 'invariant' ]; then
@@ -133,5 +136,8 @@ rule vcf_to_zarr:
     conda: '../envs/vcf_to_zarr.yaml'
     wildcard_constraints:
         site_type='snps|invariant'
+    resources:
+        cpus = 32,
+        time = '01:00:00'
     script:
         "../scripts/python/vcf_to_zarr.py"

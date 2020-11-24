@@ -9,8 +9,9 @@ rule bwa_map_unpaired:
     conda: '../envs/bwa_mapping.yaml'
     log: 'logs/bwa_map_unpaired/{sample}_bwa_map.unpaired.log'
     resources:
-        cpus = 4,
-        mem_mb = lambda wildcards, input: int(input.size_mb)
+        cpus = 8,
+        mem_mb = lambda wildcards, input: int(input.size_mb),
+        time = '01:00:00'
     shell:
         """
         ( bwa mem -t {{resources.cpus}} {0} {{input.unp}} {{params}} |\
@@ -29,8 +30,9 @@ rule bwa_map_paired:
     conda: '../envs/bwa_mapping.yaml'
     log: 'logs/bwa_map_paired/{sample}_bwa_map.paired.log'
     resources:
-        cpus = 4,
-        mem_mb = lambda wildcards, input: int(input.size_mb)
+        cpus = 8,
+        mem_mb = lambda wildcards, input: int(input.size_mb),
+        time = '06:00:00'
     shell:
         """
         ( bwa mem -t {{resources.cpus}} {0} {{input.r1}} {{input.r2}} {{params}} |\
@@ -46,7 +48,8 @@ rule merge_bams:
     conda: '../envs/bwa_mapping.yaml'
     log: 'logs/merge_bams/{sample}_merge_bams.log'
     resources:
-        cpus = 4
+        cpus = 8,
+        time = '04:00:00'
     shell:
         """
         ( samtools cat --threads {{resources.cpus}} {{input.pair}} {{input.unp}} |\
@@ -62,8 +65,9 @@ rule samtools_markdup:
     conda: '../envs/bwa_mapping.yaml'
     log: 'logs/samtools_markdup/{sample}_samtools_markdup.log'
     resources:
-        cpus = 4,
-        mem_mb = lambda wildcards, input: int(input.size_mb)
+        cpus = 8,
+        mem_mb = lambda wildcards, input: int(input.size_mb),
+        time = '05:00:00'
     shell:
         """
         ( samtools fixmate --threads {{resources.cpus}} -m {{input}} - |\
@@ -79,7 +83,8 @@ checkpoint index_bam:
     conda: '../envs/bwa_mapping.yaml'
     log: 'logs/index_bam/{sample}_index_bam.log'
     resources:
-        cpus = 4
+        cpus = 8,
+        time = '01:00:00'
     shell:
         """
         samtools index -@ {resources.cpus} {input} 2> {log}
