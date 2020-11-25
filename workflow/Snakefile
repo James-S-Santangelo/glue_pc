@@ -38,14 +38,12 @@ raw_read_dict = create_raw_read_dict(RAW_READ_DIR, SAMPLES)
 rule all:
    input:
        # QC of raw reads
-       expand('{0}/fastqc_raw_reads/{{sample}}_{{read}}.{{ext}}'.format(QC_DIR), sample=SAMPLES, read=['1_fastqc', '2_fastqc'], ext=['html', 'zip']),
+       expand('{0}/fastqc_raw_reads/{{sample}}_{{read}}_fastqc.{{ext}}'.format(QC_DIR), sample=SAMPLES, read=['1', '2'], ext=['html', 'zip']),
         # Trim reads
         expand('{0}/{{sample}}/{{sample}}_trimmed_{{read}}.fq.gz'.format(TRIMMED_READ_DIR), sample=SAMPLES, read=['1', '2', 'unpaired']),
-        expand('{0}/fastp_trim_reports/{{sample}}_fastp.html'.format(QC_DIR), sample=SAMPLES)
-#         # QC of trimmed reads
-#         expand(['{0}/fastqc_trimmed_reads/{{sample}}_trimmed_1{{ext}}'.format(QC_DIR), 
-#                 '{0}/fastqc_trimmed_reads/{{sample}}_trimmed_2{{ext}}'.format(QC_DIR)],
-#                 sample=SAMPLES, ext=['_fastqc.html', '_fastqc.zip']),
+        expand('{0}/fastp_trim_reports/{{sample}}_fastp.html'.format(QC_DIR), sample=SAMPLES),
+        # QC of trimmed reads
+        expand('{0}/fastqc_trimmed_reads/{{sample}}_trimmed_{{read}}_fastqc.{{ext}}'.format(QC_DIR), sample=SAMPLES, read=['1', '2'], ext=['html', 'zip'])
 #         # Mapping reads
 #         expand('{0}/final/{{sample}}_merged_sorted_dupsMarked.{{ext}}'.format(BAM_DIR), sample=SAMPLES, ext=['bam', 'bam.bai']),
 #         # BAM QC
@@ -64,7 +62,7 @@ rule create_tmp_dir:
 
 include: 'rules/qc_raw_reads.smk'
 include: 'rules/trimming.smk'
-# include: 'rules/qc_trimmed_reads.smk'
+include: 'rules/qc_trimmed_reads.smk'
 # include: 'rules/mapping.smk'
 # include: 'rules/qc_bams.smk'
 # include: 'rules/variant_calling.smk'
