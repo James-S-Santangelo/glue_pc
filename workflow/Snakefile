@@ -29,7 +29,7 @@ NUM_REGIONS_PER_CHROM = config['variant_calling']['num_regions_per_chrom']
 wildcard_constraints:
     chrom='|'.join([x for x in CHROMOSOMES])
 
-localrules: create_tmp_dir
+localrules: create_tmp_dir, write_qualimap_multiqc_file
 
 include: 'rules/common.smk'
 
@@ -45,10 +45,10 @@ rule all:
         # QC of trimmed reads
         expand('{0}/fastqc_trimmed_reads/{{sample}}_trimmed_{{read}}_fastqc.{{ext}}'.format(QC_DIR), sample=SAMPLES, read=['1', '2'], ext=['html', 'zip']),
         # Mapping reads
-        expand('{0}/final/{{sample}}_merged_sorted_dupsMarked.{{ext}}'.format(BAM_DIR), sample=SAMPLES, ext=['bam', 'bam.bai'])
-#         # BAM QC
-#         '{0}/qualimap/qualimap_multiqc'.format(QC_DIR),
-#         expand('{0}/bamutil_validate/{{sample}}_validation.txt'.format(QC_DIR), sample=SAMPLES),
+        expand('{0}/final/{{sample}}_merged_sorted_dupsMarked.{{ext}}'.format(BAM_DIR), sample=SAMPLES, ext=['bam', 'bam.bai']),
+        # BAM QC
+        '{0}/qualimap/qualimap_multiqc'.format(QC_DIR),
+        expand('{0}/bamutil_validate/{{sample}}_validation.txt'.format(QC_DIR), sample=SAMPLES),
 #         # Variant calling
 #         '{0}/wholeGenome_forFreebayes.regions'.format(PROGRAM_RESOURCE_DIR),
 #         '{0}/freebayes_bams.list'.format(PROGRAM_RESOURCE_DIR),
@@ -64,7 +64,7 @@ include: 'rules/qc_raw_reads.smk'
 include: 'rules/trimming.smk'
 include: 'rules/qc_trimmed_reads.smk'
 include: 'rules/mapping.smk'
-# include: 'rules/qc_bams.smk'
+include: 'rules/qc_bams.smk'
 # include: 'rules/variant_calling.smk'
 # 
 rule clean:
