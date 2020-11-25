@@ -10,7 +10,7 @@ rule fastqc_raw_reads:
         zip2 = '{0}/fastqc_raw_reads/{{sample}}_2_fastqc.zip'.format(QC_DIR)
     conda: '../envs/fastqc.yaml'
     log: 'logs/fastqc_raw_reads/{sample}_fastqc_raw_reads.log'
-    threads: 8
+    threads: 2
     resources: 
         mem_mb = 1000, 
         time = '01:00:00'
