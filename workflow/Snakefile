@@ -32,43 +32,52 @@ wildcard_constraints:
 localrules: create_tmp_dir
 
 include: 'rules/common.smk'
-    
-rule all:
-    input:
-        # QC of raw reads
-        fastqc_target_files(),
-        # Trim reads
-        expand('{0}/{{sample}}/{{sample}}_{{read}}.fq.gz'.format(TRIMMED_READ_DIR), sample=SAMPLES, read=['trimmed_1', 'trimmed_2', 'unpaired']),
-        expand('{0}/fastp_trim_reports/{{sample}}_fastp.html'.format(QC_DIR), sample=SAMPLES),
-        # QC of trimmed reads
-        expand(['{0}/fastqc_trimmed_reads/{{sample}}_trimmed_1{{ext}}'.format(QC_DIR), 
-                '{0}/fastqc_trimmed_reads/{{sample}}_trimmed_2{{ext}}'.format(QC_DIR)],
-                sample=SAMPLES, ext=['_fastqc.html', '_fastqc.zip']),
-        # Mapping reads
-        expand('{0}/final/{{sample}}_merged_sorted_dupsMarked.{{ext}}'.format(BAM_DIR), sample=SAMPLES, ext=['bam', 'bam.bai']),
-        # BAM QC
-        '{0}/qualimap/qualimap_multiqc'.format(QC_DIR),
-        expand('{0}/bamutil_validate/{{sample}}_validation.txt'.format(QC_DIR), sample=SAMPLES),
-        # Variant calling
-        '{0}/wholeGenome_forFreebayes.regions'.format(PROGRAM_RESOURCE_DIR),
-        '{0}/freebayes_bams.list'.format(PROGRAM_RESOURCE_DIR),
-        expand('{0}/vcf/wholeGenome_allSamples_{{site_type}}_sorted.vcf.{{ext}}'.format(VARIANT_DIR), site_type=['snps', 'indels', 'invariant', 'mnps', 'other', 'allSites'], ext = ['gz', 'gz.tbi']),
-        expand('{0}/zarr_db/wholeGenome_allSamples_{{site_type}}_sorted.zarr'.format(VARIANT_DIR), site_type=['snps', 'invariant']),
-        '{0}/bamqcPaths_forQualimap_multiQC.txt'.format(PROGRAM_RESOURCE_DIR)
 
-rule create_tmp_dir:
-    output: directory(TMPDIR)
-    shell: 'mkdir {output}'
+def create_raw_read_dict(RAW_READ_DIR, SAMPLES):
+    raw_read_dict = {}
+    for sample in SAMPLES:
+        R1 = glob.glob('{0}/{1}/{1}_*_1.fq.gz'.format(RAW_READ_DIR, sample))[0]
+        R2 = glob.glob('{0}/{1}/{1}_*_2.fq.gz'.format(RAW_READ_DIR, sample))[0]
+        raw_read_dict[sample] = {'R1': R1, 'R2': R2}
+    return raw_read_dict
 
-include: 'rules/qc_raw_reads.smk'
-include: 'rules/trimming.smk'
-include: 'rules/qc_trimmed_reads.smk'
-include: 'rules/mapping.smk'
-include: 'rules/qc_bams.smk'
-include: 'rules/variant_calling.smk'
-
-rule clean:
-    params:
-        'logs {0} {1}/* {2} fastp.json'.format(config['results_prefix'], TRIMMED_READ_DIR, TMPDIR)
-    shell:
-        'rm -rfv {params}'
+print(create_raw_read_dict(RAW_READ_DIR, SAMPLES))
+#  rule all:
+#     input:
+#         # QC of raw reads
+#         fastqc_target_files(),
+#         # Trim reads
+#         expand('{0}/{{sample}}/{{sample}}_{{read}}.fq.gz'.format(TRIMMED_READ_DIR), sample=SAMPLES, read=['trimmed_1', 'trimmed_2', 'unpaired']),
+#         expand('{0}/fastp_trim_reports/{{sample}}_fastp.html'.format(QC_DIR), sample=SAMPLES),
+#         # QC of trimmed reads
+#         expand(['{0}/fastqc_trimmed_reads/{{sample}}_trimmed_1{{ext}}'.format(QC_DIR), 
+#                 '{0}/fastqc_trimmed_reads/{{sample}}_trimmed_2{{ext}}'.format(QC_DIR)],
+#                 sample=SAMPLES, ext=['_fastqc.html', '_fastqc.zip']),
+#         # Mapping reads
+#         expand('{0}/final/{{sample}}_merged_sorted_dupsMarked.{{ext}}'.format(BAM_DIR), sample=SAMPLES, ext=['bam', 'bam.bai']),
+#         # BAM QC
+#         '{0}/qualimap/qualimap_multiqc'.format(QC_DIR),
+#         expand('{0}/bamutil_validate/{{sample}}_validation.txt'.format(QC_DIR), sample=SAMPLES),
+#         # Variant calling
+#         '{0}/wholeGenome_forFreebayes.regions'.format(PROGRAM_RESOURCE_DIR),
+#         '{0}/freebayes_bams.list'.format(PROGRAM_RESOURCE_DIR),
+#         expand('{0}/vcf/wholeGenome_allSamples_{{site_type}}_sorted.vcf.{{ext}}'.format(VARIANT_DIR), site_type=['snps', 'indels', 'invariant', 'mnps', 'other', 'allSites'], ext = ['gz', 'gz.tbi']),
+#         expand('{0}/zarr_db/wholeGenome_allSamples_{{site_type}}_sorted.zarr'.format(VARIANT_DIR), site_type=['snps', 'invariant']),
+#         '{0}/bamqcPaths_forQualimap_multiQC.txt'.format(PROGRAM_RESOURCE_DIR)
+# 
+# rule create_tmp_dir:
+#     output: directory(TMPDIR)
+#     shell: 'mkdir {output}'
+# 
+# include: 'rules/qc_raw_reads.smk'
+# include: 'rules/trimming.smk'
+# include: 'rules/qc_trimmed_reads.smk'
+# include: 'rules/mapping.smk'
+# include: 'rules/qc_bams.smk'
+# include: 'rules/variant_calling.smk'
+# 
+# rule clean:
+#     params:
+#         'logs {0} {1}/* {2} fastp.json'.format(config['results_prefix'], TRIMMED_READ_DIR, TMPDIR)
+#     shell:
+#         'rm -rfv {params}'
