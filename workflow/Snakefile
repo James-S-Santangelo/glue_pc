@@ -29,7 +29,7 @@ NUM_REGIONS_PER_CHROM = config['variant_calling']['num_regions_per_chrom']
 wildcard_constraints:
     chrom='|'.join([x for x in CHROMOSOMES])
 
-localrules: create_tmp_dir, write_qualimap_multiqc_file
+localrules: create_tmp_dir, write_qualimap_multiqc_file, concat_regions_freebayes, create_bam_list
 
 include: 'rules/common.smk'
 
@@ -49,12 +49,11 @@ rule all:
         # BAM QC
         '{0}/qualimap/qualimap_multiqc'.format(QC_DIR),
         expand('{0}/bamutil_validate/{{sample}}_validation.txt'.format(QC_DIR), sample=SAMPLES),
-#         # Variant calling
-#         '{0}/wholeGenome_forFreebayes.regions'.format(PROGRAM_RESOURCE_DIR),
-#         '{0}/freebayes_bams.list'.format(PROGRAM_RESOURCE_DIR),
-#         expand('{0}/vcf/wholeGenome_allSamples_{{site_type}}_sorted.vcf.{{ext}}'.format(VARIANT_DIR), site_type=['snps', 'indels', 'invariant', 'mnps', 'other', 'allSites'], ext = ['gz', 'gz.tbi']),
-#         expand('{0}/zarr_db/wholeGenome_allSamples_{{site_type}}_sorted.zarr'.format(VARIANT_DIR), site_type=['snps', 'invariant']),
-#         '{0}/bamqcPaths_forQualimap_multiQC.txt'.format(PROGRAM_RESOURCE_DIR)
+        # Variant calling
+        '{0}/wholeGenome_forFreebayes.regions'.format(PROGRAM_RESOURCE_DIR),
+        '{0}/freebayes_bams.list'.format(PROGRAM_RESOURCE_DIR),
+        expand('{0}/vcf/wholeGenome_allSamples_{{site_type}}_sorted.vcf.{{ext}}'.format(VARIANT_DIR), site_type=['snps', 'indels', 'invariant', 'mnps', 'other', 'allSites'], ext = ['gz', 'gz.tbi']),
+        expand('{0}/zarr_db/wholeGenome_allSamples_{{site_type}}_sorted.zarr'.format(VARIANT_DIR), site_type=['snps', 'invariant'])
 
 rule create_tmp_dir:
     output: directory(TMPDIR)
@@ -65,8 +64,8 @@ include: 'rules/trimming.smk'
 include: 'rules/qc_trimmed_reads.smk'
 include: 'rules/mapping.smk'
 include: 'rules/qc_bams.smk'
-# include: 'rules/variant_calling.smk'
-# 
+include: 'rules/variant_calling.smk'
+
 rule clean:
     params:
         'logs {0} {1}/* {2} fastp.json'.format(config['results_prefix'], TRIMMED_READ_DIR, TMPDIR)
