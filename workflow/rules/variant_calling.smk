@@ -117,17 +117,17 @@ rule tabix_vcf:
         tabix {input}
         """
 
-# rule vcf_to_zarr:
-#     input:
-#         rules.bcftools_split_variants.output
-#     output:
-#         directory('{0}/zarr_db/wholeGenome_allSamples_{{site_type}}_sorted.zarr'.format(VARIANT_DIR))
-#     log: 'logs/vcf_to_zarr/vcf_to_zarr_{site_type}.log'
-#     conda: '../envs/vcf_to_zarr.yaml'
-#     wildcard_constraints:
-#         site_type='snps|invariant'
-#     threads: 32
-#     resources:
-#         time = '01:00:00'
-#     script:
-#         "../scripts/python/vcf_to_zarr.py"
+rule vcf_to_zarr:
+    input:
+        rules.bcftools_split_variants.output
+    output:
+        directory('{0}/zarr_db/{{chrom}}/{{chrom}}_allSamples_{{site_type}}_sorted.zarr'.format(VARIANT_DIR))
+    log: 'logs/vcf_to_zarr/{chrom}_vcf_to_zarr_{site_type}.log'
+    conda: '../envs/vcf_to_zarr.yaml'
+    wildcard_constraints:
+        site_type='snps|invariant'
+    threads: 1
+    resources:
+        time = '01:00:00'
+    script:
+        "../scripts/python/vcf_to_zarr.py"

@@ -50,7 +50,7 @@ rule all:
         expand('{0}/bamutil_validate/{{sample}}_validation.txt'.format(QC_DIR), sample=SAMPLES),
         # Variant calling
         expand('{0}/vcf/{{chrom}}/{{chrom}}_allSamples_{{site_type}}_sorted.vcf.{{ext}}'.format(VARIANT_DIR), chrom=CHROMOSOMES, site_type=['snps', 'indels', 'invariant', 'mnps', 'other'], ext = ['gz', 'gz.tbi']),
-        #expand('{0}/zarr_db/wholeGenome_allSamples_{{site_type}}_sorted.zarr'.format(VARIANT_DIR), site_type=['snps', 'invariant'])
+        expand('{0}/zarr_db/{{chrom}}/{{chrom}}_allSamples_{{site_type}}_sorted.zarr'.format(VARIANT_DIR), chrom=CHROMOSOMES, site_type=['snps', 'invariant'])
 
 rule create_tmp_dir:
     output: directory(TMPDIR)

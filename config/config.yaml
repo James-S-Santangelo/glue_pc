@@ -1,21 +1,21 @@
 # Sample IDs as list
-samples: ../resources/sequencedPlants_phenotypesHabitat.txt
-# samples: ../resources/testSamples.txt
+# samples: ../resources/sequencedPlants_phenotypesHabitat.txt
+samples: ../resources/testSamples.txt
 chromosomes: ../resources/chromosome_file.txt
 
-# results_prefix: ../results
-results_prefix: /scratch/n/nessrobe/santang3/results 
-# data_prefix: /scratch/research/projects/trifolium/toronto_gwsd/data
+results_prefix: ../results
+# results_prefix: /scratch/n/nessrobe/santang3/results 
+data_prefix: /scratch/research/projects/trifolium/toronto_gwsd/data
 # data_prefix: /scratch/n/nessrobe/santang3/test_data  
-data_prefix: /scratch/n/nessrobe/santang3/data 
+# data_prefix: /scratch/n/nessrobe/santang3/data 
 
 paths:
-  # temp_dir: /node1nfs/archive/data/trifolium/toronto_gwsd/tmp
-  temp_dir: /scratch/n/nessrobe/santang3/tmp 
+  temp_dir: /node1nfs/archive/data/trifolium/toronto_gwsd/tmp
+  # temp_dir: /scratch/n/nessrobe/santang3/tmp 
 
 files:
-  # reference_genome: /scratch/research/references/trifolium/repens/GCA_005869975.1_AgR_To_v5/GCA_005869975.1_AgR_To_v5_genomic.fna
-  reference_genome: /scratch/n/nessrobe/santang3/data/GCA_005869975.1_AgR_To_v5_genomic.fna
+  reference_genome: /scratch/research/references/trifolium/repens/GCA_005869975.1_AgR_To_v5/GCA_005869975.1_AgR_To_v5_genomic.fna
+  # reference_genome: /scratch/n/nessrobe/santang3/data/GCA_005869975.1_AgR_To_v5_genomic.fna
 
 variant_calling:
   sample: s_117_6  # Name of representative sample (i.e., with 'average' genome-wide coverage)
