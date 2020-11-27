@@ -13,7 +13,7 @@ rule fastqc_raw_reads:
     threads: 2
     resources: 
         mem_mb = 1000, 
-        time = '01:00:00'
+        time = '03:00:00'
     shell:
         """
         ( fastqc --threads {{threads}} --outdir {0}/fastqc_raw_reads --noextract --quiet --dir {{input.tmp}} {{input.read1}} {{input.read2}} &&

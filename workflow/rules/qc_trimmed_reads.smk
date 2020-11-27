@@ -1,5 +1,6 @@
 rule fastqc_trimmed_reads:
     input:
+        tmp = rules.create_tmp_dir.output,
         read1 = rules.fastp_trim.output.r1_trim,
         read2 = rules.fastp_trim.output.r2_trim
     output:
@@ -12,7 +13,7 @@ rule fastqc_trimmed_reads:
     threads: 2
     resources:
         mem_mb = 1000,
-        time = '01:00:00'
+        time = '03:00:00'
     shell:
         """
         fastqc --threads {{threads}} --outdir {0}/fastqc_trimmed_reads --noextract --quiet --dir {1} {{input.read1}} {{input.read2}} 2> {{log}}

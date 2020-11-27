@@ -9,10 +9,10 @@ rule fastp_trim:
         html = '{0}/fastp_trim_reports/{{sample}}_fastp.html'.format(QC_DIR)
     conda: '../envs/fastp.yaml'
     log: 'logs/fastp_trim/{sample}_fastp.log'
-    threads: 8
+    threads: 4
     resources:
-        mem_mb = lambda wildcards, input: int(input.size_mb),
-        time = '02:00:00'
+        mem_mb = lambda wildcards, input, attempt: attempt * int(input.size_mb / 2),
+        time = '03:00:00'
     shell:
         """
         fastp --in1 {input.read1} \

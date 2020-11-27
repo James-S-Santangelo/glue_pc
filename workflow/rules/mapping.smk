@@ -11,7 +11,7 @@ rule bwa_map_unpaired:
     threads: 8
     resources:
         mem_mb = lambda wildcards, input: int(input.size_mb),
-        time = '01:00:00'
+        time = '03:00:00'
     shell:
         """
         ( bwa mem -t {{threads}} {0} {{input.unp}} {{params}} |\
@@ -49,7 +49,7 @@ rule merge_bams:
     log: 'logs/merge_bams/{sample}_merge_bams.log'
     threads: 8
     resources:
-        time = '04:00:00'
+        time = '03:00:00'
     shell:
         """
         ( samtools cat --threads {{threads}} {{input.pair}} {{input.unp}} |\
@@ -67,7 +67,7 @@ rule samtools_markdup:
     threads: 8
     resources:
         mem_mb = lambda wildcards, input: int(input.size_mb),
-        time = '05:00:00'
+        time = '12:00:00'
     shell:
         """
         ( samtools fixmate --threads {{threads}} -m {{input}} - |\

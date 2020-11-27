@@ -2,10 +2,9 @@
 # Rule resources (e.g., mem, cpus, time) specified in Snakefiles
 
 __default__:
-    #jobname: '{rule}_{wildcards}'
+  job-name: '{rule}_{wildcards}'
   account: 'def-nessrobe'
   output: 'slurm_logs/{rule}_{wildcards}.out'
   error: 'slurm_logs/{rule}_{wildcards}.err'
-  #mail-type: 'FAIL'
-  #mail-user: 'james.santangelo37@gmail.com'
-  #exclusive: 'user'
+  mail-type: 'FAIL'
+  mail-user: 'james.santangelo37@gmail.com'

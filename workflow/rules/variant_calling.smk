@@ -29,8 +29,8 @@ rule create_bam_list:
 rule freebayes_call_variants:
     input:
         bams = rules.create_bam_list.output,
-        #regions = rules.concat_regions_forFreebayes.output
-        regions = '../resources/{chrom}_forFreebayes.regions'
+        regions = rules.create_regions_equal_coverage.output
+        #regions = '../resources/{chrom}_forFreebayes.regions'
     output:
         temp('{0}/vcf/{{chrom}}/{{chrom}}_allSamples.vcf'.format(VARIANT_DIR))
     log: 'logs/freebayes/{chrom}_freebayes.log'
