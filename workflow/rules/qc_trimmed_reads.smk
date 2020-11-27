@@ -13,7 +13,7 @@ rule fastqc_trimmed_reads:
     threads: 2
     resources:
         mem_mb = 1000,
-        time = '03:00:00'
+        time = '01:00:00'
     shell:
         """
         fastqc --threads {{threads}} --outdir {0}/fastqc_trimmed_reads --noextract --quiet --dir {1} {{input.read1}} {{input.read2}} 2> {{log}}
