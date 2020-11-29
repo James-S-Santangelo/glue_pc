@@ -78,7 +78,7 @@ rule samtools_markdup:
             samtools markdup --threads {{threads}} -T {0} -f {{output.stats}} - {{output.bam}} ) 2> {{log}}
         """.format(TMPDIR)
 
-checkpoint index_bam:
+rule index_bam:
     input:
         rules.samtools_markdup.output.bam
     output:
@@ -92,4 +92,20 @@ checkpoint index_bam:
         """
         samtools index -@ {threads} {input} 2> {log}
         """
+
+rule samtools_flagstat:
+    input:
+        rules.samtools_markdup.output.bam
+    output:
+        '{0}/samtools_flagstat/{{sample}}_flagstat.tsv'.format(QC_DIR)
+    conda: '../envs/bwa_mapping.yaml'
+    log: 'logs/samtools_flagstat/{sample}_flagstat.log'
+    threads: 6
+    resources:
+        time = '01:00:00'
+    shell:
+        """
+        samtools flagstat -@ {threads} -O tsv {input} > {output} 2> {log}
+        """
+
 
