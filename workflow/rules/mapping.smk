@@ -97,7 +97,7 @@ rule samtools_flagstat:
     input:
         rules.samtools_markdup.output.bam
     output:
-        '{0}/samtools_flagstat/{{sample}}_flagstat.tsv'.format(QC_DIR)
+        '{0}/samtools_flagstat/{{sample}}_flagstat.json'.format(QC_DIR)
     conda: '../envs/bwa_mapping.yaml'
     log: 'logs/samtools_flagstat/{sample}_flagstat.log'
     threads: 6
@@ -105,7 +105,7 @@ rule samtools_flagstat:
         time = '01:00:00'
     shell:
         """
-        samtools flagstat -@ {threads} -O tsv {input} > {output} 2> {log}
+        samtools flagstat -@ {threads} -O json {input} > {output} 2> {log}
         """
 
 

@@ -1,0 +1,56 @@
+extra_fn_clean_exts:
+  - type: regex_keep
+    pattern: '^s_[\d]*_[\d]{1,2}'
+
+run_modules:
+  - fastqc
+  - fastp
+  - qualimap
+  - samtools/flagstat
+
+module_order:
+  - fastqc:
+      name: 'FastQC (raw)'
+      anchor: 'fastqc_raw'
+      info: 'This section of the report shows FastQC results BEFORE adapter trimming.'
+      path_filters:
+        - '*_1_fastqc.zip'
+        - '*_2_fastqc.zip'
+  - fastp:
+      name: 'Fastp'
+      anchor: 'fastp_trim'
+      info: 'This section provides stats calculated by fastp during adapter trimming'
+      path_filters:
+        - '*_fastp.json'
+  - fastqc:
+      name: 'FastQC (trimmed)'
+      anchor: 'fastqc_trimmed'
+      info: 'This section of the report shows FastQC results AFTER adapter trimming.'
+      path_filters:
+        - '*_trimmed_1_fastqc.zip'
+        - '*_trimmed_2_fastqc.zip'
+  - qualimap:
+      name: 'Qualimap'
+      anchor: 'qualimap_bamqc'
+      info: 'This section shows results from Qualimap QC of all BAM files'
+  - samtools/flagstat:
+      name: 'Samtools flagstat'
+      anchor: 'samtools_flagstat'
+      path_filters:
+        - '*_flagstat.json'
+
+report_section_order:
+  fastqc_raw:
+    order: -1000
+  # fastp_trim:
+    # after: fastqc_raw
+  # fastqc_trimmed:
+    # after: fastp_trim
+  # qualimap_bamqc:
+    # after: fastqc_trimmed
+  # samtools_flagstat:
+      # after: qualimap_bamqc
+
+sp:
+  samtools/flagstat:
+    - fn: '*_flagstat.json'

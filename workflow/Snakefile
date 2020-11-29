@@ -46,7 +46,8 @@ rule all:
         # Mapping reads
         expand('{0}/final/{{sample}}_merged_sorted_dupsMarked.{{ext}}'.format(BAM_DIR), sample=SAMPLES, ext=['bam', 'bam.bai']),
         # BAM QC
-       expand('{0}/samtools_flagstat/{{sample}}_flagstat.tsv'.format(QC_DIR), sample=SAMPLES) 
+       expand('{0}/samtools_flagstat/{{sample}}_flagstat.json'.format(QC_DIR), sample=SAMPLES),
+       '{0}/multiqc/multiqc_report.html'.format(QC_DIR) 
         #'{0}/qualimap/qualimap_multiqc'.format(QC_DIR),
         #expand('{0}/bamutil_validate/{{sample}}_validation.txt'.format(QC_DIR), sample=SAMPLES),
         # Variant calling
@@ -61,6 +62,7 @@ include: 'rules/qc_raw_reads.smk'
 include: 'rules/trimming.smk'
 include: 'rules/qc_trimmed_reads.smk'
 include: 'rules/mapping.smk'
+include: 'rules/qc.smk'
 # include: 'rules/qc_bams.smk'
 # include: 'rules/variant_calling.smk'
 

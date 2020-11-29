@@ -6,7 +6,7 @@ rule fastqc_raw_reads:
     output:
         html1 = '{0}/fastqc_raw_reads/{{sample}}_1_fastqc.html'.format(QC_DIR),
         html2 = '{0}/fastqc_raw_reads/{{sample}}_2_fastqc.html'.format(QC_DIR),
-        zip11 = '{0}/fastqc_raw_reads/{{sample}}_1_fastqc.zip'.format(QC_DIR),
+        zip1 = '{0}/fastqc_raw_reads/{{sample}}_1_fastqc.zip'.format(QC_DIR),
         zip2 = '{0}/fastqc_raw_reads/{{sample}}_2_fastqc.zip'.format(QC_DIR)
     conda: '../envs/fastqc.yaml'
     log: 'logs/fastqc_raw_reads/{sample}_fastqc_raw_reads.log'
