@@ -93,19 +93,18 @@ rule index_bam:
         samtools index -@ {threads} {input} 2> {log}
         """
 
-rule samtools_flagstat:
+rule bamtools_stats:
     input:
         rules.samtools_markdup.output.bam
     output:
-        '{0}/samtools_flagstat/{{sample}}_flagstat.json'.format(QC_DIR)
-    conda: '../envs/bwa_mapping.yaml'
-    log: 'logs/samtools_flagstat/{sample}_flagstat.log'
-    threads: 6
+        '{0}/bamtools_stats/{{sample}}_bamtools.stats'.format(QC_DIR)
+    conda: '../envs/bamtools.yaml'
+    log: 'logs/bamtools_stats/{sample}_bamtools_stats.log'
     resources:
         time = '01:00:00'
     shell:
         """
-        samtools flagstat -@ {threads} -O json {input} > {output} 2> {log}
+        bamtools stats -in {input} > {output} 2> {log}
         """
 
 

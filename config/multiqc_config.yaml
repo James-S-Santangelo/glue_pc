@@ -6,7 +6,7 @@ run_modules:
   - fastqc
   - fastp
   - qualimap
-  - samtools/flagstat
+  - bamtools
 
 module_order:
   - fastqc:
@@ -33,11 +33,10 @@ module_order:
       name: 'Qualimap'
       anchor: 'qualimap_bamqc'
       info: 'This section shows results from Qualimap QC of all BAM files'
-  - samtools/flagstat:
-      name: 'Samtools flagstat'
-      anchor: 'samtools_flagstat'
-      path_filters:
-        - '*_flagstat.json'
+  - bamtools:
+      name: 'Bamtools stats'
+      anchor: 'bamtools_stats'
+      info: 'This section shows stats from BAM file flags analyzed using bamtools'
 
 report_section_order:
   fastqc_raw:
@@ -48,9 +47,4 @@ report_section_order:
     # after: fastp_trim
   # qualimap_bamqc:
     # after: fastqc_trimmed
-  # samtools_flagstat:
-      # after: qualimap_bamqc
 
-sp:
-  samtools/flagstat:
-    - fn: '*_flagstat.json'
