@@ -7,7 +7,7 @@ rule fastp_trim:
         r2_trim = temp('{0}/{{sample}}/{{sample}}_trimmed_2.fq.gz'.format(TRIMMED_READ_DIR)),
         unp = temp('{0}/{{sample}}/{{sample}}_trimmed_unpaired.fq.gz'.format(TRIMMED_READ_DIR)),
         html = '{0}/fastp_trim_reports/{{sample}}_fastp.html'.format(QC_DIR),
-        json = '{0}/fastp_trim_reports/{{sample}}_fastp.json'.format(QC_DIR)
+        json = temp('{0}/fastp_trim_reports/{{sample}}_fastp.json'.format(QC_DIR))
     conda: '../envs/trimming.yaml'
     log: 'logs/fastp_trim/{sample}_fastp.log'
     threads: 4

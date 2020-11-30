@@ -6,8 +6,8 @@ rule fastqc_raw_reads:
     output:
         html1 = '{0}/fastqc_raw_reads/{{sample}}_1_fastqc.html'.format(QC_DIR),
         html2 = '{0}/fastqc_raw_reads/{{sample}}_2_fastqc.html'.format(QC_DIR),
-        zip1 = '{0}/fastqc_raw_reads/{{sample}}_1_fastqc.zip'.format(QC_DIR),
-        zip2 = '{0}/fastqc_raw_reads/{{sample}}_2_fastqc.zip'.format(QC_DIR)
+        zip1 = temp('{0}/fastqc_raw_reads/{{sample}}_1_fastqc.zip'.format(QC_DIR)),
+        zip2 = temp('{0}/fastqc_raw_reads/{{sample}}_2_fastqc.zip'.format(QC_DIR))
     conda: '../envs/qc.yaml'
     log: 'logs/fastqc_raw_reads/{sample}_fastqc_raw_reads.log'
     threads: 2
@@ -32,8 +32,8 @@ rule fastqc_trimmed_reads:
     output:
         html1 = '{0}/fastqc_trimmed_reads/{{sample}}_trimmed_1_fastqc.html'.format(QC_DIR),
         html2 = '{0}/fastqc_trimmed_reads/{{sample}}_trimmed_2_fastqc.html'.format(QC_DIR),
-        zip1 = '{0}/fastqc_trimmed_reads/{{sample}}_trimmed_1_fastqc.zip'.format(QC_DIR),
-        zip2 = '{0}/fastqc_trimmed_reads/{{sample}}_trimmed_2_fastqc.zip'.format(QC_DIR)
+        zip1 = temp('{0}/fastqc_trimmed_reads/{{sample}}_trimmed_1_fastqc.zip'.format(QC_DIR)),
+        zip2 = temp('{0}/fastqc_trimmed_reads/{{sample}}_trimmed_2_fastqc.zip'.format(QC_DIR))
     conda: '../envs/qc.yaml'
     log: 'logs/fastqc_trimmed_reads/{sample}_fastqc_trimmed_reads.log'
     threads: 2
@@ -67,6 +67,20 @@ rule qualimap_bam_qc:
             -outformat html \
             --java-mem-size={{resources.mem_mb}}M >> {{log}} 2>&1
         """.format(QC_DIR)
+
+rule bamtools_stats:
+    input:
+        rules.samtools_markdup.output.bam
+    output:
+        '{0}/bamtools_stats/{{sample}}_bamtools.stats'.format(QC_DIR)
+    conda: '../envs/qc.yaml'
+    log: 'logs/bamtools_stats/{sample}_bamtools_stats.log'
+    resources:
+        time = '01:00:00'
+    shell:
+        """
+        bamtools stats -in {input} > {output} 2> {log}
+        """
 
 rule multiqc:
     input:
@@ -105,16 +119,3 @@ rule bamutil_validate:
             --verbose 2> {output}
         """
 
-rule bamtools_stats:
-    input:
-        rules.samtools_markdup.output.bam
-    output:
-        '{0}/bamtools_stats/{{sample}}_bamtools.stats'.format(QC_DIR)
-    conda: '../envs/qc.yaml'
-    log: 'logs/bamtools_stats/{sample}_bamtools_stats.log'
-    resources:
-        time = '01:00:00'
-    shell:
-        """
-        bamtools stats -in {input} > {output} 2> {log}
-        """
