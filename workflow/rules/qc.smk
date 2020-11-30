@@ -47,7 +47,7 @@ rule fastqc_trimmed_reads:
 
 rule qualimap_bam_qc:
     input:
-        bam = rules.samtools_markdup.output,
+        bam = rules.samtools_markdup.output.bam,
         index = rules.index_bam.output
     output:
         temp(directory('{0}/qualimap/{{sample}}_qualimap_bamqc'.format(QC_DIR)))
@@ -55,8 +55,8 @@ rule qualimap_bam_qc:
     conda: '../envs/qc.yaml'
     threads: 8
     resources:
-        mem_mb = lambda wildcards, input: 4 * int(input.size_mb),
-        time = '04:00:00'
+        mem_mb = lambda wildcards, input, attempt: attempt * (int(input.size_mb) * 2),
+        time = '01:00:00'
     shell:
         """
         unset DISPLAY;
@@ -95,6 +95,9 @@ rule multiqc:
         '{0}/multiqc/multiqc_report.html'.format(QC_DIR)
     conda: '../envs/qc.yaml'
     log: 'logs/multiqc/multiqc.log'
+    resources:
+        mem_mb = lambda wildcards, attempt: attempt * 5000,
+        time = '01:00:00'
     shell:
         """
         multiqc --verbose \
