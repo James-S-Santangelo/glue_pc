@@ -58,12 +58,9 @@ rule create_tmp_dir:
     output: directory(TMPDIR)
     shell: 'mkdir {output}'
 
-include: 'rules/qc_raw_reads.smk'
 include: 'rules/trimming.smk'
-include: 'rules/qc_trimmed_reads.smk'
 include: 'rules/mapping.smk'
 include: 'rules/qc.smk'
-# include: 'rules/qc_bams.smk'
 # include: 'rules/variant_calling.smk'
 
 rule clean:
