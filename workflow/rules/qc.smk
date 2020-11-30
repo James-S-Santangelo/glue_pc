@@ -116,8 +116,7 @@ rule bamutil_validate:
     log: 'logs/bamutil_validate/{sample}_validation.log'
     conda: '../envs/qc.yaml'
     resources:
-        mem = lambda wildcards, input: int(input.size_mb),
-        time = '04:00:00'
+        time = '01:00:00'
     shell:
         """
         bam validate --in {input.bam} \
