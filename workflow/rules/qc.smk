@@ -47,7 +47,8 @@ rule fastqc_trimmed_reads:
 
 rule qualimap_bam_qc:
     input:
-        rules.samtools_markdup.output
+        bam = rules.samtools_markdup.output,
+        index = rules.index_bam.output
     output:
         temp(directory('{0}/qualimap/{{sample}}_qualimap_bamqc'.format(QC_DIR)))
     log: 'logs/qualimap/{sample}_bamqc.log'
@@ -59,7 +60,7 @@ rule qualimap_bam_qc:
     shell:
         """
         unset DISPLAY;
-        qualimap bamqc -bam {{input}} \
+        qualimap bamqc -bam {{input.bam}} \
             --paint-chromosome-limits \
             --collect-overlap-pairs \
             -nt {{threads}} \
@@ -70,7 +71,8 @@ rule qualimap_bam_qc:
 
 rule bamtools_stats:
     input:
-        rules.samtools_markdup.output.bam
+        bam = rules.samtools_markdup.output.bam,
+        index = rules.index_bam.output
     output:
         '{0}/bamtools_stats/{{sample}}_bamtools.stats'.format(QC_DIR)
     conda: '../envs/qc.yaml'
@@ -79,7 +81,7 @@ rule bamtools_stats:
         time = '01:00:00'
     shell:
         """
-        bamtools stats -in {input} > {output} 2> {log}
+        bamtools stats -in {input.bam} > {output} 2> {log}
         """
 
 rule multiqc:
@@ -104,7 +106,8 @@ rule multiqc:
 
 rule bamutil_validate:
     input:
-        rules.samtools_markdup.output
+        bam = rules.samtools_markdup.output,
+        index = rules.index_bam.output
     output:
         '{0}/bamutil_validate/{{sample}}_validation.txt'.format(QC_DIR)
     log: 'logs/bamutil_validate/{sample}_validation.log'
@@ -114,7 +117,7 @@ rule bamutil_validate:
         time = '04:00:00'
     shell:
         """
-        bam validate --in {input} \
+        bam validate --in {input.bam} \
             --so_coord \
             --verbose 2> {output}
         """
