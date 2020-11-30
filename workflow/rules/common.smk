@@ -8,11 +8,6 @@ def create_raw_read_dict(RAW_READ_DIR, SAMPLES):
         raw_read_dict[sample] = {'R1': R1, 'R2': R2}
     return raw_read_dict
 
-def get_bam(wildcards):
-    bam_index = checkpoints.index_bam.get(**wildcards).output[0]
-    bam = os.path.splitext(bam_index)[0]
-    return bam
-
 def get_representative_bam(wildcards):
     bam_index = checkpoints.index_bam.get(sample = REPRESENTATIVE_SAMPLE).output[0]
     bam = os.path.splitext(bam_index)[0]
