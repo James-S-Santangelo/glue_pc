@@ -40,11 +40,16 @@ module_order:
 
 report_section_order:
   fastqc_raw:
-    order: -1000
-  # fastp_trim:
-    # after: fastqc_raw
-  # fastqc_trimmed:
-    # after: fastp_trim
-  # qualimap_bamqc:
-    # after: fastqc_trimmed
+    order: 50
+  fastp_trim:
+    order: 40
+  fastqc_trimmed:
+    order: 30
+  qualimap_bamqc:
+    order: 20
+  bamtools_stats:
+    order: 10
 
+sp:
+  bamtools/stats:
+    fn: '*_bamtools.stats'
