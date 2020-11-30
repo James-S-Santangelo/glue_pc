@@ -36,20 +36,17 @@ raw_read_dict = create_raw_read_dict(RAW_READ_DIR, SAMPLES)
 
 rule all:
    input:
-       # QC of raw reads
-       expand('{0}/fastqc_raw_reads/{{sample}}_{{read}}_fastqc.{{ext}}'.format(QC_DIR), sample=SAMPLES, read=['1', '2'], ext=['html', 'zip']),
         # Trim reads
         expand('{0}/{{sample}}/{{sample}}_trimmed_{{read}}.fq.gz'.format(TRIMMED_READ_DIR), sample=SAMPLES, read=['1', '2', 'unpaired']),
         expand('{0}/fastp_trim_reports/{{sample}}_fastp.html'.format(QC_DIR), sample=SAMPLES),
-        # QC of trimmed reads
-        expand('{0}/fastqc_trimmed_reads/{{sample}}_trimmed_{{read}}_fastqc.{{ext}}'.format(QC_DIR), sample=SAMPLES, read=['1', '2'], ext=['html', 'zip']),
         # Mapping reads
         expand('{0}/final/{{sample}}_merged_sorted_dupsMarked.{{ext}}'.format(BAM_DIR), sample=SAMPLES, ext=['bam', 'bam.bai']),
-        # BAM QC
-       expand('{0}/bamtools_stats/{{sample}}_bamtools.stats'.format(QC_DIR), sample=SAMPLES),
-       '{0}/multiqc/multiqc_report.html'.format(QC_DIR) 
-        #'{0}/qualimap/qualimap_multiqc'.format(QC_DIR),
-        #expand('{0}/bamutil_validate/{{sample}}_validation.txt'.format(QC_DIR), sample=SAMPLES),
+        # QC 
+        #expand('{0}/fastqc_raw_reads/{{sample}}_{{read}}_fastqc.{{ext}}'.format(QC_DIR), sample=SAMPLES, read=['1', '2'], ext=['html', 'zip']),
+        #expand('{0}/fastqc_trimmed_reads/{{sample}}_trimmed_{{read}}_fastqc.{{ext}}'.format(QC_DIR), sample=SAMPLES, read=['1', '2'], ext=['html', 'zip']),
+        #expand('{0}/bamtools_stats/{{sample}}_bamtools.stats'.format(QC_DIR), sample=SAMPLES), 
+        '{0}/multiqc/multiqc_report.html'.format(QC_DIR), 
+        expand('{0}/bamutil_validate/{{sample}}_validation.txt'.format(QC_DIR), sample=SAMPLES),
         # Variant calling
         #expand('{0}/vcf/{{chrom}}/{{chrom}}_allSamples_{{site_type}}_sorted.vcf.{{ext}}'.format(VARIANT_DIR), chrom=CHROMOSOMES, site_type=['snps', 'indels', 'invariant', 'mnps', 'other'], ext = ['gz', 'gz.tbi']),
         #expand('{0}/zarr_db/{{chrom}}/{{chrom}}_allSamples_{{site_type}}_sorted.zarr'.format(VARIANT_DIR), chrom=CHROMOSOMES, site_type=['snps', 'invariant'])

@@ -104,7 +104,7 @@ rule multiqc:
 
 rule bamutil_validate:
     input:
-        get_bam
+        rules.samtools_markdup.output
     output:
         '{0}/bamutil_validate/{{sample}}_validation.txt'.format(QC_DIR)
     log: 'logs/bamutil_validate/{sample}_validation.log'
