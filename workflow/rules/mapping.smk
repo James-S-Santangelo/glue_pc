@@ -1,13 +1,12 @@
 rule bwa_map_unpaired:
     input:
-        fastqc_trimmed_done = rules.fastqc_trimmed_reads.output.html1,
         unp = rules.fastp_trim.output.unp,
         ref = REFERENCE_GENOME
     output:
         temp('{0}/unpaired/{{sample}}_unpaired_sorted.bam'.format(BAM_DIR))
     params:
         r"-R '@RG\tID:${sample}\tCN:NOVOGENE\tPL:ILLUMINA\tPM:NOVASEQ.S4\tSM:${sample}'"
-    conda: '../envs/bwa_mapping.yaml'
+    conda: '../envs/mapping.yaml'
     log: 'logs/bwa_map_unpaired/{sample}_bwa_map.unpaired.log'
     threads: 2
     resources:
@@ -21,7 +20,6 @@ rule bwa_map_unpaired:
 
 rule bwa_map_paired:
     input:
-        fastqc_trimmed_done = rules.fastqc_trimmed_reads.output.html1,
         r1 = rules.fastp_trim.output.r1_trim,
         r2 = rules.fastp_trim.output.r2_trim,
         ref = REFERENCE_GENOME
@@ -29,7 +27,7 @@ rule bwa_map_paired:
         temp('{0}/paired/{{sample}}_paired_sorted.bam'.format(BAM_DIR))
     params:
         r"-R '@RG\tID:${sample}\tCN:NOVOGENE\tPL:ILLUMINA\tPM:NOVASEQ.S4\tSM:${sample}'"
-    conda: '../envs/bwa_mapping.yaml'
+    conda: '../envs/mapping.yaml'
     log: 'logs/bwa_map_paired/{sample}_bwa_map.paired.log'
     threads: 6
     resources:
@@ -47,7 +45,7 @@ rule merge_bams:
         pair = rules.bwa_map_paired.output
     output:
         temp('{0}/merged/{{sample}}_merged_sorted.bam'.format(BAM_DIR))
-    conda: '../envs/bwa_mapping.yaml'
+    conda: '../envs/mapping.yaml'
     log: 'logs/merge_bams/{sample}_merge_bams.log'
     threads: 6
     resources:
@@ -65,7 +63,7 @@ rule samtools_markdup:
     output:
         bam = '{0}/final/{{sample}}_merged_sorted_dupsMarked.bam'.format(BAM_DIR),
         stats = '{0}/duplication_stats/{{sample}}_dupStats.txt'.format(QC_DIR)
-    conda: '../envs/bwa_mapping.yaml'
+    conda: '../envs/mapping.yaml'
     log: 'logs/samtools_markdup/{sample}_samtools_markdup.log'
     threads: 8
     resources:
@@ -83,7 +81,7 @@ rule index_bam:
         rules.samtools_markdup.output.bam
     output:
         '{0}/final/{{sample}}_merged_sorted_dupsMarked.bam.bai'.format(BAM_DIR),
-    conda: '../envs/bwa_mapping.yaml'
+    conda: '../envs/mapping.yaml'
     log: 'logs/index_bam/{sample}_index_bam.log'
     threads: 6
     resources:

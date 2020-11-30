@@ -8,7 +8,7 @@ rule fastqc_raw_reads:
         html2 = '{0}/fastqc_raw_reads/{{sample}}_2_fastqc.html'.format(QC_DIR),
         zip1 = '{0}/fastqc_raw_reads/{{sample}}_1_fastqc.zip'.format(QC_DIR),
         zip2 = '{0}/fastqc_raw_reads/{{sample}}_2_fastqc.zip'.format(QC_DIR)
-    conda: '../envs/fastqc.yaml'
+    conda: '../envs/qc.yaml'
     log: 'logs/fastqc_raw_reads/{sample}_fastqc_raw_reads.log'
     threads: 2
     resources: 
@@ -34,7 +34,7 @@ rule fastqc_trimmed_reads:
         html2 = '{0}/fastqc_trimmed_reads/{{sample}}_trimmed_2_fastqc.html'.format(QC_DIR),
         zip1 = '{0}/fastqc_trimmed_reads/{{sample}}_trimmed_1_fastqc.zip'.format(QC_DIR),
         zip2 = '{0}/fastqc_trimmed_reads/{{sample}}_trimmed_2_fastqc.zip'.format(QC_DIR)
-    conda: '../envs/fastqc.yaml'
+    conda: '../envs/qc.yaml'
     log: 'logs/fastqc_trimmed_reads/{sample}_fastqc_trimmed_reads.log'
     threads: 2
     resources:
@@ -51,7 +51,7 @@ rule qualimap_bam_qc:
     output:
         temp(directory('{0}/qualimap/{{sample}}_qualimap_bamqc'.format(QC_DIR)))
     log: 'logs/qualimap/{sample}_bamqc.log'
-    conda: '../envs/qualimap.yaml'
+    conda: '../envs/qc.yaml'
     threads: 8
     resources:
         mem_mb = lambda wildcards, input: 4 * int(input.size_mb),
@@ -77,7 +77,7 @@ rule multiqc:
        bamstats = expand('{0}/bamtools_stats/{{sample}}_bamtools.stats'.format(QC_DIR), sample=SAMPLES)
     output:
         '{0}/multiqc/multiqc_report.html'.format(QC_DIR)
-    conda: '../envs/multiqc.yaml'
+    conda: '../envs/qc.yaml'
     log: 'logs/multiqc/multiqc.log'
     shell:
         """
@@ -94,7 +94,7 @@ rule bamutil_validate:
     output:
         '{0}/bamutil_validate/{{sample}}_validation.txt'.format(QC_DIR)
     log: 'logs/bamutil_validate/{sample}_validation.log'
-    conda: '../envs/bamutil.yaml'
+    conda: '../envs/qc.yaml'
     resources:
         mem = lambda wildcards, input: int(input.size_mb),
         time = '04:00:00'
@@ -110,7 +110,7 @@ rule bamtools_stats:
         rules.samtools_markdup.output.bam
     output:
         '{0}/bamtools_stats/{{sample}}_bamtools.stats'.format(QC_DIR)
-    conda: '../envs/bamtools.yaml'
+    conda: '../envs/qc.yaml'
     log: 'logs/bamtools_stats/{sample}_bamtools_stats.log'
     resources:
         time = '01:00:00'

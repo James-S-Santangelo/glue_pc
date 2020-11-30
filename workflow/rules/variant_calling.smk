@@ -123,7 +123,7 @@ rule vcf_to_zarr:
     output:
         directory('{0}/zarr_db/{{chrom}}/{{chrom}}_allSamples_{{site_type}}_sorted.zarr'.format(VARIANT_DIR))
     log: 'logs/vcf_to_zarr/{chrom}_vcf_to_zarr_{site_type}.log'
-    conda: '../envs/vcf_to_zarr.yaml'
+    conda: '../envs/variant_calling.yaml'
     wildcard_constraints:
         site_type='snps|invariant'
     threads: 1
