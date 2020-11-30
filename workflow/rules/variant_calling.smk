@@ -19,7 +19,7 @@ rule create_regions_equal_coverage:
 
 rule create_bam_list:
     input:
-        expand('{0}/final/{{sample}}_merged_sorted_dupsMarked.bam'.format(BAM_DIR), sample=SAMPLES)
+        expand(rules.samtools_markdup.output.bam, sample=SAMPLES)
     output:
         '{0}/freebayes_bams.list'.format(PROGRAM_RESOURCE_DIR)
     log: 'logs/create_bam_list/create_bam_list.log'
