@@ -1,6 +1,8 @@
 rule create_regions_equal_coverage:
     input: 
-        get_representative_bam
+        qc_done = rules.multiqc.output,
+        bam = get_representative_bam,
+        ref_index = '{0}.fai'.format(REFERENCE_GENOME),
     output:
         '{0}/{{chrom}}_forFreebayes.regions'.format(PROGRAM_RESOURCE_DIR)
     log: 'logs/create_regions_equal_cov/{chrom}_create_regions_equal_cov.log'
@@ -10,10 +12,10 @@ rule create_regions_equal_coverage:
         time = '06:00:00'
     shell:
         """
-        ( samtools view --threads {{threads}} -b -s 0.20 {{input}} {{wildcards.chrom}} |\
+        ( samtools view --threads {{threads}} -b -s 0.20 {{input.bam}} {{wildcards.chrom}} |\
             bamtools coverage |\
-            coverage_to_regions.py {0}.fai {1} > {{output}} ) 2> {{log}} 
-        """.format(REFERENCE_GENOME, NUM_REGIONS_PER_CHROM)
+            coverage_to_regions.py {{input.ref_index}} {0} > {{output}} ) 2> {{log}} 
+        """.format(NUM_REGIONS_PER_CHROM)
 
 rule create_bam_list:
     input:

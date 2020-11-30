@@ -9,8 +9,10 @@ def create_raw_read_dict(RAW_READ_DIR, SAMPLES):
     return raw_read_dict
 
 def get_representative_bam(wildcards):
-    bam_index = checkpoints.index_bam.get(sample = REPRESENTATIVE_SAMPLE).output[0]
-    bam = os.path.splitext(bam_index)[0]
+    bam_index_files = expand(rules.index_bam.output, sample=SAMPLES)
+    for i in bam_index_files:
+        if REPRESENTATIVE_SAMPLE in i:
+            bam = os.path.splitext(i)[0]
     return bam
 
 def get_tabix_files(wildcards):
