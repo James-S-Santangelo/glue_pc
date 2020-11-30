@@ -90,7 +90,8 @@ rule multiqc:
        fastqc_trim = expand('{0}/fastqc_trimmed_reads/{{sample}}_trimmed_{{read}}_fastqc.zip'.format(QC_DIR), sample=SAMPLES, read=['1', '2']),
        fastp = expand('{0}/fastp_trim_reports/{{sample}}_fastp.json'.format(QC_DIR), sample=SAMPLES),
        qualimap = expand('{0}/qualimap/{{sample}}_qualimap_bamqc'.format(QC_DIR), sample=SAMPLES),
-       bamstats = expand('{0}/bamtools_stats/{{sample}}_bamtools.stats'.format(QC_DIR), sample=SAMPLES)
+       bamstats = expand('{0}/bamtools_stats/{{sample}}_bamtools.stats'.format(QC_DIR), sample=SAMPLES),
+       bamutil = expand('{0}/bamutil_validate/{{sample}}_validation.txt'.format(QC_DIR), sample=SAMPLES)
     output:
         '{0}/multiqc/multiqc_report.html'.format(QC_DIR)
     conda: '../envs/qc.yaml'
