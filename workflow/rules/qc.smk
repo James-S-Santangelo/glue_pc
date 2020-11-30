@@ -47,7 +47,7 @@ rule fastqc_trimmed_reads:
 
 rule qualimap_bam_qc:
     input:
-        get_bam
+        rules.samtools_markdup.output
     output:
         temp(directory('{0}/qualimap/{{sample}}_qualimap_bamqc'.format(QC_DIR)))
     log: 'logs/qualimap/{sample}_bamqc.log'
