@@ -21,21 +21,17 @@ rule region_files_forFreebayes:
     input:
         rules.create_regions_equal_coverage.output
     output:
-        '{0}/{{chrom}}_{{node}}_forFreebayes.regions'.format(PROGRAM_RESOURCE_DIR)
-    log: 'logs/regions_files_forFreebayes/{chrom}_{node}_forFreebayes.log'
-    run:
-        inpath = os.path.dirname(input[0])
-        if NODES_PER_CHROM == 1:
-            out = '{0}/{1}_node1_forFreebayes.regions'.format(inpath, wildcards.chrom)
-            shell("cp {{input}} {0}".format(out))
-        elif NODES_PER_CHROM > 1:
-            lines_per_file = CORES_PER_NODE
-            with open(input[0], 'r') as fin:
-                files = [open('{0}/{1}_node{2}_forFreebayes.regions'.format(inpath, wildcards.chrom, i + 1), 'w') for i in range(NODES_PER_CHROM)]
-                for i, line in enumerate(fin):
-                    files[i % NODES_PER_CHROM].write(line)
-                for f in files:
-                    f.close() 
+        directory('{0}/{{chrom}}_regions'.format(PROGRAM_RESOURCE_DIR))
+    log: 'logs/regions_files_forFreebayes/{chrom}_forFreebayes.log'
+    shell:
+        """
+        mkdir {{output}};
+        split --numeric-suffixes=1 \
+            -n l/{0} \
+            --additional-suffix=_forFreebayes.regions \
+            {{input}} \
+            {1}/{{wildcards.chrom}}_regions/{{wildcards.chrom}}_node 2> {{log}}
+        """.format(NODES_PER_CHROM, PROGRAM_RESOURCE_DIR)
 
 rule create_bam_list:
     input:

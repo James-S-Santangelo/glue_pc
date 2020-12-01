@@ -18,5 +18,5 @@ files:
 variant_calling:
   # sample: s_7_7
   sample: s_117_6  # Name of representative sample (i.e., with 'average' genome-wide coverage)
-  nodes_per_chrom: 2
+  nodes_per_chrom: 3
   cores_per_node: 32
