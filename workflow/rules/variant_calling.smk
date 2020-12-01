@@ -10,7 +10,7 @@ rule create_regions_equal_coverage:
     threads: 8
     resources:
         mem_mb = lambda wildcards, input, attempt: attempt * (int(input.size_mb) * 2),
-        time = '06:00:00'
+        time = '01:00:00'
     shell:
         """
         ( samtools view --threads {{threads}} -b -s 0.20 {{input.bam}} {{wildcards.chrom}} |\
