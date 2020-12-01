@@ -4,7 +4,7 @@ rule create_regions_equal_coverage:
         bam = get_representative_bam,
         ref_index = '{0}.fai'.format(REFERENCE_GENOME),
     output:
-        '{0}/{{chrom}}_forFreebayes.regions'.format(PROGRAM_RESOURCE_DIR)
+        temp('{0}/{{chrom}}_forFreebayes.regions'.format(PROGRAM_RESOURCE_DIR))
     log: 'logs/create_regions_equal_cov/{chrom}_create_regions_equal_cov.log'
     conda: '../envs/variant_calling.yaml'
     threads: 8
@@ -21,10 +21,15 @@ rule region_files_forFreebayes:
     input:
         rules.create_regions_equal_coverage.output
     output:
-        '{0}/{{chrom}}_{{node}}_forFreebayes.regions'.format(PROGRAM_RESOURCES_DIR)
+        '{0}/{{chrom}}_{{node}}_forFreebayes.regions'.format(PROGRAM_RESOURCE_DIR)
     log: 'logs/regions_files_forFreebayes/{chrom}_{node}_forFreebayes.log'
     run:
-        for region_file in input
+        with open(input[0], 'r') as fin:
+            inpath = os.path.dirname(input[0])
+            if NODES_PER_CHROM == 1:
+                out = '{0}/{1}_node1_forFreebayes.regions'.format(inpath, wildcards.chrom)
+                with open(out, 'w') as f:
+                    f.write('worked')
 
 rule create_bam_list:
     input:
