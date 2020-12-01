@@ -9,6 +9,7 @@ rule create_regions_equal_coverage:
     conda: '../envs/variant_calling.yaml'
     threads: 8
     resources:
+        mem_mb = lambda wildcards, input, attempt: attempt * (int(input.size_mb) * 2),
         time = '06:00:00'
     shell:
         """
@@ -27,11 +28,11 @@ rule region_files_forFreebayes:
         """
         mkdir {{output}};
         split --numeric-suffixes=1 \
-            -n l/{0} \
+            -l {0} \
             --additional-suffix=_forFreebayes.regions \
             {{input}} \
             {1}/{{wildcards.chrom}}_regions/{{wildcards.chrom}}_node 2> {{log}}
-        """.format(NODES_PER_CHROM, PROGRAM_RESOURCE_DIR)
+        """.format(CORES_PER_NODE, PROGRAM_RESOURCE_DIR)
 
 rule create_bam_list:
     input:
