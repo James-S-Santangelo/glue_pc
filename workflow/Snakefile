@@ -25,13 +25,16 @@ REFERENCE_GENOME = config['files']['reference_genome']
 REPRESENTATIVE_SAMPLE = config['variant_calling']['sample']
 NODES_PER_CHROM = config['variant_calling']['nodes_per_chrom']
 CORES_PER_NODE = config['variant_calling']['cores_per_node']
-NUM_REGIONS_PER_CHROM = NODES_PER_CHROM * CORES_PER_NODE
 NODES = ['node{0}'.format(x + 1) for x in range(NODES_PER_CHROM)]
+if NODES_PER_CHROM == 1:
+    NUM_REGIONS_PER_CHROM = CORES_PER_NODE
+elif NODES_PER_CHROM > 1:
+    NUM_REGIONS_PER_CHROM = NODES_PER_CHROM * CORES_PER_NODE
 
 wildcard_constraints:
     chrom='|'.join([x for x in CHROMOSOMES])
 
-localrules: create_tmp_dir, write_qualimap_multiqc_file, create_bam_list
+localrules: create_tmp_dir, write_qualimap_multiqc_file, create_bam_list, region_files_forFreebayes
 
 include: 'rules/common.smk'
 

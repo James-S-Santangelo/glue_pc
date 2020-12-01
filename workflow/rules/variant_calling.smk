@@ -24,12 +24,18 @@ rule region_files_forFreebayes:
         '{0}/{{chrom}}_{{node}}_forFreebayes.regions'.format(PROGRAM_RESOURCE_DIR)
     log: 'logs/regions_files_forFreebayes/{chrom}_{node}_forFreebayes.log'
     run:
-        with open(input[0], 'r') as fin:
-            inpath = os.path.dirname(input[0])
-            if NODES_PER_CHROM == 1:
-                out = '{0}/{1}_node1_forFreebayes.regions'.format(inpath, wildcards.chrom)
-                with open(out, 'w') as f:
-                    f.write('worked')
+        inpath = os.path.dirname(input[0])
+        if NODES_PER_CHROM == 1:
+            out = '{0}/{1}_node1_forFreebayes.regions'.format(inpath, wildcards.chrom)
+            shell("cp {{input}} {0}".format(out))
+        elif NODES_PER_CHROM > 1:
+            lines_per_file = CORES_PER_NODE
+            with open(input[0], 'r') as fin:
+                files = [open('{0}/{1}_node{2}_forFreebayes.regions'.format(inpath, wildcards.chrom, i + 1), 'w') for i in range(NODES_PER_CHROM)]
+                for i, line in enumerate(fin):
+                    files[i % NODES_PER_CHROM].write(line)
+                for f in files:
+                    f.close() 
 
 rule create_bam_list:
     input:
