@@ -9,7 +9,8 @@ rule create_regions_equal_coverage:
     conda: '../envs/variant_calling.yaml'
     threads: 8
     resources:
-        time = '06:00:00'
+        mem_mb = lambda wildcards, input, attempt: attempt * (int(input.size_mb) * 2),
+        time = '01:00:00'
     shell:
         """
         ( samtools view --threads {{threads}} -b -s 0.20 {{input.bam}} {{wildcards.chrom}} |\
@@ -27,11 +28,11 @@ rule region_files_forFreebayes:
         """
         mkdir {{output}};
         split --numeric-suffixes=1 \
-            -n l/{0} \
+            -l {0} \
             --additional-suffix=_forFreebayes.regions \
             {{input}} \
             {1}/{{wildcards.chrom}}_regions/{{wildcards.chrom}}_node 2> {{log}}
-        """.format(NODES_PER_CHROM, PROGRAM_RESOURCE_DIR)
+        """.format(CORES_PER_NODE, PROGRAM_RESOURCE_DIR)
 
 rule create_bam_list:
     input:
@@ -47,15 +48,17 @@ rule create_bam_list:
 # rule freebayes_call_variants:
 #     input:
 #         bams = rules.create_bam_list.output,
-#         regions = rules.create_regions_equal_coverage.output
+#         regions = '{0}/{{chrom}}_{{node}}_forFreebayes.regions'.format(rules.region_files_forFreebayes.output)
 #         #regions = '../resources/{chrom}_forFreebayes.regions'
 #     output:
-#         temp('{0}/vcf/{{chrom}}/{{chrom}}_allSamples.vcf'.format(VARIANT_DIR))
-#     log: 'logs/freebayes/{chrom}_freebayes.log'
+#         temp('{0}/vcf/{{chrom}}/{{chrom}}_{{node}}_allSamples.vcf'.format(VARIANT_DIR))
+#     log: 'logs/freebayes/{chrom}__{node}_freebayes.log'
 #     conda: '../envs/variant_calling.yaml'
-#     threads: 5
+#     threads: CORES_PER_NODE
 #     resources:
-#         time = '24:00:00'
+#         nodes = 1,
+#         mem_mb = lambda wildcards, attempt: attempt * 250000,
+#         time = '12:00:00'
 #     shell:
 #         """
 #         ( freebayes-parallel {{input.regions}} {{threads}} \
@@ -67,16 +70,17 @@ rule create_bam_list:
 #             --haplotype-length 1 \
 #             --genotype-qualities > {{output}} ) 2> {{log}}
 #         """.format(REFERENCE_GENOME)
-# 
+#  
 # rule bgzip_vcf:
 #     input:
 #         rules.freebayes_call_variants.output
 #     output:
-#         temp('{0}/vcf/{{chrom}}/{{chrom}}_allSamples.vcf.gz'.format(VARIANT_DIR))
-#     log: 'logs/bgzip/{chrom}_bgzip.log'
+#         temp('{0}/vcf/{{chrom}}/{{chrom}}_{{node}}_allSamples.vcf.gz'.format(VARIANT_DIR))
+#     log: 'logs/bgzip/{chrom}_{node}_bgzip.log'
 #     conda: '../envs/variant_calling.yaml',
 #     threads: 8
 #     resources:
+#         mem_mb = lambda wildcards, attempt: attempt * 4000,
 #         time = '01:00:00'
 #     shell:
 #         """
