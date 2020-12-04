@@ -15,15 +15,15 @@ def get_representative_bam(wildcards):
             bam = os.path.splitext(i)[0]
     return bam
 
-def get_chrom_vcfs(wildcards):
+def get_node_vcfs(wildcards):
     all_vcfs = expand(rules.bgzip_vcf.output, chrom=CHROMOSOMES, node=NODES)
-    chrom_vcfs = [vcf for vcf in all_vcfs if wildcards.chrom in vcf]
-    return chrom_vcfs
+    node_vcfs = [vcf for vcf in all_vcfs if wildcards.chrom in vcf]
+    return node_vcfs
 
-def get_chrom_tabix_files(wildcards):
+def get_node_tabix_files(wildcards):
     all_indices = expand(rules.tabix_node_vcf.output, chrom=CHROMOSOMES, node=NODES)
-    chrom_indices = [i for i in all_indices if wildcards.chrom in i]
-    return chrom_indices
+    node_indices = [i for i in all_indices if wildcards.chrom in i]
+    return node_indices
 
 def get_tabix_files(wildcards):
     if wildcards.site_type == 'allSites':
