@@ -57,7 +57,7 @@ rule freebayes_call_variants:
     resources:
         nodes = 1,
         ntasks = CORES_PER_NODE,
-        mem_mb = lambda wildcards, attempt: attempt * 128000 
+        mem_mb = lambda wildcards, attempt: attempt * 128000, 
         time = '12:00:00'
     shell:
         """
@@ -70,11 +70,12 @@ rule freebayes_call_variants:
             --haplotype-length 1 > {{output}} ) 2> {{log}}
         """.format(REFERENCE_GENOME)
  
-rule bgzip_vcf:
+rule bgzip_tabix_vcf:
     input:
         rules.freebayes_call_variants.output
     output:
-        temp('{0}/vcf/{{chrom}}/{{chrom}}_{{node}}_allSamples.vcf.gz'.format(VARIANT_DIR))
+        vcf = temp('{0}/vcf/{{chrom}}/{{chrom}}_{{node}}_allSamples.vcf.gz'.format(VARIANT_DIR))
+        index= temp('{0}/vcf/{{chrom}}/{{chrom}}_{{node}}_allSamples.vcf.gz.tbi'.format(VARIANT_DIR)),
     log: 'logs/bgzip/{chrom}_{node}_bgzip.log'
     conda: '../envs/variant_calling.yaml',
     threads: CORES_PER_NODE
@@ -84,8 +85,39 @@ rule bgzip_vcf:
         time = '01:00:00'
     shell:
         """
-        bgzip -@ {threads} {input}
+        ( bgzip --threads {threads} \
+            --force \
+            {input} && 
+            tabix --force \
+                {output.index} ) 2> {log}
         """
+
+# rule concat_vcfs:
+#     input:
+#         chrom_vcfs = get_chrom_vcfs,
+#         chrom_indices = get_chrom_tabix_files
+#     output:
+#         '{0}/vcf/{{chrom}}/{{chrom}}_allSamples.vcf.gz'.format(VARIANT_DIR)
+#     log: 'logs/concat_vcfs/{chrom}_concat_vcfs.log'
+#     conda: '../envs/variant_calling.yaml'
+#     threads: 4
+#     resources:
+#         mem_mb = lambda wildcards, attempt: attempt * 4000,
+#         time = '01:00:00'
+#     shell:
+#         """
+#         if [[ {0} -eq 1 ]]
+#         then
+#             mv {{input.chrom_vcfs}} {{output}} 2> {{log}}
+#         elif [[ {0} -gt 1 ]]
+#         then
+#             ( bcftools concat --allow-overlaps \
+#                 --threads {{threads}} \
+#                 --output-type z \
+#                 --output {{output}} \
+#                 {{input.chrom_vcfs}} ) 2> {{log}}
+#         fi
+#         """.format(NODES_PER_CHROM)
 # 
 # rule bcftools_sort:
 #     input:

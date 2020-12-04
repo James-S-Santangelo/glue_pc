@@ -46,7 +46,8 @@ rule all:
         '{0}/multiqc/multiqc_report.html'.format(QC_DIR), 
         # Variant calling
         expand('{0}/{{chrom}}_regions'.format(PROGRAM_RESOURCE_DIR), chrom=CHROMOSOMES),
-        expand('{0}/vcf/{{chrom}}/{{chrom}}_{{node}}_allSamples.vcf.gz'.format(VARIANT_DIR), chrom=CHROMOSOMES, node=NODES)
+        expand('{0}/vcf/{{chrom}}/{{chrom}}_{{node}}_allSamples.vcf.{{ext}}'.format(VARIANT_DIR), chrom=CHROMOSOMES, node=NODES), ext=['gz','gz.tbi'],
+        #expand('{0}/vcf/{{chrom}}/{{chrom}}_allSamples.vcf.gz'.format(VARIANT_DIR), chrom=CHROMOSOMES, node=NODES)
         #expand('{0}/vcf/{{chrom}}/{{chrom}}_allSamples_{{site_type}}_sorted.vcf.{{ext}}'.format(VARIANT_DIR), chrom=CHROMOSOMES, site_type=['snps', 'indels', 'invariant', 'mnps', 'other'], ext = ['gz', 'gz.tbi']),
         #expand('{0}/zarr_db/{{chrom}}/{{chrom}}_allSamples_{{site_type}}_sorted.zarr'.format(VARIANT_DIR), chrom=CHROMOSOMES, site_type=['snps', 'invariant'])
 
