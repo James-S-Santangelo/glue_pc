@@ -45,47 +45,47 @@ rule create_bam_list:
             for bam in input:
                 f.write('{0}\n'.format(bam))
 
-# rule freebayes_call_variants:
-#     input:
-#         bams = rules.create_bam_list.output,
-#         regions = '{0}/{{chrom}}_{{node}}_forFreebayes.regions'.format(rules.region_files_forFreebayes.output)
-#         #regions = '../resources/{chrom}_forFreebayes.regions'
-#     output:
-#         temp('{0}/vcf/{{chrom}}/{{chrom}}_{{node}}_allSamples.vcf'.format(VARIANT_DIR))
-#     log: 'logs/freebayes/{chrom}__{node}_freebayes.log'
-#     conda: '../envs/variant_calling.yaml'
-#     threads: CORES_PER_NODE
-#     resources:
-#         nodes = 1,
-#         mem_mb = lambda wildcards, attempt: attempt * 250000,
-#         time = '12:00:00'
-#     shell:
-#         """
-#         ( freebayes-parallel {{input.regions}} {{threads}} \
-#             --fasta-reference {0} \
-#             --bam-list {{input.bams}} \
-#             --use-best-n-alleles 4 \
-#             --report-monomorphic \
-#             --max-complex-gap 1 \
-#             --haplotype-length 1 \
-#             --genotype-qualities > {{output}} ) 2> {{log}}
-#         """.format(REFERENCE_GENOME)
-#  
-# rule bgzip_vcf:
-#     input:
-#         rules.freebayes_call_variants.output
-#     output:
-#         temp('{0}/vcf/{{chrom}}/{{chrom}}_{{node}}_allSamples.vcf.gz'.format(VARIANT_DIR))
-#     log: 'logs/bgzip/{chrom}_{node}_bgzip.log'
-#     conda: '../envs/variant_calling.yaml',
-#     threads: 8
-#     resources:
-#         mem_mb = lambda wildcards, attempt: attempt * 4000,
-#         time = '01:00:00'
-#     shell:
-#         """
-#         bgzip -@ {threads} {input}
-#         """
+rule freebayes_call_variants:
+    input:
+        bams = rules.create_bam_list.output,
+        regions = '{0}/{{chrom}}_{{node}}_forFreebayes.regions'.format(rules.region_files_forFreebayes.output)
+        #regions = '../resources/{chrom}_forFreebayes.regions'
+    output:
+        temp('{0}/vcf/{{chrom}}/{{chrom}}_{{node}}_allSamples.vcf'.format(VARIANT_DIR))
+    log: 'logs/freebayes/{chrom}__{node}_freebayes.log'
+    conda: '../envs/variant_calling.yaml'
+    resources:
+        nodes = 1,
+        ntasks = CORES_PER_NODE,
+        mem_mb = lambda wildcards, attempt: attempt * 128000 
+        time = '12:00:00'
+    shell:
+        """
+        ( freebayes-parallel {{input.regions}} {{resources.ntasks}} \
+            --fasta-reference {0} \
+            --bam-list {{input.bams}} \
+            --use-best-n-alleles 2 \
+            --report-monomorphic \
+            --max-complex-gap 1 \
+            --haplotype-length 1 > {{output}} ) 2> {{log}}
+        """.format(REFERENCE_GENOME)
+ 
+rule bgzip_vcf:
+    input:
+        rules.freebayes_call_variants.output
+    output:
+        temp('{0}/vcf/{{chrom}}/{{chrom}}_{{node}}_allSamples.vcf.gz'.format(VARIANT_DIR))
+    log: 'logs/bgzip/{chrom}_{node}_bgzip.log'
+    conda: '../envs/variant_calling.yaml',
+    threads: CORES_PER_NODE
+    resources:
+        nodes = 1,
+        mem_mb = lambda wildcards, attempt: attempt * 500,
+        time = '01:00:00'
+    shell:
+        """
+        bgzip -@ {threads} {input}
+        """
 # 
 # rule bcftools_sort:
 #     input:
