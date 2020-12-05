@@ -179,6 +179,6 @@ rule vcf_to_zarr:
         site_type='snps|invariant'
     threads: 1
     resources:
-        time = '01:00:00'
+        time = '02:00:00'
     script:
         "../scripts/python/vcf_to_zarr.py"
