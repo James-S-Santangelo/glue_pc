@@ -24,10 +24,3 @@ def get_node_tabix_files(wildcards):
     all_indices = expand(rules.tabix_node_vcf.output, chrom=CHROMOSOMES, node=NODES)
     node_indices = [i for i in all_indices if wildcards.chrom in i]
     return node_indices
-
-def get_tabix_files(wildcards):
-    if wildcards.site_type == 'allSites':
-        vcf_in = rules.bcftools_sort.output
-    else:
-        vcf_in = rules.bcftools_split_variants.output
-    return vcf_in
