@@ -128,22 +128,7 @@ rule concat_vcfs:
                 {{input.node_vcfs}} ) 2> {{log}}
         fi
         """.format(NODES_PER_CHROM)
-# 
-# rule bcftools_sort:
-#     input:
-#         rules.bgzip_vcf.output
-#     output:
-#         '{0}/vcf/{{chrom}}/{{chrom}}_allSamples_sorted.vcf.gz'.format(VARIANT_DIR)
-#     log: 'logs/bcftools_sort/{chrom}_bcftools_sort.log'
-#     conda: '../envs/variant_calling.yaml'
-#     resources:
-#         time = '12:00:00'
-#     shell:
-#         """
-#         mkdir {0}/{{wildcards.chrom}};
-#         bcftools sort -O z -o {{output}} -T {0}/{{wildcards.chrom}} {{input}} 2> {{log}}
-#         """.format(TMPDIR)
-# 
+
 rule bcftools_split_variants:
     input:
         vcf = rules.concat_vcfs.output
