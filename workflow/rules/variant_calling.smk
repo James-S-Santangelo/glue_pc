@@ -87,7 +87,7 @@ rule bgzip_vcf:
         bgzip --threads {threads} --force {input} 
         """
 
-rule tabix_node_vcfs:
+rule tabix_node_vcf:
     input: 
         rules.bgzip_vcf.output
     output:
@@ -110,22 +110,22 @@ rule concat_vcfs:
         '{0}/vcf/{{chrom}}/{{chrom}}_allSamples.vcf.gz'.format(VARIANT_DIR)
     log: 'logs/concat_vcfs/{chrom}_concat_vcfs.log'
     conda: '../envs/variant_calling.yaml'
-    threads: 4
+    threads: 8
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 4000,
-        time = '01:00:00'
+        time = '02:00:00'
     shell:
         """
         if [[ {0} -eq 1 ]]
         then
-            mv {{input.chrom_vcfs}} {{output}} 2> {{log}}
+            mv {{input.node_vcfs}} {{output}} 2> {{log}}
         elif [[ {0} -gt 1 ]]
         then
             ( bcftools concat --allow-overlaps \
                 --threads {{threads}} \
                 --output-type z \
                 --output {{output}} \
-                {{input.chrom_vcfs}} ) 2> {{log}}
+                {{input.node_vcfs}} ) 2> {{log}}
         fi
         """.format(NODES_PER_CHROM)
 # 
@@ -144,42 +144,43 @@ rule concat_vcfs:
 #         bcftools sort -O z -o {{output}} -T {0}/{{wildcards.chrom}} {{input}} 2> {{log}}
 #         """.format(TMPDIR)
 # 
-# rule bcftools_split_variants:
-#     input:
-#         vcf = rules.bcftools_sort.output
-#     output:
-#         '{0}/vcf/{{chrom}}/{{chrom}}_allSamples_{{site_type}}_sorted.vcf.gz'.format(VARIANT_DIR)
-#     log: 'logs/bcftools_split_variants/{chrom}_bcftools_split_variants_{site_type}.log'
-#     conda: '../envs/variant_calling.yaml'
-#     wildcard_constraints:
-#         site_type='snps|indels|invariant|mnps|other'
-#     threads: 8
-#     resources:
-#         time = '12:00:00'
-#     shell:
-#         """
-#         if [ {{wildcards.site_type}} = 'invariant' ]; then
-#             bcftools view --threads {{threads}} -O z --include 'N_ALT = 0' {{input}} > {{output}} 2> {{log}}
-#         elif [ {{wildcards.site_type}} = 'snps' ]; then
-#             ( bcftools view --threads {{threads}} -O v --types {{wildcards.site_type}} {{input}} |\
-#             vcfallelicprimitives --keep-info --keep-geno |\
-#             bcftools view --threads {{threads}} --types {{wildcards.site_type}} --min-alleles 2 --max-alleles 2 |\
-#             bcftools sort -O z -T {0}/{{wildcards.chrom}} -o {{output}} ) 2> {{log}}
-#         else
-#             bcftools view --threads {{threads}} -O z --types {{wildcards.site_type}} {{input}} > {{output}} 2> {{log}}
-#         fi
-#         """.format(TMPDIR)
-# 
-# rule tabix_vcf:
-#     input: get_tabix_files
-#     output:
-#         '{0}/vcf/{{chrom}}/{{chrom}}_allSamples_{{site_type}}_sorted.vcf.gz.tbi'.format(VARIANT_DIR)
-#     log: 'logs/tabix/{chrom}_tabix_{site_type}.log'
-#     conda: '../envs/variant_calling.yaml'
-#     shell:
-#         """
-#         tabix {input}
-#         """
+rule bcftools_split_variants:
+    input:
+        vcf = rules.concat_vcfs.output
+    output:
+        '{0}/vcf/{{chrom}}/{{chrom}}_allSamples_{{site_type}}_sorted.vcf.gz'.format(VARIANT_DIR)
+    log: 'logs/bcftools_split_variants/{chrom}_bcftools_split_variants_{site_type}.log'
+    conda: '../envs/variant_calling.yaml'
+    wildcard_constraints:
+        site_type='snps|indels|invariant|mnps|other'
+    threads: 8
+    resources:
+        mem_mb = lambda wildcards, attempt: attempt * 2000,
+        time = '06:00:00'
+    shell:
+        """
+        if [ {{wildcards.site_type}} = 'invariant' ]; then
+            bcftools view --threads {{threads}} -O z --include 'N_ALT = 0' {{input}} > {{output}} 2> {{log}}
+        elif [ {{wildcards.site_type}} = 'snps' ]; then
+            ( bcftools view --threads {{threads}} -O v --types {{wildcards.site_type}} {{input}} |\
+            vcfallelicprimitives --keep-info --keep-geno |\
+            bcftools view --threads {{threads}} --types {{wildcards.site_type}} --min-alleles 2 --max-alleles 2 |\
+            bcftools sort -O z -T {0}/{{wildcards.chrom}} -o {{output}} ) 2> {{log}}
+        else
+            bcftools view --threads {{threads}} -O z --types {{wildcards.site_type}} {{input}} > {{output}} 2> {{log}}
+        fi
+        """.format(TMPDIR)
+
+rule tabix_vcf:
+    input: get_tabix_files
+    output:
+        '{0}/vcf/{{chrom}}/{{chrom}}_allSamples_{{site_type}}_sorted.vcf.gz.tbi'.format(VARIANT_DIR)
+    log: 'logs/tabix/{chrom}_tabix_{site_type}.log'
+    conda: '../envs/variant_calling.yaml'
+    shell:
+        """
+        tabix {input}
+        """
 # 
 # rule vcf_to_zarr:
 #     input:
