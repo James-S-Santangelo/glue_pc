@@ -34,18 +34,20 @@ elif NODES_PER_CHROM > 1:
 wildcard_constraints:
     chrom='|'.join([x for x in CHROMOSOMES])
 
-localrules: create_tmp_dir, write_qualimap_multiqc_file, create_bam_list, region_files_forFreebayes
+localrules: create_tmp_dir, create_bam_list, region_files_forFreebayes
 
 include: 'rules/common.smk'
 
-# raw_read_dict = create_raw_read_dict(RAW_READ_DIR, SAMPLES)
+raw_read_dict = create_raw_read_dict(RAW_READ_DIR, SAMPLES)
 
 rule all:
    input:
         # Trimming, mapping, and QC
         '{0}/multiqc/multiqc_report.html'.format(QC_DIR), 
         # Variant calling
-        expand('{0}/zarr_db/{{chrom}}/{{chrom}}_allSamples_{{site_type}}_sorted.zarr'.format(VARIANT_DIR), chrom=CHROMOSOMES, site_type=['snps', 'invariant'])
+        #expand('{0}/zarr_db/{{chrom}}/{{chrom}}_allSamples_{{site_type}}_sorted.zarr'.format(VARIANT_DIR), chrom=CHROMOSOMES, site_type=['snps', 'invariant']),
+        '{0}/variant_calling.done'.format(VARIANT_DIR)
+
 
 rule create_tmp_dir:
     output: directory(TMPDIR)

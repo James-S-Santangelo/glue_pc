@@ -22,11 +22,10 @@ rule region_files_forFreebayes:
     input:
         rules.create_regions_equal_coverage.output
     output:
-        directory('{0}/{{chrom}}_regions'.format(PROGRAM_RESOURCE_DIR))
-    log: 'logs/regions_files_forFreebayes/{chrom}_forFreebayes.log'
+        '{0}/{{chrom}}_regions/{{chrom}}_{{node}}_forFreebayes.regions'.format(PROGRAM_RESOURCE_DIR)
+    log: 'logs/regions_files_forFreebayes/{chrom}_{node}_forFreebayes.log'
     shell:
         """
-        mkdir {{output}};
         split --numeric-suffixes=1 \
             -l {0} \
             --additional-suffix=_forFreebayes.regions \
@@ -48,8 +47,7 @@ rule create_bam_list:
 rule freebayes_call_variants:
     input:
         bams = rules.create_bam_list.output,
-        regions = '{0}/{{chrom}}_{{node}}_forFreebayes.regions'.format(rules.region_files_forFreebayes.output)
-        #regions = '../resources/{chrom}_forFreebayes.regions'
+        regions = rules.region_files_forFreebayes.output
     output:
         temp('{0}/vcf/{{chrom}}/{{chrom}}_{{node}}_allSamples.vcf'.format(VARIANT_DIR))
     log: 'logs/freebayes/{chrom}__{node}_freebayes.log'
@@ -182,3 +180,15 @@ rule vcf_to_zarr:
         time = '02:00:00'
     script:
         "../scripts/python/vcf_to_zarr.py"
+
+rule variant_calling_done:
+    input:
+        expand(rules.bcftools_split_variants.output, chrom=CHROMOSOMES, site_type=['snps','indels','invariant','mnps','other']),
+        expand(rules.tabix_vcf.output, chrom=CHROMOSOMES, site_type=['snps','indels','invariant','mnps','other']),
+        expand(rules.vcf_to_zarr.output, chrom=CHROMOSOMES, site_type=['snps','invariant'])
+    output:
+        '{0}/variant_calling.done'.format(VARIANT_DIR)
+    shell:
+        """
+        touch {output}
+        """
