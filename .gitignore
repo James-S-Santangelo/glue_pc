@@ -5,6 +5,5 @@ data/
 results/
 *log*/
 *.pdf
-notebooks/
 resources/
 __pycache__/
