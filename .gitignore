@@ -7,3 +7,4 @@ results/
 *.pdf
 resources/
 __pycache__/
+.ipynb_checkpoints
