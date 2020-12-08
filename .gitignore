@@ -2,7 +2,7 @@
 data/
 *.done
 *.json
-results/
+results*
 *log*/
 *.pdf
 resources/
