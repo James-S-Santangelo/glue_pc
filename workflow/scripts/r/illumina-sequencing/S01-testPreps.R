@@ -1,12 +1,12 @@
 # Script to select plants for test and optimization preps
 
 # Load in data with extracted Toronto plants
-torPlants <- read_csv("data/illumina-sequencing/library-preps/03_allPlants_Toronto_allData.csv") %>% 
+torPlants <- read_csv("resources/illumina-sequencing/library-preps/03_allPlants_Toronto_allData.csv") %>% 
   filter(!is.na(Qubit_conc)) %>% 
   mutate(plant_id = paste(Population, Plant, sep = "_"))
 
 # Load plants to library prep
-allPlant_toPrep <- read_csv("data/illumina-sequencing/library-preps/04_allPlants_toPrep.csv")
+allPlant_toPrep <- read_csv("resources/illumina-sequencing/library-preps/04_allPlants_toPrep.csv")
 
 final_vol <- 50 # Volume required for shearing
 final_conc <- 10 # Concentration required for shearing
@@ -30,7 +30,7 @@ testPrep <- torPlants %>%
   mutate(initial_vol = round((5 * final_conc) / Qubit_conc, 2),
          TE_vol = round(5 - initial_vol, 2))
 
-write_csv(testPrep, path = "data/illumina-sequencing/library-preps/optimizing-testing/01_testPrep_plants.csv", col_names = TRUE)
+write_csv(testPrep, path = "resources/illumina-sequencing/library-preps/optimizing-testing/01_testPrep_plants.csv", col_names = TRUE)
 
 #### TEST SHEARING ####
 
@@ -77,7 +77,7 @@ bioruptor_timeCourse <- torPlants %>%
   as.data.frame() %>% 
   arrange(Population, Plant)
 
-write_csv(bioruptor_timeCourse, path = 'data/illumina-sequencing/library-preps/optimizing-testing/bioruptor_timeCourse.csv', col_names = TRUE)
+write_csv(bioruptor_timeCourse, path = 'resources/illumina-sequencing/library-preps/optimizing-testing/bioruptor_timeCourse.csv', col_names = TRUE)
 
 #### TEST PREP: ROUND 2 ####
 
@@ -98,7 +98,7 @@ testPlants_02 <- torPlants %>%
          TE_vol = round(final_vol - initial_vol, 1),
          tube = 1:8) 
 
-write_csv(testPlants_02, path = 'data/illumina-sequencing/library-preps/optimizing-testing/02-03_testPrep_plants.csv', col_names = TRUE)
+write_csv(testPlants_02, path = 'resources/illumina-sequencing/library-preps/optimizing-testing/02-03_testPrep_plants.csv', col_names = TRUE)
 
 #### TEST PREP: ROUND 3 ####
 
@@ -132,7 +132,7 @@ testPlants_04 <- torPlants %>%
   mutate(initial_vol = round((25 * final_conc) / Qubit_conc, 1),
          TE_vol = round(25 - initial_vol, 1)) 
 
-write_csv(testPlants_04, path = 'data/illumina-sequencing/library-preps/optimizing-testing/04_testPrep_plants.csv', col_names = TRUE)
+write_csv(testPlants_04, path = 'resources/illumina-sequencing/library-preps/optimizing-testing/04_testPrep_plants.csv', col_names = TRUE)
 
 
 #### TEST PREP: ROUND 5 ####
@@ -161,5 +161,5 @@ SKtestPlants <- torPlants %>%
   mutate(initial_vol = round((30 * final_conc) / Qubit_conc, 1),
          TE_vol = round(30 - initial_vol, 1)) 
 
-write_csv(SKtestPlants, path = 'data/illumina-sequencing/library-preps/optimizing-testing/05_SK_testPrep_plants.csv', 
+write_csv(SKtestPlants, path = 'resources/illumina-sequencing/library-preps/optimizing-testing/05_SK_testPrep_plants.csv', 
           col_names = TRUE)

@@ -8,3 +8,4 @@ results*
 resources/
 __pycache__/
 .ipynb_checkpoints
+.Rproj.user

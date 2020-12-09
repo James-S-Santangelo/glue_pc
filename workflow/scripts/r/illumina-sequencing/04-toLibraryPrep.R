@@ -8,7 +8,7 @@ library(tidyverse)
 #### EXPERIMENTAL PLANTS ####
 
 # Load in data with extracted Toronto plants
-torPlants <- read_csv("data/illumina-sequencing/library-preps/03_allPlants_Toronto_allData.csv") %>% 
+torPlants <- read_csv("resources/illumina-sequencing/library-preps/03_allPlants_Toronto_allData.csv") %>% 
   filter(!is.na(Qubit_conc)) %>% 
   mutate(plant_id = paste(Population, Plant, sep = "_"))
 
@@ -95,5 +95,5 @@ allPlant_toPrep <- bind_rows(plantsShallowSample,
          TE_vol = round(final_vol - initial_vol, 1)) %>% 
   arrange(Plate, Population, Plant)
 
-write_csv(allPlant_toPrep, path = "data/illumina-sequencing/library-preps/04_allPlants_toPrep.csv", col_names = TRUE)
+write_csv(allPlant_toPrep, path = "resources/illumina-sequencing/library-preps/04_allPlants_toPrep.csv", col_names = TRUE)
 

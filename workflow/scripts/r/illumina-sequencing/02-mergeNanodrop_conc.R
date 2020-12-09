@@ -7,7 +7,7 @@
 library(tidyverse)
 
 # Load in extraction data with qubit readings
-extraction_data <- read_csv("data/illumina-sequencing/raw/allPlants_Toronto_extractionData.csv") %>% 
+extraction_data <- read_csv("resources/illumina-sequencing/raw/allPlants_Toronto_extractionData.csv") %>% 
   select(City:Qubit_conc)
 
 
@@ -41,7 +41,7 @@ clean_nanodrop_data <- function(df){
 }
 
 # Read in all Nanodrop dfs
-nanodrop_dfs <- create_df_list("data/illumina-sequencing/reference/nanodrop/")
+nanodrop_dfs <- create_df_list("resources/illumina-sequencing/reference/nanodrop/")
 
 # Clean all Nanodrop dfs
 nanodrop_dfs_mod <- purrr::map(nanodrop_dfs, clean_nanodrop_data)
@@ -52,4 +52,4 @@ nanodrop_merged <- bind_rows(nanodrop_dfs_mod)
 extraction_data_merged <- extraction_data %>% 
   left_join(nanodrop_merged, by = c("Population", "Plant"))
 
-write_csv(extraction_data_merged, "data/illumina-sequencing/library-preps/02_allPlants_Toronto_extractionData_allQC.csv")
+write_csv(extraction_data_merged, "resources/illumina-sequencing/library-preps/02_allPlants_Toronto_extractionData_allQC.csv")

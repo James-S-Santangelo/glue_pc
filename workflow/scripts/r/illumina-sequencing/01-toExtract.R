@@ -7,7 +7,7 @@
 library(tidyverse)
 
 #Load in dataset containing Toronto plants
-Tor_plants <- read_csv("data/illumina-sequencing/reference/allPlants_Toronto.csv") %>% 
+Tor_plants <- read_csv("resources/illumina-sequencing/reference/allPlants_Toronto.csv") %>% 
   mutate(Transect = case_when(Transect == "A" ~ "North",
                               Transect == "B" ~ "West",
                               Transect == "C" ~ "East"))
@@ -44,4 +44,4 @@ all_tor_pops <- bind_rows(Urban_pops, Rural_pops, Suburban_pops) %>%
          "longitude" = "Long.pop")
 
 # Write toronto populations to disk
-write_csv(all_tor_pops, "data/illumina-sequencing/library-preps/01_torontoPops_toExtract.csv")
+write_csv(all_tor_pops, "resources/illumina-sequencing/library-preps//01_torontoPops_toExtract.csv")
