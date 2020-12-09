@@ -5,7 +5,6 @@ data/
 results*
 *log*/
 *.pdf
-resources/
 __pycache__/
 .ipynb_checkpoints
 .Rproj.user
