@@ -3,7 +3,8 @@
 samples: ../resources/testSamples.txt
 chromosomes: ../resources/chromosome_file.txt
 
-results_prefix: ../results
+# results_prefix: ../results
+results_prefix: ../results_test
 data_prefix: /scratch/research/projects/trifolium/toronto_gwsd/data
 # data_prefix: /scratch/santang3/data 
 
@@ -18,5 +19,5 @@ files:
 variant_calling:
   # sample: s_7_7
   sample: s_117_6  # Name of representative sample (i.e., with 'average' genome-wide coverage)
-  nodes_per_chrom: 3
+  nodes_per_chrom: 1
   cores_per_node: 32
