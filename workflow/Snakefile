@@ -19,6 +19,7 @@ QC_DIR = '{0}/qc'.format(config['results_prefix'])
 BAM_DIR = '{0}/bam'.format(config['results_prefix'])
 VARIANT_DIR = '{0}/variants'.format(config['results_prefix'])
 PROGRAM_RESOURCE_DIR = '{0}/program_resources'.format(config['results_prefix'])
+POP_STRUC_DIR = '{0}/population_structure'.format(config['results_prefix'])
 
 REFERENCE_GENOME = config['files']['reference_genome']
 
@@ -45,8 +46,9 @@ rule all:
         # Trimming, mapping, and QC
         '{0}/multiqc/multiqc_report.html'.format(QC_DIR), 
         # Variant calling
-        '{0}/variant_calling.done'.format(VARIANT_DIR)
-
+        '{0}/variant_calling.done'.format(VARIANT_DIR),
+        # Population structure
+        expand('{0}/angsd_gl/genolike_allSamples_maf0.05.{{ext}}'.format(POP_STRUC_DIR), ext=['arg', 'beagle.gz', 'mafs.gz'])
 
 rule create_tmp_dir:
     output: directory(TMPDIR)
@@ -56,6 +58,7 @@ include: 'rules/trimming.smk'
 include: 'rules/mapping.smk'
 include: 'rules/qc.smk'
 include: 'rules/variant_calling.smk'
+include: 'rules/population_structure.smk'
 
 rule clean:
     params:
