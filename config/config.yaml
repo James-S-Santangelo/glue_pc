@@ -1,16 +1,17 @@
 # Sample IDs as list
-# samples: ../resources/sequencedPlants_phenotypesHabitat.txt
-samples: ../resources/testSamples.txt
+samples: ../resources/sequencedPlants_phenotypesHabitat.txt
+# samples: ../resources/testSamples.txt
 chromosomes: ../resources/chromosome_file.txt
 
-# results_prefix: ../results
-results_prefix: ../results_test
-data_prefix: /scratch/research/projects/trifolium/toronto_gwsd/data
+results_prefix: ../results
+# results_prefix: ../results_test
+# data_prefix: /scratch/research/projects/trifolium/toronto_gwsd/data
+data_prefix: /node1nfs/archive/data/trifolium/toronto_gwsd/128.120.88.251/X202SC20030702-Z01-F001
 # data_prefix: /scratch/santang3/data 
 
 paths:
-  temp_dir: /node1nfs/archive/data/trifolium/toronto_gwsd/tmp
-  # temp_dir: /scratch/santang3/tmp 
+  # temp_dir: /node1nfs/archive/data/trifolium/toronto_gwsd/tmp
+  temp_dir: /scratch/santang3/tmp 
 
 files:
   reference_genome: /scratch/research/references/trifolium/repens/GCA_005869975.1_AgR_To_v5/GCA_005869975.1_AgR_To_v5_genomic.fna

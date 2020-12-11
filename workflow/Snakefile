@@ -13,7 +13,7 @@ SAMPLES = pd.read_table(config['samples'])['Sample'].tolist()
 CHROMOSOMES = pd.read_table(config['chromosomes'], header=None).iloc[:,0].tolist()
 
 TMPDIR = config['paths']['temp_dir']
-RAW_READ_DIR = '{0}/raw_fastq'.format(config['data_prefix'])
+RAW_READ_DIR = '{0}/raw_data'.format(config['data_prefix'])
 TRIMMED_READ_DIR = '{0}/trimmed_reads'.format(config['data_prefix'])
 QC_DIR = '{0}/qc'.format(config['results_prefix'])
 BAM_DIR = '{0}/bam'.format(config['results_prefix'])
