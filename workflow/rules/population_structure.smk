@@ -22,6 +22,6 @@ rule angsd_gl:
             -minQ 20 \
             -minMapQ 30 \
             -minMaf 0.05 \
-            -r {{wildcards.chrom}}
+            -r {{wildcards.chrom}} \
             -bam {{input.bams}} 2> {{log}}
         """.format(POP_STRUC_DIR)
