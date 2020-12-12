@@ -13,7 +13,7 @@ rule angsd_gl:
     shell:
         """
         angsd -GL 1 \
-            -out {0}/angsd_gl/genolike_allSamples_maf0.05 \
+            -out {0}/angsd_gl/{{wildcards.chrom}}/{{wildcards.chrom}}_genolike_allSamples_maf0.05 \
             -nThreads {{threads}} \
             -doGlf 2 \
             -doMajorMinor 1 \
