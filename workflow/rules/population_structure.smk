@@ -6,7 +6,10 @@ rule angsd_gl:
         '{0}/angsd_gl/{{chrom}}/{{chrom}}_genolike_allSamples_maf0.05.mafs.gz'.format(POP_STRUC_DIR)
     log: 'logs/angsd_gl/{chrom}_angsd_gl.log'
     conda: '../envs/population_structure.yaml'
-    threads: CORES_PER_NODE
+    threads: 10
+    resources:
+        mem_mb = lambda wildcards, attempt: attempt * 5000,
+        time = '06:00:00'
     shell:
         """
         angsd -GL 1 \

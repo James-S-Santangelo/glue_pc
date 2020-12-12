@@ -4,21 +4,33 @@ samples: ../resources/sequencedPlants_phenotypesHabitat.txt
 chromosomes: ../resources/chromosome_file.txt
 
 results_prefix: ../results
+<<<<<<< Updated upstream
 # results_prefix: ../results_test
 # data_prefix: /scratch/research/projects/trifolium/toronto_gwsd/data
 data_prefix: /node1nfs/archive/data/trifolium/toronto_gwsd/128.120.88.251/X202SC20030702-Z01-F001
 # data_prefix: /scratch/santang3/data 
+=======
+# data_prefix: /scratch/research/projects/trifolium/toronto_gwsd/data
+data_prefix: /scratch/santang3/data 
+>>>>>>> Stashed changes
 
 paths:
   # temp_dir: /node1nfs/archive/data/trifolium/toronto_gwsd/tmp
   temp_dir: /scratch/santang3/tmp 
 
 files:
-  reference_genome: /scratch/research/references/trifolium/repens/GCA_005869975.1_AgR_To_v5/GCA_005869975.1_AgR_To_v5_genomic.fna
-  # reference_genome: /scratch/santang3/data/ref_genome/GCA_005869975.1_AgR_To_v5_genomic.fna
+  # reference_genome: /scratch/research/references/trifolium/repens/GCA_005869975.1_AgR_To_v5/GCA_005869975.1_AgR_To_v5_genomic.fna
+  reference_genome: /scratch/santang3/data/ref_genome/GCA_005869975.1_AgR_To_v5_genomic.fna
 
 variant_calling:
+<<<<<<< Updated upstream
   # sample: s_7_7
   sample: s_117_6  # Name of representative sample (i.e., with 'average' genome-wide coverage)
   nodes_per_chrom: 1
   cores_per_node: 32
+=======
+  sample: s_7_7
+  # sample: s_117_6  # Name of representative sample (i.e., with 'average' genome-wide coverage)
+  nodes_per_chrom: 12
+  cores_per_node: 40
+>>>>>>> Stashed changes
