@@ -48,7 +48,7 @@ rule all:
         # Variant calling
         '{0}/variant_calling.done'.format(VARIANT_DIR),
         # Population structure
-        expand('{0}/angsd_gl/genolike_allSamples_maf0.05.{{ext}}'.format(POP_STRUC_DIR), ext=['arg', 'beagle.gz', 'mafs.gz'])
+        expand('{0}/angsd_gl/{{chrom}}/{{chrom}}_genolike_allSamples_maf0.05.{{ext}}'.format(POP_STRUC_DIR), ext=['beagle.gz', 'mafs.gz'], chrom=CHROMOSOMES)
 
 rule create_tmp_dir:
     output: directory(TMPDIR)
