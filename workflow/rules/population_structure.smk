@@ -8,7 +8,7 @@ rule angsd_gl:
     conda: '../envs/population_structure.yaml'
     threads: 10
     resources:
-        mem_mb = lambda wildcards, attempt: attempt * 5000,
+        mem_mb = lambda wildcards, attempt: attempt * 10000,
         time = '06:00:00'
     shell:
         """
