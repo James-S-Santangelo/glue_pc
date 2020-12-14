@@ -35,7 +35,7 @@ elif NODES_PER_CHROM > 1:
 wildcard_constraints:
     chrom='|'.join([x for x in CHROMOSOMES])
 
-localrules: create_tmp_dir, create_bam_list, region_files_forFreebayes, variant_calling_done, concat_angsd_gl, concat_angsd_mafs
+localrules: create_tmp_dir, create_bam_list, region_files_forFreebayes, variant_calling_done
 
 include: 'rules/common.smk'
 
