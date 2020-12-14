@@ -2,8 +2,8 @@ rule angsd_gl:
     input:
         bams = rules.create_bam_list.output
     output:
-        '{0}/angsd_gl/{{chrom}}/{{chrom}}_genolike_allSamples_maf0.05.beagle.gz'.format(POP_STRUC_DIR),
-        '{0}/angsd_gl/{{chrom}}/{{chrom}}_genolike_allSamples_maf0.05.mafs.gz'.format(POP_STRUC_DIR)
+        '{0}/angsd_gl/{{chrom}}/{{chrom}}_genolike_allSamples.beagle.gz'.format(POP_STRUC_DIR),
+        '{0}/angsd_gl/{{chrom}}/{{chrom}}_genolike_allSamples.mafs.gz'.format(POP_STRUC_DIR)
     log: 'logs/angsd_gl/{chrom}_angsd_gl.log'
     conda: '../envs/population_structure.yaml'
     threads: 10
@@ -13,7 +13,7 @@ rule angsd_gl:
     shell:
         """
         angsd -GL 1 \
-            -out {0}/angsd_gl/{{wildcards.chrom}}/{{wildcards.chrom}}_genolike_allSamples_maf0.05 \
+            -out {0}/angsd_gl/{{wildcards.chrom}}/{{wildcards.chrom}}_genolike_allSamples \
             -nThreads {{threads}} \
             -doGlf 2 \
             -doMajorMinor 1 \
@@ -21,7 +21,6 @@ rule angsd_gl:
             -doMaf 1 \
             -minQ 20 \
             -minMapQ 30 \
-            -minMaf 0.05 \
             -r {{wildcards.chrom}} \
             -bam {{input.bams}} 2> {{log}}
         """.format(POP_STRUC_DIR)
