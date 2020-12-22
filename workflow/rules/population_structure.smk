@@ -67,18 +67,21 @@ rule concat_angsd_mafs:
 
 rule ld_prune_angsd_gl:
     input:
-        rules.concat_angsd_gl.output
+        rules.angsd_gl.output.gls
     output:
-        '{0}/angsd_gl/pruned/{{chrom}}/{{chrom}}_genolike_allSamples_prunned.beagle.gz'.format(POP_STRUC_DIR)
+        '{0}/angsd_gl/pruned/{{chrom}}/{{chrom}}_genolike_allSamples_prunned.tsv'.format(POP_STRUC_DIR)
     log: 'logs/ld_prune_angsd_gl/{chrom}_ld_prune.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:ngsld_v1.1.1'
     threads: 8
+    resources: 
+        mem_mb = lambda wildcards, attempt: attempt * 5000,
+        time = '03:00:00'
     shell:
         """
-        NUM_SITES=$(( $(zcat {input} | wc -l) -1 )) &&
-        ngsLD --geno {input} \
+        ( NUM_SITES=$(( $(zcat {input} | wc -l) -1 )) &&
+          ngsLD --geno {input} \
             --n_ind 120 \
-            --n_sites $NUM_SITES
+            --n_sites $NUM_SITES \
             --n_threads {threads} \
-            --out {output} 2> {log}
+            --out {output} ) 2> {log}
         """
