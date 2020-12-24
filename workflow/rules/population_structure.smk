@@ -65,23 +65,37 @@ rule concat_angsd_mafs:
         done | bgzip -c > {output} 2> {log}
         """
 
-rule ld_prune_angsd_gl:
+rule create_pos_file_for_ngsLD:
     input:
-        rules.angsd_gl.output.gls
+        rules.angsd_gl.output.mafs
     output:
-        '{0}/angsd_gl/pruned/{{chrom}}/{{chrom}}_genolike_allSamples_prunned.tsv'.format(POP_STRUC_DIR)
-    log: 'logs/ld_prune_angsd_gl/{chrom}_ld_prune.log'
-    container: 'shub://James-S-Santangelo/singularity-recipes:ngsld_v1.1.1'
-    threads: 8
-    resources: 
-        mem_mb = lambda wildcards, attempt: attempt * 5000,
-        time = '03:00:00'
+        '{0}/angsd_gl/full/{{chrom}}/{{chrom}}_angsdGL.pos'.format(POP_STRUC_DIR)
+    log: 'logs/create_pos_file_for_ngsLD/{chrom}_pos.log'
     shell:
         """
-        ( NUM_SITES=$(( $(zcat {input} | wc -l) -1 )) &&
-          ngsLD --geno {input} \
+        zcat {input} | cut -f 1,2 | tail -n +2 > {output} 2> {log}
+        """
+
+rule calc_ld_angsd_gl:
+    input:
+        pos = rules.create_pos_file_for_ngsLD.output,
+        gls = rules.angsd_gl.output.gls
+    output:
+        '{0}/angsd_gl/ld/{{chrom}}/{{chrom}}_genolike_allSamples.ld.gz'.format(POP_STRUC_DIR)
+    log: 'logs/calc_ld_angsd_gl/{chrom}_calc_ld.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:ngsld_v1.1.1'
+    resources:
+        ntasks = CORES_PER_NODE,
+        mem_mb = lambda wildcards, attempt: attempt * 8000,
+        time = '06:00:00'
+    shell:
+        """
+        ( NUM_SITES=$(cat {input.pos} | wc -l) &&
+          ngsLD --geno {input.gls} \
+            --pos {input.pos} \
             --n_ind 120 \
             --n_sites $NUM_SITES \
-            --n_threads {threads} \
-            --out {output} ) 2> {log}
+            --probs \
+            --n_threads {resources.ntasks} \
+            --max_kb_dist 100 | gzip > {output} ) 2> {log}
         """

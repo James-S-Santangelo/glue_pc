@@ -35,7 +35,7 @@ elif NODES_PER_CHROM > 1:
 wildcard_constraints:
     chrom='|'.join([x for x in CHROMOSOMES])
 
-localrules: create_tmp_dir, create_bam_list, region_files_forFreebayes, variant_calling_done
+localrules: create_tmp_dir, create_bam_list, region_files_forFreebayes, variant_calling_done, create_pos_file_for_ngsLD
 
 include: 'rules/common.smk'
 
@@ -49,7 +49,7 @@ rule all:
         '{0}/variant_calling.done'.format(VARIANT_DIR),
         # Population structure
         expand('{0}/angsd_gl/full/genolike_allSamples.{{ext}}'.format(POP_STRUC_DIR), ext=['beagle.gz', 'mafs.gz']),
-        expand('{0}/angsd_gl/pruned/{{chrom}}/{{chrom}}_genolike_allSamples_prunned.tsv'.format(POP_STRUC_DIR), chrom=CHROMOSOMES)
+        expand('{0}/angsd_gl/ld/{{chrom}}/{{chrom}}_genolike_allSamples.ld.gz'.format(POP_STRUC_DIR), chrom=CHROMOSOMES)
 
 rule create_tmp_dir:
     output: directory(TMPDIR)
