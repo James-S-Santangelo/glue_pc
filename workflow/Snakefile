@@ -7,7 +7,7 @@ min_version('5.26.1')
 
 #container: 'continuumio/miniconda3:4.9.1'
 
-configfile: '../config/config.yaml'
+configfile: '../config/hpcnode.yaml'
 
 SAMPLES = pd.read_table(config['samples'])['Sample'].tolist()
 CHROMOSOMES = pd.read_table(config['chromosomes'], header=None).iloc[:,0].tolist()
