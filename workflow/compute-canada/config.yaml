@@ -16,6 +16,6 @@ rerun-incomplete: True
 printshellcmds: True
 use-conda: True
 use-singularity: True
-singularity-args: "--bind /scratch/santang3/toronto_gwsd/results"
+singularity-args: "--bind /scratch"
 keep-going: True
 notemp: True

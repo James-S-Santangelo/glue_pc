@@ -3,7 +3,10 @@ rule angsd_gl:
         bams = rules.create_bam_list.output
     output:
         gls = temp('{0}/angsd_gl/full/{{chrom}}/{{chrom}}_genolike_allSamples.beagle.gz'.format(POP_STRUC_DIR)),
-        mafs = temp('{0}/angsd_gl/full/{{chrom}}/{{chrom}}_genolike_allSamples.mafs.gz'.format(POP_STRUC_DIR))
+        mafs = temp('{0}/angsd_gl/full/{{chrom}}/{{chrom}}_genolike_allSamples.mafs.gz'.format(POP_STRUC_DIR)),
+        saf = temp('{0}/angsd_gl/full/{{chrom}}/{{chrom}}_genolike_allSamples.saf.gz'.format(POP_STRUC_DIR)),
+        saf_idx = temp('{0}/angsd_gl/full/{{chrom}}/{{chrom}}_genolike_allSamples.saf.idx'.format(POP_STRUC_DIR)),
+        saf_pos = temp('{0}/angsd_gl/full/{{chrom}}/{{chrom}}_genolike_allSamples.saf.pos.gz'.format(POP_STRUC_DIR))
     log: 'logs/angsd_gl/{chrom}_angsd_gl.log'
     conda: '../envs/population_structure.yaml'
     threads: 10
@@ -13,17 +16,25 @@ rule angsd_gl:
     shell:
         """
         angsd -GL 1 \
-            -out {0}/angsd_gl/{{wildcards.chrom}}/{{wildcards.chrom}}_genolike_allSamples \
+            -out {0}/angsd_gl/full/{{wildcards.chrom}}/{{wildcards.chrom}}_genolike_allSamples \
             -nThreads {{threads}} \
             -doGlf 2 \
             -doMajorMinor 1 \
             -SNP_pval 1e-6 \
             -doMaf 1 \
+            -doCounts 1 \
+            -setMinDepthInd 3 \
+            -setMaxDepth 4500 \
+            -baq 2 \
+            -ref {1} \
+            -minInd 96 
             -minQ 20 \
             -minMapQ 30 \
+            -doSaf 1 \
+            -anc {1} \
             -r {{wildcards.chrom}} \
             -bam {{input.bams}} 2> {{log}}
-        """.format(POP_STRUC_DIR)
+        """.format(POP_STRUC_DIR, REFERENCE_GENOME)
 
 rule concat_angsd_gl:
     input:
@@ -84,10 +95,10 @@ rule calc_ld_angsd_gl:
         '{0}/angsd_gl/ld/{{chrom}}/{{chrom}}_genolike_allSamples.ld.gz'.format(POP_STRUC_DIR)
     log: 'logs/calc_ld_angsd_gl/{chrom}_calc_ld.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:ngsld_v1.1.1'
+    threads: 16
     resources:
-        ntasks = CORES_PER_NODE,
         mem_mb = lambda wildcards, attempt: attempt * 8000,
-        time = '06:00:00'
+        time = '48:00:00'
     shell:
         """
         ( NUM_SITES=$(cat {input.pos} | wc -l) &&
@@ -96,6 +107,6 @@ rule calc_ld_angsd_gl:
             --n_ind 120 \
             --n_sites $NUM_SITES \
             --probs \
-            --n_threads {resources.ntasks} \
-            --max_kb_dist 100 | gzip > {output} ) 2> {log}
+            --n_threads {threads} \
+            --max_kb_dist 100 | gzip --best > {output} ) 2> {log}
         """
