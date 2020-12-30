@@ -8,11 +8,11 @@ rule angsd_gl:
         saf_idx = temp('{0}/angsd_gl/full/{{chrom}}/{{chrom}}_genolike_allSamples.saf.idx'.format(POP_STRUC_DIR)),
         saf_pos = temp('{0}/angsd_gl/full/{{chrom}}/{{chrom}}_genolike_allSamples.saf.pos.gz'.format(POP_STRUC_DIR))
     log: 'logs/angsd_gl/{chrom}_angsd_gl.log'
-    conda: '../envs/angsd.yaml'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933' 
     threads: 10
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 10000,
-        time = '12:00:00'
+        time = '06:00:00'
     shell:
         """
         angsd -GL 1 \
@@ -44,7 +44,7 @@ rule merge_safs:
         saf_idx = '{0}/angsd_gl/full/genolike_allSamples.saf.idx'.format(POP_STRUC_DIR),
         saf_pos = '{0}/angsd_gl/full/genolike_allSamples.saf.pos.gz'.format(POP_STRUC_DIR)
     log: 'logs/merge_safs/merge_safs.log'
-    conda: '../envs/angsd.yaml'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933' 
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 4000,
         time = '02:00:00'
@@ -60,7 +60,7 @@ rule concat_angsd_gl:
     output:
         '{0}/angsd_gl/full/genolike_allSamples.beagle.gz'.format(POP_STRUC_DIR)
     log: 'logs/concat_angsd_gl/concat_angsd_gl.log'
-    conda: '../envs/angsd.yaml'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933' 
     shell:
         """
         first=1
@@ -80,7 +80,7 @@ rule concat_angsd_mafs:
     output:
         '{0}/angsd_gl/full/genolike_allSamples.mafs.gz'.format(POP_STRUC_DIR)
     log: 'logs/concat_angsd_mafs/concat_angsd_mafs.log'
-    conda: '../envs/angsd.yaml'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933' 
     shell:
         """
         first=1
