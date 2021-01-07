@@ -1,13 +1,13 @@
-rule angsd_gl:
+rule angsd:
     input:
         bams = rules.create_bam_list.output
     output:
-        gls = temp('{0}/angsd_gl/full/{{chrom}}/{{chrom}}_genolike_allSamples.beagle.gz'.format(POP_STRUC_DIR)),
-        mafs = temp('{0}/angsd_gl/full/{{chrom}}/{{chrom}}_genolike_allSamples.mafs.gz'.format(POP_STRUC_DIR)),
-        saf = temp('{0}/angsd_gl/full/{{chrom}}/{{chrom}}_genolike_allSamples.saf.gz'.format(POP_STRUC_DIR)),
-        saf_idx = temp('{0}/angsd_gl/full/{{chrom}}/{{chrom}}_genolike_allSamples.saf.idx'.format(POP_STRUC_DIR)),
-        saf_pos = temp('{0}/angsd_gl/full/{{chrom}}/{{chrom}}_genolike_allSamples.saf.pos.gz'.format(POP_STRUC_DIR))
-    log: 'logs/angsd_gl/{chrom}_angsd_gl.log'
+        gls = temp('{0}/angsd/{{chrom}}/{{chrom}}_genolike_allSamples.beagle.gz'.format(POP_STRUC_DIR)),
+        mafs = temp('{0}/angsd/{{chrom}}/{{chrom}}_genolike_allSamples.mafs.gz'.format(POP_STRUC_DIR)),
+        saf = temp('{0}/angsd/{{chrom}}/{{chrom}}_genolike_allSamples.saf.gz'.format(POP_STRUC_DIR)),
+        saf_idx = temp('{0}/angsd/{{chrom}}/{{chrom}}_genolike_allSamples.saf.idx'.format(POP_STRUC_DIR)),
+        saf_pos = temp('{0}/angsd/{{chrom}}/{{chrom}}_genolike_allSamples.saf.pos.gz'.format(POP_STRUC_DIR))
+    log: 'logs/angsd/{chrom}_angsd_gl.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933' 
     threads: 10
     resources:
@@ -16,7 +16,7 @@ rule angsd_gl:
     shell:
         """
         angsd -GL 1 \
-            -out {0}/angsd_gl/full/{{wildcards.chrom}}/{{wildcards.chrom}}_genolike_allSamples \
+            -out {0}/angsd/{{wildcards.chrom}}/{{wildcards.chrom}}_genolike_allSamples \
             -nThreads {{threads}} \
             -doGlf 2 \
             -doMajorMinor 1 \
@@ -38,11 +38,11 @@ rule angsd_gl:
 
 rule merge_safs:
     input:
-        expand(rules.angsd_gl.output.saf_idx, chrom=CHROMOSOMES)
+        expand(rules.angsd.output.saf_idx, chrom=CHROMOSOMES)
     output:
-        saf = '{0}/angsd_gl/full/genolike_allSamples.saf.gz'.format(POP_STRUC_DIR),
-        saf_idx = '{0}/angsd_gl/full/genolike_allSamples.saf.idx'.format(POP_STRUC_DIR),
-        saf_pos = '{0}/angsd_gl/full/genolike_allSamples.saf.pos.gz'.format(POP_STRUC_DIR)
+        saf = '{0}/angsd/genolike_allSamples.saf.gz'.format(POP_STRUC_DIR),
+        saf_idx = '{0}/angsd/genolike_allSamples.saf.idx'.format(POP_STRUC_DIR),
+        saf_pos = '{0}/angsd/genolike_allSamples.saf.pos.gz'.format(POP_STRUC_DIR)
     log: 'logs/merge_safs/merge_safs.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933' 
     resources:
@@ -51,14 +51,14 @@ rule merge_safs:
     shell:
         """
         realSFS cat {{input}} \
-            -outnames {0}/angsd_gl/full/genolike_allSamples 2> {{log}}
+            -outnames {0}/angsd/genolike_allSamples 2> {{log}}
         """.format(POP_STRUC_DIR)
 
 rule concat_angsd_gl:
     input:
-        expand(rules.angsd_gl.output.gls, chrom=CHROMOSOMES)
+        expand(rules.angsd.output.gls, chrom=CHROMOSOMES)
     output:
-        '{0}/angsd_gl/full/genolike_allSamples.beagle.gz'.format(POP_STRUC_DIR)
+        '{0}/angsd/genolike_allSamples.beagle.gz'.format(POP_STRUC_DIR)
     log: 'logs/concat_angsd_gl/concat_angsd_gl.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933' 
     shell:
@@ -76,9 +76,9 @@ rule concat_angsd_gl:
 
 rule concat_angsd_mafs:
     input:
-        expand(rules.angsd_gl.output.mafs, chrom=CHROMOSOMES)
+        expand(rules.angsd.output.mafs, chrom=CHROMOSOMES)
     output:
-        '{0}/angsd_gl/full/genolike_allSamples.mafs.gz'.format(POP_STRUC_DIR)
+        '{0}/angsd/genolike_allSamples.mafs.gz'.format(POP_STRUC_DIR)
     log: 'logs/concat_angsd_mafs/concat_angsd_mafs.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933' 
     shell:
@@ -96,9 +96,9 @@ rule concat_angsd_mafs:
 
 rule create_pos_file_for_ngsLD:
     input:
-        rules.angsd_gl.output.mafs
+        rules.angsd.output.mafs
     output:
-        '{0}/angsd_gl/full/{{chrom}}/{{chrom}}_angsdGL.pos'.format(POP_STRUC_DIR)
+        '{0}/angsd/{{chrom}}/{{chrom}}_angsdGL.pos'.format(POP_STRUC_DIR)
     log: 'logs/create_pos_file_for_ngsLD/{chrom}_pos.log'
     shell:
         """
@@ -108,15 +108,15 @@ rule create_pos_file_for_ngsLD:
 rule calc_ld_angsd_gl:
     input:
         pos = rules.create_pos_file_for_ngsLD.output,
-        gls = rules.angsd_gl.output.gls
+        gls = rules.angsd.output.gls
     output:
-        '{0}/angsd_gl/ld/{{chrom}}/{{chrom}}_genolike_allSamples.ld.gz'.format(POP_STRUC_DIR)
+        '{0}/ld/{{chrom}}/{{chrom}}_genolike_allSamples.ld.gz'.format(POP_STRUC_DIR)
     log: 'logs/calc_ld_angsd_gl/{chrom}_calc_ld.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:ngsld_v1.1.1'
     threads: 16
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 8000,
-        time = '48:00:00'
+        time = '24:00:00'
     shell:
         """
         ( NUM_SITES=$(cat {input.pos} | wc -l) &&
@@ -128,3 +128,9 @@ rule calc_ld_angsd_gl:
             --n_threads {threads} \
             --max_kb_dist 25 | gzip --best > {output} ) 2> {log}
         """
+
+# rule global_sfs:
+#     input:
+#         rule.merge_safs.output.saf_idx 
+#     output:
+#         
