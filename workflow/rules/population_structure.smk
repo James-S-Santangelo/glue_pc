@@ -126,5 +126,5 @@ rule calc_ld_angsd_gl:
             --n_sites $NUM_SITES \
             --probs \
             --n_threads {threads} \
-            --max_kb_dist 100 | gzip --best > {output} ) 2> {log}
+            --max_kb_dist 25 | gzip --best > {output} ) 2> {log}
         """
