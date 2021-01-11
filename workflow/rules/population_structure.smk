@@ -116,7 +116,7 @@ rule calc_ld_angsd_gl:
     threads: 16
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 8000,
-        time = '24:00:00'
+        time = '16:00:00'
     shell:
         """
         ( NUM_SITES=$(cat {input.pos} | wc -l) &&
@@ -129,8 +129,35 @@ rule calc_ld_angsd_gl:
             --max_kb_dist 25 | gzip --best > {output} ) 2> {log}
         """
 
-# rule global_sfs:
+rule global_sfs:
+    input:
+        rules.merge_safs.output.saf_idx 
+    output:
+        '{0}/sfs/allSamples_global.sfs'.format(POP_STRUC_DIR)
+    log: 'logs/global_sfs/global_sfs.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    threads: 16
+    resources:
+        mem_mb = 30000,
+        time = '01:00:00'
+    shell:
+        """
+        realSFS {input} -P {threads} -fold 1 > {output} 2> {log}
+        """
+
+# rule prune_ld:
 #     input:
-#         rule.merge_safs.output.saf_idx 
+#         rules.calc_ld_angsd_gl.output
 #     output:
-#         
+#         '{0}/ld/pruned/{{chrom}}/{{chrom}}_pruned.id'.format(POP_STRUC_DIR)
+#     log: 'logs/prune_ld/{chrom}_prune_ld.log'
+#     container: 'shub://James-S-Santangelo/singularity-recipes:ngsld_v1.1.1'
+#     resources:
+#         mem_mb = lambda wildcards, attempt: attempt * 4000,
+#         time = '06:00:00'
+#     shell:
+#         """
+#         zcat {input} | cut -f 1,3,5- | perl /opt/bin/prune_graph.pl \
+#             --max_kb_dist 25 \
+#             --min_weight 0.5 | sort -V > {output}
+#         """

@@ -49,7 +49,8 @@ rule all:
         '{0}/variant_calling.done'.format(VARIANT_DIR),
         # Population structure
         expand('{0}/angsd/genolike_allSamples.{{ext}}'.format(POP_STRUC_DIR), ext=['beagle.gz', 'mafs.gz', 'saf.gz', 'saf.idx', 'saf.pos.gz']),
-        expand('{0}/ld/{{chrom}}/{{chrom}}_genolike_allSamples.ld.gz'.format(POP_STRUC_DIR), chrom=CHROMOSOMES)
+        expand('{0}/ld/{{chrom}}/{{chrom}}_genolike_allSamples.ld.gz'.format(POP_STRUC_DIR), chrom=CHROMOSOMES),
+        '{0}/sfs/allSamples_global.sfs'.format(POP_STRUC_DIR)
 
 rule create_tmp_dir:
     output: directory(TMPDIR)
