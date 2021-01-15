@@ -24,3 +24,17 @@ def get_node_tabix_files(wildcards):
     all_indices = expand(rules.tabix_node_vcf.output, chrom=CHROMOSOMES, node=NODES)
     node_indices = [i for i in all_indices if wildcards.chrom in i]
     return node_indices
+
+def get_angsd_gl_toConcat(wildcards):
+    if wildcards.minMAF == 'noMaf':
+        gls = expand(rules.angsd_noMaf.output.gls, chrom=CHROMOSOMES)
+    elif wildcards.minMaf == 'maf005':
+        gls = expand(rules.angsd_minMaf.output.gls, chrom=CHROMOSOMES)
+    return gls
+
+def get_angsd_maf_toConcat(wildcards):
+    if wildcards.minMAF == 'noMaf':
+        mafs = expand(rules.angsd_noMaf.output.mafs, chrom=CHROMOSOMES)
+    elif wildcards.minMaf == 'maf005':
+        mafs = expand(rules.angsd_minMaf.output.mafs, chrom=CHROMOSOMES)
+    return mafs

@@ -19,7 +19,8 @@ QC_DIR = '{0}/qc'.format(config['results_prefix'])
 BAM_DIR = '{0}/bam'.format(config['results_prefix'])
 VARIANT_DIR = '{0}/variants'.format(config['results_prefix'])
 PROGRAM_RESOURCE_DIR = '{0}/program_resources'.format(config['results_prefix'])
-POP_STRUC_DIR = '{0}/population_structure'.format(config['results_prefix'])
+ANGSD_DIR = '{0}/angsd'.format(config['results_prefix'])
+NGSLD_DIR = '{0}/ngsld'.format(config['results_prefix'])
 
 REFERENCE_GENOME = config['files']['reference_genome']
 
@@ -48,9 +49,8 @@ rule all:
         # Variant calling
         '{0}/variant_calling.done'.format(VARIANT_DIR),
         # Population structure
-        expand('{0}/angsd/genolike_allSamples.{{ext}}'.format(POP_STRUC_DIR), ext=['beagle.gz', 'mafs.gz', 'saf.gz', 'saf.idx', 'saf.pos.gz']),
-        expand('{0}/ld/{{chrom}}/{{chrom}}_genolike_allSamples.ld.gz'.format(POP_STRUC_DIR), chrom=CHROMOSOMES),
-        '{0}/sfs/allSamples_global.sfs'.format(POP_STRUC_DIR)
+        '{0}/sfs/allSamples_global.sfs'.format(ANGSD_DIR),
+        expand('{0}/{{chrom}}/{{chrom}}_genolike_allSamples_maf{{maf}}.ld.gz'.format(NGSLD_DIR), chrom=CHROMOSOMES, maf=['0.05'])
 
 rule create_tmp_dir:
     output: directory(TMPDIR)
