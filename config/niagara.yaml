@@ -15,7 +15,7 @@ paths:
 
 files:
   # reference_genome: /scratch/research/references/trifolium/repens/GCA_005869975.1_AgR_To_v5/GCA_005869975.1_AgR_To_v5_genomic.fna
-  reference_genome: /scratch/santang3/data/ref_genome/GCA_005869975.1_AgR_To_v5_genomic.fna
+  reference_genome: /scratch/n/nessrobe/santang3/data/ref_genome/GCA_005869975.1_AgR_To_v5_genomic.fna
 
 variant_calling:
   sample: s_7_7
