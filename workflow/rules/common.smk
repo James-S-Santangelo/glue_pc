@@ -26,15 +26,15 @@ def get_node_tabix_files(wildcards):
     return node_indices
 
 def get_angsd_gl_toConcat(wildcards):
-    if wildcards.minMAF == 'noMaf':
-        gls = expand(rules.angsd_noMaf.output.gls, chrom=CHROMOSOMES)
-    elif wildcards.minMaf == 'maf005':
-        gls = expand(rules.angsd_minMaf.output.gls, chrom=CHROMOSOMES)
+    if wildcards.minMAF == '0.05':
+        gls = expand(rules.angsd_withMaf.output.gls, chrom=CHROMOSOMES, maf=['0.05'])
+    else:
+        gls = expand(rules.angsd_full.output.gls, chrom=CHROMOSOMES)
     return gls
 
 def get_angsd_maf_toConcat(wildcards):
-    if wildcards.minMAF == 'noMaf':
-        mafs = expand(rules.angsd_noMaf.output.mafs, chrom=CHROMOSOMES)
-    elif wildcards.minMaf == 'maf005':
-        mafs = expand(rules.angsd_minMaf.output.mafs, chrom=CHROMOSOMES)
+    if wildcards.minMAF == '0.05':
+        mafs = expand(rules.angsd_withMaf.output.mafs, chrom=CHROMOSOMES, maf=['0.05'])
+    else:
+        mafs = expand(rules.angsd_full.output.mafs, chrom=CHROMOSOMES)
     return mafs
