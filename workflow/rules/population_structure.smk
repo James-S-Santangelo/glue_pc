@@ -74,9 +74,9 @@ rule merge_safs:
     input:
         expand(rules.angsd_full.output.saf_idx, chrom=CHROMOSOMES)
     output:
-        saf = '{0}/full/genolike_allSamples_full.saf.gz'.format(ANGSD_DIR),
-        saf_idx = '{0}/full/genolike_allSamples_full.saf.idx'.format(ANGSD_DIR),
-        saf_pos = '{0}/full/genolike_allSamples_full.saf.pos.gz'.format(ANGSD_DIR)
+        saf = '{0}/sfs/genolike_allSamples_full.saf.gz'.format(ANGSD_DIR),
+        saf_idx = '{0}/sfs/genolike_allSamples_full.saf.idx'.format(ANGSD_DIR),
+        saf_pos = '{0}/sfs/genolike_allSamples_full.saf.pos.gz'.format(ANGSD_DIR)
     log: 'logs/merge_safs/merge_safs.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933' 
     resources:
@@ -85,7 +85,7 @@ rule merge_safs:
     shell:
         """
         realSFS cat {{input}} \
-            -outnames {0}/genolike_allSamples_full 2> {{log}}
+            -outnames {0}/sfs/genolike_allSamples_full 2> {{log}}
         """.format(ANGSD_DIR)
 
 rule concat_angsd_gl:
@@ -180,19 +180,56 @@ rule global_sfs:
         realSFS {input} -P {threads} -fold 1 > {output} 2> {log}
         """
 
-# rule prune_ld:
-#     input:
-#         rules.calc_ld_angsd_gl.output
-#     output:
-#         '{0}/pruned/{{chrom}}/{{chrom}}_withMaf{{maf}}_pruned.id'.format(NGSLD_DIR)
-#     log: 'logs/prune_ld/{chrom}_withMaf{maf}_prune_ld.log'
-#     container: 'shub://James-S-Santangelo/singularity-recipes:ngsld_v1.1.1'
-#     resources:
-#         mem_mb = lambda wildcards, attempt: attempt * 40000,
-#         time = '48:00:00'
-#     shell:
-#         """
-#         ( zcat {input} | perl /opt/bin/prune_graph.pl \
-#             --max_kb_dist 25 \
-#             --min_weight 0.2 | sort -V > {output} ) 2> {log}
-#         """
+rule thetas_per_site:
+    input:
+        saf_idx = rules.merge_safs.output.saf_idx,
+        sfs = rules.global_sfs.output
+    output:
+        idx = '{0}/summary_stats/thetas/allSamples_perSite.thetas.idx'.format(ANGSD_DIR),
+        thet = '{0}/summary_stats/thetas/allSamples_perSite.thetas.gz'.format(ANGSD_DIR)
+    log: 'logs/thetas_per_site/thetas.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    threads: 10
+    resources:
+        mem_mb = lambda wildcards, attempt: attempt * 10000,
+        time = '06:00:00'
+    shell:
+        """
+        realSFS saf2theta {{input.saf_idx}} \
+            -P {{threads}} \
+            -sfs {{input.sfs}} \
+            -outname {0}/summary_stats/thetas/allSamples_perSite 2> {{log}}
+        """.format(ANGSD_DIR)
+
+rule theta_stat_wholeGenome:
+    input:
+        rules.thetas_per_site.output.idx
+    output:
+        '{0}/summary_stats/thetas/genome-wide/allSamples_perSite.thetas.idx.pestPG'.format(ANGSD_DIR)
+    log: 'logs/theta_stat_wholeGenome.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    resources:
+        mem_mb = lambda wildcards, attempt: attempt * 4000,
+        time = '06:00:00'
+    shell:
+        """
+        thetaStat do_stat {input} 2> {output}
+        """
+        
+
+rule prune_ld:
+    input:
+        rules.calc_ld_angsd_gl.output
+    output:
+        '{0}/pruned/{{chrom}}/{{chrom}}_withMaf{{maf}}_pruned.id'.format(NGSLD_DIR)
+    log: 'logs/prune_ld/{chrom}_withMaf{maf}_prune_ld.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:ngsld_v1.1.1'
+    resources:
+        mem_mb = lambda wildcards, attempt: attempt * 40000,
+        time = '24:00:00'
+    shell:
+        """
+        ( zcat {input} | perl /opt/bin/prune_graph.pl \
+            --max_kb_dist 20 \
+            --min_weight 0.2 | sort -V > {output} ) 2> {log}
+        """
