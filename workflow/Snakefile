@@ -40,7 +40,7 @@ localrules: create_tmp_dir, create_bam_list, region_files_forFreebayes, variant_
 
 include: 'rules/common.smk'
 
-raw_read_dict = create_raw_read_dict(RAW_READ_DIR, SAMPLES)
+#raw_read_dict = create_raw_read_dict(RAW_READ_DIR, SAMPLES)
 
 rule all:
    input:
@@ -49,8 +49,9 @@ rule all:
         # Variant calling
         '{0}/variant_calling.done'.format(VARIANT_DIR),
         # Population structure
-        '{0}/summary_stats/thetas/genome-wide/allSamples_perSite.thetas.idx.pestPG'.format(ANGSD_DIR),
-        expand('{0}/pruned/{{chrom}}/{{chrom}}_withMaf{{maf}}_pruned.id'.format(NGSLD_DIR), chrom=CHROMOSOMES, maf=['0.05']),
+        expand('{0}/withInvar/{{chrom}}/{{chrom}}_genolike_allSamples_withInvar.{{ext}}'.format(ANGSD_DIR), chrom=CHROMOSOMES, ext=['saf.gz','saf.idx','saf.pos.gz'])
+        # '{0}/summary_stats/thetas/genome-wide/allSamples_perSite.thetas.idx.pestPG'.format(ANGSD_DIR),
+        #expand('{0}/pruned/{{chrom}}/{{chrom}}_withMaf{{maf}}_pruned.id'.format(NGSLD_DIR), chrom=CHROMOSOMES, maf=['0.05']),
 
 rule create_tmp_dir:
     output: directory(TMPDIR)
