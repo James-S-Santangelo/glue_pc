@@ -64,63 +64,63 @@ rule angsd_withMaf:
             -bam {{input.bams}} 2> {{log}}
         """.format(ANGSD_DIR, REFERENCE_GENOME)
 
-rule merge_safs:
-    input:
-        expand(rules.angsd_withInvar.output.saf_idx, chrom=CHROMOSOMES)
-    output:
-        saf = '{0}/sfs/genolike_allSamples_withInvar.saf.gz'.format(ANGSD_DIR),
-        saf_idx = '{0}/sfs/genolike_allSamples_withInvar.saf.idx'.format(ANGSD_DIR),
-        saf_pos = '{0}/sfs/genolike_allSamples_withInvar.saf.pos.gz'.format(ANGSD_DIR)
-    log: 'logs/merge_safs/merge_safs.log'
-    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933' 
-    resources:
-        mem_mb = lambda wildcards, attempt: attempt * 4000,
-        time = '04:00:00'
-    shell:
-        """
-        realSFS cat {{input}} \
-            -outnames {0}/sfs/genolike_allSamples_withInvar 2> {{log}}
-        """.format(ANGSD_DIR)
-
-rule concat_angsd_gl:
-    input:
-        get_angsd_gl_toConcat
-    output:
-        '{0}/genolike_allSamples_withMaf{{minMaf}}.beagle.gz'.format(ANGSD_DIR)
-    log: 'logs/concat_angsd_gl/concat_angsd_gl_withMaf{{minMaf}}.log'
-    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933' 
-    shell:
-        """
-        first=1
-        for f in {input}; do
-            if [ "$first"  ]; then
-                zcat "$f"
-                first=
-            else
-                zcat "$f"| tail -n +2
-            fi
-        done | bgzip -c > {output} 2> {log}
-        """
-
-rule concat_angsd_mafs:
-    input:
-        get_angsd_maf_toConcat
-    output:
-        '{0}/genolike_allSamples_withMaf{{minMaf}}.mafs.gz'.format(ANGSD_DIR)
-    log: 'logs/concat_angsd_mafs/concat_angsd_mafs_withMaf{{minMaf}}.log'
-    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933' 
-    shell:
-        """
-        first=1
-        for f in {input}; do
-            if [ "$first"  ]; then
-                zcat "$f"
-                first=
-            else
-                zcat "$f"| tail -n +2
-            fi
-        done | bgzip -c > {output} 2> {log}
-        """
+# rule merge_safs:
+#     input:
+#         expand(rules.angsd_withInvar.output.saf_idx, chrom=CHROMOSOMES)
+#     output:
+#         saf = '{0}/sfs/genolike_allSamples_withInvar.saf.gz'.format(ANGSD_DIR),
+#         saf_idx = '{0}/sfs/genolike_allSamples_withInvar.saf.idx'.format(ANGSD_DIR),
+#         saf_pos = '{0}/sfs/genolike_allSamples_withInvar.saf.pos.gz'.format(ANGSD_DIR)
+#     log: 'logs/merge_safs/merge_safs.log'
+#     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933' 
+#     resources:
+#         mem_mb = lambda wildcards, attempt: attempt * 4000,
+#         time = '04:00:00'
+#     shell:
+#         """
+#         realSFS cat {{input}} \
+#             -outnames {0}/sfs/genolike_allSamples_withInvar 2> {{log}}
+#         """.format(ANGSD_DIR)
+# 
+# rule concat_angsd_gl:
+#     input:
+#         get_angsd_gl_toConcat
+#     output:
+#         '{0}/genolike_allSamples_withMaf{{minMaf}}.beagle.gz'.format(ANGSD_DIR)
+#     log: 'logs/concat_angsd_gl/concat_angsd_gl_withMaf{{minMaf}}.log'
+#     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933' 
+#     shell:
+#         """
+#         first=1
+#         for f in {input}; do
+#             if [ "$first"  ]; then
+#                 zcat "$f"
+#                 first=
+#             else
+#                 zcat "$f"| tail -n +2
+#             fi
+#         done | bgzip -c > {output} 2> {log}
+#         """
+# 
+# rule concat_angsd_mafs:
+#     input:
+#         get_angsd_maf_toConcat
+#     output:
+#         '{0}/genolike_allSamples_withMaf{{minMaf}}.mafs.gz'.format(ANGSD_DIR)
+#     log: 'logs/concat_angsd_mafs/concat_angsd_mafs_withMaf{{minMaf}}.log'
+#     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933' 
+#     shell:
+#         """
+#         first=1
+#         for f in {input}; do
+#             if [ "$first"  ]; then
+#                 zcat "$f"
+#                 first=
+#             else
+#                 zcat "$f"| tail -n +2
+#             fi
+#         done | bgzip -c > {output} 2> {log}
+#         """
 
 rule create_pos_file_for_ngsLD:
     input:
@@ -158,30 +158,30 @@ rule calc_ld_angsd_gl:
             --max_kb_dist 100 | gzip --best > {{output}} ) 2> {{log}}
         """.format(len(SAMPLES))
 
-rule global_sfs:
+rule sfs_allSites:
     input:
-        rules.merge_safs.output.saf_idx 
+        rules.angsd_withInvar.output.saf_idx 
     output:
-        '{0}/sfs/allSamples_global.sfs'.format(ANGSD_DIR)
-    log: 'logs/global_sfs/global_sfs.log'
+        '{0}/sfs/{{chrom}}/{{chrom}}_allSamples_allSites.sfs'.format(ANGSD_DIR)
+    log: 'logs/sfs_allSites/{chrom}_sfs_allSites.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    threads: 10
     resources:
-        nodes = 1,
-        ntasks = CORES_PER_NODE * 2,
-        time = '12:00:00'
+        mem_mb = lambda wildcards, attempt: attempt * 25000,
+        time = '06:00:00'
     shell:
         """
-        realSFS {input} -P {resources.ntasks} -fold 1 > {output} 2> {log}
+        realSFS {input} -P {threads} -fold 1 > {output} 2> {log}
         """
 
 rule thetas_per_site:
     input:
-        saf_idx = rules.merge_safs.output.saf_idx,
-        sfs = rules.global_sfs.output
+        saf_idx = rules.angsd_withInvar.output.saf_idx,
+        sfs = rules.sfs_allSites.output
     output:
-        idx = '{0}/summary_stats/thetas/allSamples_perSite.thetas.idx'.format(ANGSD_DIR),
-        thet = '{0}/summary_stats/thetas/allSamples_perSite.thetas.gz'.format(ANGSD_DIR)
-    log: 'logs/thetas_per_site/thetas.log'
+        idx = '{0}/summary_stats/thetas/{{chrom}}/{{chrom}}_allSamples_perSite.thetas.idx'.format(ANGSD_DIR),
+        thet = '{0}/summary_stats/thetas/{{chrom}}/{{chrom}}_allSamples_perSite.thetas.gz'.format(ANGSD_DIR)
+    log: 'logs/thetas_per_site/{chrom}_thetas.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     threads: 10
     resources:
@@ -192,15 +192,15 @@ rule thetas_per_site:
         realSFS saf2theta {{input.saf_idx}} \
             -P {{threads}} \
             -sfs {{input.sfs}} \
-            -outname {0}/summary_stats/thetas/allSamples_perSite 2> {{log}}
+            -outname {0}/summary_stats/thetas/{{wildcards.chrom}}/{{wildcards.chrom}}_allSamples_perSite 2> {{log}}
         """.format(ANGSD_DIR)
 
-rule theta_stat_wholeGenome:
+rule diversity_neutrality_byChrom:
     input:
         rules.thetas_per_site.output.idx
     output:
-        '{0}/summary_stats/thetas/allSamples_diversityNeutrality_byChrom.thetas.idx.pestPG'.format(ANGSD_DIR)
-    log: 'logs/theta_stat_wholeGenome.log'
+        '{0}/summary_stats/thetas/{{chrom}}/{{chrom}}_allSamples_allSites_diversityNeutrality.thetas.idx.pestPG'.format(ANGSD_DIR)
+    log: 'logs/diversity_neutrality_byChrom/{{chrom}}_allSites_diversity_neutrality.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 4000,
@@ -219,7 +219,7 @@ rule theta_stat_wholeGenome:
 #     log: 'logs/prune_ld/{chrom}_withMaf{maf}_prune_ld.log'
 #     container: 'shub://James-S-Santangelo/singularity-recipes:ngsld_v1.1.1'
 #     resources:
-#         mem_mb = lambda wildcards, attempt: attempt * 40000,
+#         mem_mb = lambda wildcards, attempt: attempt * 50000,
 #         time = '24:00:00'
 #     shell:
 #         """
