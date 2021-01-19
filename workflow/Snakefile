@@ -49,8 +49,7 @@ rule all:
         # Variant calling
         '{0}/variant_calling.done'.format(VARIANT_DIR),
         # Population structure
-        expand('{0}/withInvar/{{chrom}}/{{chrom}}_genolike_allSamples_withInvar.{{ext}}'.format(ANGSD_DIR), chrom=CHROMOSOMES, ext=['saf.gz','saf.idx','saf.pos.gz'])
-        # '{0}/summary_stats/thetas/genome-wide/allSamples_perSite.thetas.idx.pestPG'.format(ANGSD_DIR),
+        '{0}/summary_stats/thetas/allSamples_diversityNeutrality_byChrom.thetas.idx.pestPG'.format(ANGSD_DIR),
         #expand('{0}/pruned/{{chrom}}/{{chrom}}_withMaf{{maf}}_pruned.id'.format(NGSLD_DIR), chrom=CHROMOSOMES, maf=['0.05']),
 
 rule create_tmp_dir:
