@@ -142,8 +142,12 @@ rule concat_sfs_allSites:
         '{0}/sfs/allSites/allSamples_allSites_allChroms.sfs'.format(ANGSD_DIR)
     log: 'logs/concat_sfs_allSites/concat_sfs_allSites.log'
     run:
-       shell('cat {input} > {output} 2> {log}')
-
+        shell('cat {input} > temp.txt 2> {log}')
+        import pandas as pd
+        sfs_allChroms = pd.read_table('temp.txt', delimiter = '\t')
+        sfs_sum = sfs_allChroms.sum(axis=0) 
+        sfs_sum.to_csv(output[0], sep = '\t', header = None)
+        shell('rm temp.txt')
 
 # rule concat_angsd_gl:
 #     input:
