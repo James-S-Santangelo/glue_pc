@@ -60,6 +60,7 @@ include: 'rules/trimming.smk'
 include: 'rules/mapping.smk'
 include: 'rules/qc.smk'
 include: 'rules/variant_calling.smk'
+include: 'rules/angsd.smk'
 include: 'rules/population_structure.smk'
 
 rule clean:
