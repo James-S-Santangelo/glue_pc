@@ -1,11 +1,11 @@
-rule angsd_withInvar:
+rule angsd_allSites:
     input:
         bams = rules.create_bam_list.output
     output:
-        saf = temp('{0}/withInvar/{{chrom}}/{{chrom}}_genolike_allSamples_withInvar.saf.gz'.format(ANGSD_DIR)),
-        saf_idx = temp('{0}/withInvar/{{chrom}}/{{chrom}}_genolike_allSamples_withInvar.saf.idx'.format(ANGSD_DIR)),
-        saf_pos = temp('{0}/withInvar/{{chrom}}/{{chrom}}_genolike_allSamples_withInvar.saf.pos.gz'.format(ANGSD_DIR))
-    log: 'logs/angsd_withInvar/{chrom}_angsd_withInvar.log'
+        saf = temp('{0}/sfs/allSites/{{chrom}}/{{chrom}}_genolike_allSamples_allSites.saf.gz'.format(ANGSD_DIR)),
+        saf_idx = temp('{0}/sfs/allSites/{{chrom}}/{{chrom}}_genolike_allSamples_allSites.saf.idx'.format(ANGSD_DIR)),
+        saf_pos = temp('{0}/sfs/allSites/{{chrom}}/{{chrom}}_genolike_allSamples_allSites.saf.pos.gz'.format(ANGSD_DIR))
+    log: 'logs/angsd_allSites/{chrom}_angsd_allSites.log'
     conda: '../envs/angsd.yaml'
     resources:
         nodes = 1,
@@ -14,7 +14,7 @@ rule angsd_withInvar:
     shell:
         """
         angsd -GL 1 \
-            -out {0}/withInvar/{{wildcards.chrom}}/{{wildcards.chrom}}_genolike_allSamples_withInvar \
+            -out {0}/sfs/allSites/{{wildcards.chrom}}/{{wildcards.chrom}}_genolike_allSamples_allSites \
             -nThreads {{resources.ntasks}} \
             -doCounts 1 \
             -setMinDepthInd 3 \
@@ -30,13 +30,13 @@ rule angsd_withInvar:
             -bam {{input.bams}} 2> {{log}}
         """.format(ANGSD_DIR, REFERENCE_GENOME)
 
-rule angsd_withMaf:
+rule angsd_gl_withMaf:
     input:
         bams = rules.create_bam_list.output
     output:
-        gls = temp('{0}/withMaf/{{chrom}}/{{chrom}}_genolike_allSamples_withMaf{{maf}}.beagle.gz'.format(ANGSD_DIR)),
-        mafs = temp('{0}/withMaf/{{chrom}}/{{chrom}}_genolike_allSamples_withMaf{{maf}}.mafs.gz'.format(ANGSD_DIR)),
-    log: 'logs/angsd_withMaf/{chrom}_angsd_maf{maf}.log'
+        gls = temp('{0}/gl/withMaf/{{chrom}}/{{chrom}}_genolike_allSamples_withMaf{{maf}}.beagle.gz'.format(ANGSD_DIR)),
+        mafs = temp('{0}/gl/withMaf/{{chrom}}/{{chrom}}_genolike_allSamples_withMaf{{maf}}.mafs.gz'.format(ANGSD_DIR)),
+    log: 'logs/angsd_gl_withMaf/{chrom}_angsd_maf{maf}.log'
     conda: '../envs/angsd.yaml'
     resources:
         nodes = 1,
@@ -45,7 +45,7 @@ rule angsd_withMaf:
     shell:
         """
         angsd -GL 1 \
-            -out {0}/withMaf/{{wildcards.chrom}}/{{wildcards.chrom}}_genolike_allSamples_withMaf{{wildcards.maf}} \
+            -out {0}/gl/withMaf/{{wildcards.chrom}}/{{wildcards.chrom}}_genolike_allSamples_withMaf{{wildcards.maf}} \
             -nThreads {{resources.ntasks}} \
             -doGlf 2 \
             -doMajorMinor 1 \
@@ -66,9 +66,9 @@ rule angsd_withMaf:
  
 rule sfs_allSites:
     input:
-        rules.angsd_withInvar.output.saf_idx 
+        rules.angsd_allSites.output.saf_idx 
     output:
-        '{0}/sfs/{{chrom}}/{{chrom}}_allSamples_allSites.sfs'.format(ANGSD_DIR)
+        '{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.sfs'.format(ANGSD_DIR)
     log: 'logs/sfs_allSites/{chrom}_sfs_allSites.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     threads: 10
@@ -80,14 +80,14 @@ rule sfs_allSites:
         realSFS {input} -P {threads} -fold 1 > {output} 2> {log}
         """
 
-rule thetas_per_site:
+rule thetas_allSites:
     input:
-        saf_idx = rules.angsd_withInvar.output.saf_idx,
+        saf_idx = rules.angsd_allSites.output.saf_idx,
         sfs = rules.sfs_allSites.output
     output:
-        idx = '{0}/summary_stats/thetas/{{chrom}}/{{chrom}}_allSamples_perSite.thetas.idx'.format(ANGSD_DIR),
-        thet = '{0}/summary_stats/thetas/{{chrom}}/{{chrom}}_allSamples_perSite.thetas.gz'.format(ANGSD_DIR)
-    log: 'logs/thetas_per_site/{chrom}_thetas.log'
+        idx = '{0}/summary_stats/thetas/{{chrom}}/{{chrom}}_allSamples_allSites.thetas.idx'.format(ANGSD_DIR),
+        thet = '{0}/summary_stats/thetas/{{chrom}}/{{chrom}}_allSamples_allSites.thetas.gz'.format(ANGSD_DIR)
+    log: 'logs/thetas_allSites/{chrom}_thetas.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     threads: 10
     resources:
@@ -98,15 +98,15 @@ rule thetas_per_site:
         realSFS saf2theta {{input.saf_idx}} \
             -P {{threads}} \
             -sfs {{input.sfs}} \
-            -outname {0}/summary_stats/thetas/{{wildcards.chrom}}/{{wildcards.chrom}}_allSamples_perSite 2> {{log}}
+            -outname {0}/summary_stats/thetas/{{wildcards.chrom}}/{{wildcards.chrom}}_allSamples_allSites 2> {{log}}
         """.format(ANGSD_DIR)
 
-rule diversity_neutrality_byChrom:
+rule angsd_diversity_neutrality_stats:
     input:
-        rules.thetas_per_site.output.idx
+        rules.thetas_allSites.output.idx
     output:
-        '{0}/summary_stats/thetas/{{chrom}}/{{chrom}}_allSamples_allSites_diversityNeutrality.thetas.idx.pestPG'.format(ANGSD_DIR)
-    log: 'logs/diversity_neutrality_byChrom/{{chrom}}_allSites_diversity_neutrality.log'
+        '{0}/summary_stats/thetas/{{chrom}}/{{chrom}}_allSamples_allSites.thetas.idx.pestPG'.format(ANGSD_DIR)
+    log: 'logs/angsd_diversity_neutrality_stats/{{chrom}}_allSites_diversity_neutrality.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 4000,
@@ -115,6 +115,35 @@ rule diversity_neutrality_byChrom:
         """
         thetaStat do_stat {input} 2> {log}
         """
+
+rule concat_angsd_stats:
+    input:
+        expand(rules.angsd_diversity_neutrality_stats.output, chrom=CHROMOSOMES)
+    output:
+        '{0}/summary_stats/thetas/allSamples_allSites_diversityNeutrality.thetas.idx.pestPG'.format(ANGSD_DIR)
+    log: 'logs/concat_angsd_stats/concat_angsd_stats.log'
+    shell:
+        """
+        first=1
+        for f in {input}; do
+            if [ "$first"  ]; then
+                cat "$f"
+                first=
+            else
+                cat "$f"| tail -n +2
+            fi
+        done > {output} 2> {log}
+        """
+
+rule concat_sfs_allSites:
+    input:
+        expand(rules.sfs_allSites.output, chrom=CHROMOSOMES)
+    output:
+        '{0}/sfs/allSites/allSamples_allSites_allChroms.sfs'.format(ANGSD_DIR)
+    log: 'logs/concat_sfs_allSites/concat_sfs_allSites.log'
+    run:
+       shell('cat {input} > {output} 2> {log}')
+
 
 # rule concat_angsd_gl:
 #     input:
