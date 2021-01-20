@@ -1,27 +1,51 @@
+rule angsd_depth:
+    input:
+        bams = rules.create_bam_list.output
+    output:
+        sam = '{0}/depth/{{chrom}}/{{chrom}}_allSamples_allSites.depthSample'.format(ANGSD_DIR),
+        glo = '{0}/depth/{{chrom}}/{{chrom}}_allSamples_allSites.depthGlobal'.format(ANGSD_DIR)
+    log: 'logs/angsd_depth/{chrom}_angsd_depth.log'
+    conda: '../envs/angsd.yaml'
+    resources:
+        nodes = 1,
+        ntasks = CORES_PER_NODE,
+        time = '12:00:00'
+    shell:
+        """
+        angsd -bam {input.bams} \
+            -nThreads {resources.ntasks} \
+            -doDepth 1 \
+            -doCounts 1 \
+            -r {wildcards.chrom} \
+            -minMapQ 30 \
+            -minQ 20
+        """
+
 rule angsd_allSites:
     input:
         bams = rules.create_bam_list.output
     output:
-        saf = temp('{0}/sfs/allSites/{{chrom}}/{{chrom}}_genolike_allSamples_allSites.saf.gz'.format(ANGSD_DIR)),
-        saf_idx = temp('{0}/sfs/allSites/{{chrom}}/{{chrom}}_genolike_allSamples_allSites.saf.idx'.format(ANGSD_DIR)),
-        saf_pos = temp('{0}/sfs/allSites/{{chrom}}/{{chrom}}_genolike_allSamples_allSites.saf.pos.gz'.format(ANGSD_DIR))
+        saf = temp('{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.saf.gz'.format(ANGSD_DIR)),
+        saf_idx = temp('{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.saf.idx'.format(ANGSD_DIR)),
+        saf_pos = temp('{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.saf.pos.gz'.format(ANGSD_DIR))
     log: 'logs/angsd_allSites/{chrom}_angsd_allSites.log'
     conda: '../envs/angsd.yaml'
     resources:
         nodes = 1,
-        ntasks = CORES_PER_NODE * 2,
+        ntasks = CORES_PER_NODE,
         time = '12:00:00'
     shell:
         """
         angsd -GL 1 \
-            -out {0}/sfs/allSites/{{wildcards.chrom}}/{{wildcards.chrom}}_genolike_allSamples_allSites \
+            -out {0}/sfs/allSites/{{wildcards.chrom}}/{{wildcards.chrom}}_allSamples_allSites \
             -nThreads {{resources.ntasks}} \
             -doCounts 1 \
-            -setMinDepthInd 3 \
+            -dumpCounts 2 \
+            -setMinDepthInd 1 \
             -setMaxDepth 4500 \
             -baq 2 \
             -ref {1} \
-            -minInd 96 \
+            -minInd 60 \
             -minQ 20 \
             -minMapQ 30 \
             -doSaf 1 \
@@ -40,7 +64,7 @@ rule angsd_gl_withMaf:
     conda: '../envs/angsd.yaml'
     resources:
         nodes = 1,
-        ntasks = CORES_PER_NODE * 2,
+        ntasks = CORES_PER_NODE,
         time = '12:00:00'
     shell:
         """
