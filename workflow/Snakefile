@@ -50,8 +50,8 @@ rule all:
         '{0}/variant_calling.done'.format(VARIANT_DIR),
         # Population structure
         '{0}/summary_stats/thetas/allSamples_allSites_diversityNeutrality.thetas.idx.pestPG'.format(ANGSD_DIR),
-        '{0}/sfs/allSites/allSamples_allSites_allChroms.sfs'.format(ANGSD_DIR)
-        #expand('{0}/pruned/{{chrom}}/{{chrom}}_withMaf{{maf}}_pruned.id'.format(NGSLD_DIR), chrom=CHROMOSOMES, maf=['0.05']),
+        '{0}/sfs/allSites/allSamples_allSites_allChroms.sfs'.format(ANGSD_DIR),
+        expand('{0}/pruned/{{chrom}}/{{chrom}}_withMaf{{maf}}_pruned.id'.format(NGSLD_DIR), chrom=CHROMOSOMES, maf=['0.05']),
 
 rule create_tmp_dir:
     output: directory(TMPDIR)

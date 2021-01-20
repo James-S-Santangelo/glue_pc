@@ -34,19 +34,19 @@ rule calc_ld_angsd_gl:
             --max_kb_dist 100 | gzip --best > {{output}} ) 2> {{log}}
         """.format(len(SAMPLES))
 
-# rule prune_ld:
-#     input:
-#         rules.calc_ld_angsd_gl.output
-#     output:
-#         '{0}/pruned/{{chrom}}/{{chrom}}_withMaf{{maf}}_pruned.id'.format(NGSLD_DIR)
-#     log: 'logs/prune_ld/{chrom}_withMaf{maf}_prune_ld.log'
-#     container: 'shub://James-S-Santangelo/singularity-recipes:ngsld_v1.1.1'
-#     resources:
-#         mem_mb = lambda wildcards, attempt: attempt * 50000,
-#         time = '24:00:00'
-#     shell:
-#         """
-#         ( zcat {input} | perl /opt/bin/prune_graph.pl \
-#             --max_kb_dist 20 \
-#             --min_weight 0.2 | sort -V > {output} ) 2> {log}
-#         """
+rule prune_ld:
+    input:
+        rules.calc_ld_angsd_gl.output
+    output:
+        '{0}/pruned/{{chrom}}/{{chrom}}_withMaf{{maf}}_pruned.id'.format(NGSLD_DIR)
+    log: 'logs/prune_ld/{chrom}_withMaf{maf}_prune_ld.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:ngsld_v1.1.1'
+    resources:
+        mem_mb = lambda wildcards, attempt: attempt * 50000,
+        time = '72:00:00'
+    shell:
+        """
+        ( zcat {input} | perl /opt/bin/prune_graph.pl \
+            --max_kb_dist 20 \
+            --min_weight 0.2 | sort -V > {output} ) 2> {log}
+        """
