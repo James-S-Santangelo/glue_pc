@@ -23,6 +23,19 @@ rule angsd_depth:
             -out {0}/depth/{{wildcards.chrom}}/{{wildcards.chrom}}_allSamples_allSites
         """.format(ANGSD_DIR)
 
+rule convert_sites_for_angsd:
+    input:
+        rules.get_fourfold_zerofold.output
+    output:
+        '{0}/angsd_sites/Trepens_{{site}}.sites'.format(PROGRAM_RESOURCE_DIR), 
+    log: 'logs/convert_sites_for_angsd/convert_{site}_for_angsd.log'
+    conda: '../envs/angsd.yaml'
+    shell:
+        """
+        ( awk '{{print $1"\t"$2+1"\t"$3}}' {input} > {output} && \
+            angsd sites index {output} ) 2> {log}
+        """
+
 rule angsd_allSites:
     input:
         bams = rules.create_bam_list.output

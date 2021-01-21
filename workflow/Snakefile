@@ -37,7 +37,7 @@ elif NODES_PER_CHROM > 1:
 wildcard_constraints:
     chrom='|'.join([x for x in CHROMOSOMES])
 
-localrules: create_tmp_dir, create_bam_list, region_files_forFreebayes, variant_calling_done, concat_angsd_stats, create_pos_file_for_ngsLD, concat_sfs_allSites
+localrules: create_tmp_dir, create_bam_list, region_files_forFreebayes, variant_calling_done, concat_angsd_stats, create_pos_file_for_ngsLD, concat_sfs_allSites, convert_sites_for_angsd
 
 include: 'rules/common.smk'
 
@@ -53,7 +53,7 @@ rule all:
         expand('{0}/depth/{{chrom}}/{{chrom}}_allSamples_allSites.depth{{ext}}'.format(ANGSD_DIR), chrom=CHROMOSOMES, ext=['Sample', 'Global']),
         expand('{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.saf.{{ext}}'.format(ANGSD_DIR), chrom=CHROMOSOMES, ext=['gz','idx','pos.gz']),
         expand('{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.sfs'.format(ANGSD_DIR), chrom=CHROMOSOMES),
-        expand('{0}/4fold_0fold/Trepens_{{site}}.bed.gz'.format(PROGRAM_RESOURCE_DIR), site=['0fold','4fold']),
+        expand('{0}/angsd_sites/Trepens_{{site}}.sites'.format(PROGRAM_RESOURCE_DIR), site=['0fold','4fold']),
         #'{0}/summary_stats/thetas/allSamples_allSites_diversityNeutrality.thetas.idx.pestPG'.format(ANGSD_DIR),
         #'{0}/sfs/allSites/allSamples_allSites_allChroms.sfs'.format(ANGSD_DIR),
         # Param tests
