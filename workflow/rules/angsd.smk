@@ -12,14 +12,16 @@ rule angsd_depth:
         time = '12:00:00'
     shell:
         """
-        angsd -bam {input.bams} \
-            -nThreads {resources.ntasks} \
+        angsd -bam {{input.bams}} \
+            -nThreads {{resources.ntasks}} \
             -doDepth 1 \
             -doCounts 1 \
-            -r {wildcards.chrom} \
+            -r {{wildcards.chrom}} \
             -minMapQ 30 \
-            -minQ 20
-        """
+            -minQ 20 \
+            -maxDepth 2000 \
+            -out {0}/depth/{{wildcards.chrom}}/{{wildcards.chrom}}_allSamples_allSites
+        """.format(ANGSD_DIR)
 
 rule angsd_allSites:
     input:
