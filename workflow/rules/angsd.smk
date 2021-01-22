@@ -37,7 +37,7 @@ rule convert_sites_for_angsd:
             angsd sites index {output} ) 2> {log}
         """
 
-rule angsd_allSites:
+rule angsd_saf_likelihood:
     input:
         bams = rules.create_bam_list.output,
         sites = rules.convert_sites_for_angsd.output
@@ -125,12 +125,12 @@ rule angsd_gl_withMaf:
             -bam {{input.bams}} 2> {{log}}
         """.format(ANGSD_DIR, REFERENCE_GENOME)
  
-rule sfs_allSites:
+rule angsd_estimate_sfs:
     input:
-        rules.angsd_allSites.output.saf_idx 
+        rules.angsd_saf_likelihood.output.saf_idx 
     output:
-        '{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.sfs'.format(ANGSD_DIR)
-    log: 'logs/sfs_allSites/{chrom}_sfs_allSites.log'
+        '{0}/sfs/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}.sfs'.format(ANGSD_DIR)
+    log: 'logs/angsd_estimate_sfs/{chrom}_{site}_sfs.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     threads: 10
     resources:
@@ -141,74 +141,74 @@ rule sfs_allSites:
         realSFS {input} -P {threads} -fold 1 > {output} 2> {log}
         """
 
-rule thetas_allSites:
-    input:
-        saf_idx = rules.angsd_allSites.output.saf_idx,
-        sfs = rules.sfs_allSites.output
-    output:
-        idx = '{0}/summary_stats/thetas/{{chrom}}/{{chrom}}_allSamples_allSites.thetas.idx'.format(ANGSD_DIR),
-        thet = '{0}/summary_stats/thetas/{{chrom}}/{{chrom}}_allSamples_allSites.thetas.gz'.format(ANGSD_DIR)
-    log: 'logs/thetas_allSites/{chrom}_thetas.log'
-    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
-    threads: 10
-    resources:
-        mem_mb = lambda wildcards, attempt: attempt * 10000,
-        time = '06:00:00'
-    shell:
-        """
-        realSFS saf2theta {{input.saf_idx}} \
-            -P {{threads}} \
-            -sfs {{input.sfs}} \
-            -outname {0}/summary_stats/thetas/{{wildcards.chrom}}/{{wildcards.chrom}}_allSamples_allSites 2> {{log}}
-        """.format(ANGSD_DIR)
-
-rule angsd_diversity_neutrality_stats:
-    input:
-        rules.thetas_allSites.output.idx
-    output:
-        '{0}/summary_stats/thetas/{{chrom}}/{{chrom}}_allSamples_allSites.thetas.idx.pestPG'.format(ANGSD_DIR)
-    log: 'logs/angsd_diversity_neutrality_stats/{{chrom}}_allSites_diversity_neutrality.log'
-    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
-    resources:
-        mem_mb = lambda wildcards, attempt: attempt * 4000,
-        time = '06:00:00'
-    shell:
-        """
-        thetaStat do_stat {input} 2> {log}
-        """
-
-rule concat_angsd_stats:
-    input:
-        expand(rules.angsd_diversity_neutrality_stats.output, chrom=CHROMOSOMES)
-    output:
-        '{0}/summary_stats/thetas/allSamples_allSites_diversityNeutrality.thetas.idx.pestPG'.format(ANGSD_DIR)
-    log: 'logs/concat_angsd_stats/concat_angsd_stats.log'
-    shell:
-        """
-        first=1
-        for f in {input}; do
-            if [ "$first"  ]; then
-                cat "$f"
-                first=
-            else
-                cat "$f"| tail -n +2
-            fi
-        done > {output} 2> {log}
-        """
-
-rule concat_sfs_allSites:
-    input:
-        expand(rules.sfs_allSites.output, chrom=CHROMOSOMES)
-    output:
-        '{0}/sfs/allSites/allSamples_allSites_allChroms.sfs'.format(ANGSD_DIR)
-    log: 'logs/concat_sfs_allSites/concat_sfs_allSites.log'
-    run:
-        shell('cat {input} > temp.txt 2> {log}')
-        import pandas as pd
-        sfs_allChroms = pd.read_table('temp.txt', delimiter = '\t')
-        sfs_sum = sfs_allChroms.sum(axis=0) 
-        sfs_sum.to_csv(output[0], sep = '\t', header = None)
-        shell('rm temp.txt')
+# rule angsd_estimate_thetas:
+#     input:
+#         saf_idx = rules.angsd_saf_likelihood.output.saf_idx,
+#         sfs = rules.angsd_estimate_sfs.output
+#     output:
+#         idx = '{0}/summary_stats/thetas/{{chrom}}/{{chrom}}_allSamples_{{site}}.thetas.idx'.format(ANGSD_DIR),
+#         thet = '{0}/summary_stats/thetas/{{chrom}}/{{chrom}}_allSamples_{{site}}.thetas.gz'.format(ANGSD_DIR)
+#     log: 'logs/angsd_estimate_thetas/{chrom}_{site}_thetas.log'
+#     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+#     threads: 10
+#     resources:
+#         mem_mb = lambda wildcards, attempt: attempt * 10000,
+#         time = '06:00:00'
+#     shell:
+#         """
+#         realSFS saf2theta {{input.saf_idx}} \
+#             -P {{threads}} \
+#             -sfs {{input.sfs}} \
+#             -outname {0}/summary_stats/thetas/{{wildcards.chrom}}/{{wildcards.chrom}}_allSamples_{{wildcards.site}} 2> {{log}}
+#         """.format(ANGSD_DIR)
+# 
+# rule angsd_diversity_neutrality_stats:
+#     input:
+#         rules.angsd_estimate_thetas.output.idx
+#     output:
+#         '{0}/summary_stats/thetas/{{chrom}}/{{chrom}}_allSamples_{{site}}.thetas.idx.pestPG'.format(ANGSD_DIR)
+#     log: 'logs/angsd_diversity_neutrality_stats/{{chrom}}_{site}_diversity_neutrality.log'
+#     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+#     resources:
+#         mem_mb = lambda wildcards, attempt: attempt * 4000,
+#         time = '06:00:00'
+#     shell:
+#         """
+#         thetaStat do_stat {input} 2> {log}
+#         """
+# 
+# rule concat_angsd_stats:
+#     input:
+#         expand(rules.angsd_diversity_neutrality_stats.output, chrom=CHROMOSOMES)
+#     output:
+#         '{0}/summary_stats/thetas/allSamples_{{site}}_diversityNeutrality.thetas.idx.pestPG'.format(ANGSD_DIR)
+#     log: 'logs/concat_angsd_stats/concat_angsd_stats.log'
+#     shell:
+#         """
+#         first=1
+#         for f in {input}; do
+#             if [ "$first"  ]; then
+#                 cat "$f"
+#                 first=
+#             else
+#                 cat "$f"| tail -n +2
+#             fi
+#         done > {output} 2> {log}
+#         """
+# 
+# rule concat_sfs_allSites:
+#     input:
+#         expand(rules.sfs_allSites.output, chrom=CHROMOSOMES)
+#     output:
+#         '{0}/sfs/allSites/allSamples_allSites_allChroms.sfs'.format(ANGSD_DIR)
+#     log: 'logs/concat_sfs_allSites/concat_sfs_allSites.log'
+#     run:
+#         shell('cat {input} > temp.txt 2> {log}')
+#         import pandas as pd
+#         sfs_allChroms = pd.read_table('temp.txt', delimiter = '\t')
+#         sfs_sum = sfs_allChroms.sum(axis=0) 
+#         sfs_sum.to_csv(output[0], sep = '\t', header = None)
+#         shell('rm temp.txt')
 
 # rule concat_angsd_gl:
 #     input:
