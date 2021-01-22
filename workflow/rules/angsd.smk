@@ -32,18 +32,20 @@ rule convert_sites_for_angsd:
     conda: '../envs/angsd.yaml'
     shell:
         """
+        touch {output}
         ( awk '{{print $1"\t"$2+1"\t"$3}}' {input} > {output} && \
             angsd sites index {output} ) 2> {log}
         """
 
 rule angsd_allSites:
     input:
-        bams = rules.create_bam_list.output
+        bams = rules.create_bam_list.output,
+        sites = rules.convert_sites_for_angsd.output
     output:
-        saf = temp('{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.saf.gz'.format(ANGSD_DIR)),
-        saf_idx = temp('{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.saf.idx'.format(ANGSD_DIR)),
-        saf_pos = temp('{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.saf.pos.gz'.format(ANGSD_DIR))
-    log: 'logs/angsd_allSites/{chrom}_angsd_allSites.log'
+        saf = temp('{0}/sfs/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}.saf.gz'.format(ANGSD_DIR)),
+        saf_idx = temp('{0}/sfs/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}.saf.idx'.format(ANGSD_DIR)),
+        saf_pos = temp('{0}/sfs/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}.saf.pos.gz'.format(ANGSD_DIR))
+    log: 'logs/angsd_{site}/{chrom}_angsd_{site}.log'
     conda: '../envs/angsd.yaml'
     resources:
         nodes = 1,
@@ -51,22 +53,42 @@ rule angsd_allSites:
         time = '12:00:00'
     shell:
         """
-        angsd -GL 1 \
-            -out {0}/sfs/allSites/{{wildcards.chrom}}/{{wildcards.chrom}}_allSamples_allSites \
-            -nThreads {{resources.ntasks}} \
-            -doCounts 1 \
-            -dumpCounts 2 \
-            -setMinDepthInd 1 \
-            -setMaxDepth 4500 \
-            -baq 2 \
-            -ref {1} \
-            -minInd 60 \
-            -minQ 20 \
-            -minMapQ 30 \
-            -doSaf 1 \
-            -anc {1} \
-            -r {{wildcards.chrom}} \
-            -bam {{input.bams}} 2> {{log}}
+        if [ wildcards.site = 'allSites' ]
+        then
+            angsd -GL 1 \
+                -out {0}/sfs/{{wildcards.site}}/{{wildcards.chrom}}/{{wildcards.chrom}}_allSamples_{{wildcards.site}} \
+                -nThreads {{resources.ntasks}} \
+                -doCounts 1 \
+                -dumpCounts 2 \
+                -setMinDepthInd 1 \
+                -setMaxDepth 4500 \
+                -baq 2 \
+                -ref {1} \
+                -minInd 60 \
+                -minQ 20 \
+                -minMapQ 30 \
+                -doSaf 1 \
+                -anc {1} \
+                -r {{wildcards.chrom}} \
+                -bam {{input.bams}} 2> {{log}}
+        else
+            angsd -GL 1 \
+                -out {0}/sfs/{{wildcards.site}}/{{wildcards.chrom}}/{{wildcards.chrom}}_allSamples_{{wildcards.site}} \
+                -nThreads {{resources.ntasks}} \
+                -sites {{input.sites}} \
+                -doCounts 1 \
+                -dumpCounts 2 \
+                -setMinDepthInd 1 \
+                -setMaxDepth 4500 \
+                -baq 2 \
+                -ref {1} \
+                -minInd 60 \
+                -minQ 20 \
+                -minMapQ 30 \
+                -doSaf 1 \
+                -anc {1} \
+                -r {{wildcards.chrom}} \
+                -bam {{input.bams}} 2> {{log}}
         """.format(ANGSD_DIR, REFERENCE_GENOME)
 
 rule angsd_gl_withMaf:
