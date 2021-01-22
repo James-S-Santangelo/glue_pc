@@ -1,6 +1,6 @@
 rule create_pos_file_for_ngsLD:
     input:
-        rules.angsd_gl_withMaf.output.mafs
+        rules.angsd_gl_allSites.output.mafs
     output:
         '{0}/ngsld_pos/{{chrom}}_angsdGL_withMaf{{maf}}.pos'.format(PROGRAM_RESOURCE_DIR)
     log: 'logs/create_pos_file_for_ngsLD/{chrom}_withMaf{maf}_pos.log'
@@ -12,9 +12,9 @@ rule create_pos_file_for_ngsLD:
 rule calc_ld_angsd_gl:
     input:
         pos = rules.create_pos_file_for_ngsLD.output,
-        gls = rules.angsd_gl_withMaf.output.gls
+        gls = rules.angsd_gl_allSites.output.gls
     output:
-        '{0}/{{chrom}}/{{chrom}}_genolike_allSamples_withMaf{{maf}}.ld.gz'.format(NGSLD_DIR)
+        '{0}/{{chrom}}/{{chrom}}_allSamples_withMaf{{maf}}.ld.gz'.format(NGSLD_DIR)
     log: 'logs/calc_ld_angsd_gl/{chrom}_withMaf{maf}_calc_ld.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:ngsld_v1.1.1'
     threads: 16

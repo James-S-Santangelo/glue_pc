@@ -37,7 +37,7 @@ elif NODES_PER_CHROM > 1:
 wildcard_constraints:
     chrom='|'.join([x for x in CHROMOSOMES])
 
-localrules: create_tmp_dir, create_bam_list, region_files_forFreebayes, variant_calling_done, concat_angsd_stats, create_pos_file_for_ngsLD, concat_sfs_allSites, convert_sites_for_angsd
+localrules: create_tmp_dir, create_bam_list, region_files_forFreebayes, variant_calling_done, concat_angsd_stats, create_pos_file_for_ngsLD, concat_sfs_allSites, convert_sites_for_angsd, angsd_index_sites
 
 include: 'rules/common.smk'
 
@@ -51,11 +51,10 @@ rule all:
         '{0}/variant_calling.done'.format(VARIANT_DIR),
         # Angsd
         expand('{0}/depth/{{chrom}}/{{chrom}}_allSamples_allSites.depth{{ext}}'.format(ANGSD_DIR), chrom=CHROMOSOMES, ext=['Sample', 'Global']),
-        expand('{0}/sfs/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}.saf.{{ext}}'.format(ANGSD_DIR), chrom=CHROMOSOMES, ext=['gz','idx','pos.gz'], site=['allSites','0fold','4fold']),
-        #expand('{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.sfs'.format(ANGSD_DIR), chrom=CHROMOSOMES),
-        #expand('{0}/angsd_sites/Trepens_{{site}}.sites'.format(PROGRAM_RESOURCE_DIR), site=['0fold','4fold']),
-        #'{0}/summary_stats/thetas/allSamples_allSites_diversityNeutrality.thetas.idx.pestPG'.format(ANGSD_DIR),
-        #'{0}/sfs/allSites/allSamples_allSites_allChroms.sfs'.format(ANGSD_DIR),
+        expand('{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.{{ext}}'.format(ANGSD_DIR), chrom=CHROMOSOMES, ext=['saf.gz','saf.idx','saf.pos.gz', 'pos.gz', 'counts.gz']),
+        expand('{0}/gl/allSites/{{chrom}}/{{chrom}}_allSamples_allSites_maf{{maf}}.{{ext}}'.format(ANGSD_DIR), chrom=CHROMOSOMES, maf=['0.05'], ext=['beagle.gz','mafs.gz']),
+        expand('{0}/sfs/{{site}}/allSamples_{{site}}.{{ext}}'.format(ANGSD_DIR), chrom=CHROMOSOMES, ext=['saf.gz','saf.idx','saf.pos.gz', 'pos.gz', 'counts.gz'], site=['0fold','4fold']),
+        expand('{0}/gl/{{site}}/allSamples_{{site}}_maf{{maf}}.{{ext}}'.format(ANGSD_DIR), chrom=CHROMOSOMES, maf=['0.05'], ext=['beagle.gz','mafs.gz'], site=['0fold','4fold']),
         # Param tests
         expand('{0}/test_params/GL{{GL}}_baq{{baq}}/CM019112.1_allSamples_allSites_GL{{GL}}_baq{{baq}}.saf.{{ext}}'.format(ANGSD_DIR), chrom=CHROMOSOMES, ext=['gz','idx','pos.gz'], GL=['1','2'], baq=['0','1','2'])
         # NGSLD
