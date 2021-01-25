@@ -42,16 +42,14 @@ def get_angsd_sfs_toConcat(wildcards):
     else:
         return expand(rules.angsd_estimate_sfs_allSites.output, chrom=CHROMOSOMES, site='allSites')
 
-# def get_angsd_gl_toConcat(wildcards):
-#     if wildcards.minMAF == '0.05':
-#         gls = expand(rules.angsd_withMaf.output.gls, chrom=CHROMOSOMES, maf=['0.05'])
-#     else:
-#         gls = expand(rules.angsd_full.output.gls, chrom=CHROMOSOMES)
-#     return gls
-# 
-# def get_angsd_maf_toConcat(wildcards):
-#     if wildcards.minMAF == '0.05':
-#         mafs = expand(rules.angsd_withMaf.output.mafs, chrom=CHROMOSOMES, maf=['0.05'])
-#     else:
-#         mafs = expand(rules.angsd_full.output.mafs, chrom=CHROMOSOMES)
-#     return mafs
+def get_angsd_gl_toConcat(wildcards):
+    if wildcards.site == '0fold' and wildcards.maf == '0.05':
+        return expand(rules.subset_angsd_gl.output, site='0fold', maf='0.05', chrom=CHROMOSOMES)
+    elif wildcards.site == '4fold' and wildcards.maf == '0.05':
+        return expand(rules.subset_angsd_gl.output, site='4fold', maf='0.05', chrom=CHROMOSOMES)
+
+def get_angsd_maf_toConcat(wildcards):
+    if wildcards.site == '0fold' and wildcards.maf == '0.05':
+        return expand(rules.subset_angsd_maf.output, site='0fold', maf='0.05', chrom=CHROMOSOMES)
+    elif wildcards.site == '4fold' and wildcards.maf == '0.05':
+        return expand(rules.subset_angsd_maf.output, site='4fold', maf='0.05', chrom=CHROMOSOMES)

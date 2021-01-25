@@ -52,8 +52,8 @@ rule all:
         # Angsd
         #expand('{0}/depth/{{chrom}}/{{chrom}}_allSamples_allSites.depth{{ext}}'.format(ANGSD_DIR), chrom=CHROMOSOMES, ext=['Sample', 'Global']),
         expand('{0}/summary_stats/thetas/{{site}}/allSamples_{{site}}_diversityNeutrality.thetas.idx.pestPG'.format(ANGSD_DIR), site=['allSites','0fold','4fold']),
-        #expand('{0}/gl/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}_maf{{maf}}.{{ext}}.gz'.format(ANGSD_DIR), site=['0fold','4fold'], chrom=CHROMOSOMES, maf=['0.05'], ext = ['beagle', 'mafs']),
-        expand('{0}/sfs/{{site}}/allSamples_{{site}}_allChroms.sfs'.format(ANGSD_DIR), site=['allSites','0fold','4fold'])
+        expand('{0}/sfs/{{site}}/allSamples_{{site}}_allChroms.sfs'.format(ANGSD_DIR), site=['allSites','0fold','4fold']),
+        expand('{0}/gl/{{site}}/allSamples_allChroms_{{site}}_maf{{maf}}.{{ext}}.gz'.format(ANGSD_DIR), maf=['0.05'], ext=['beagle', 'mafs'], site=['0fold', '4fold'])
         # Param tests
         #expand('{0}/test_params/GL{{GL}}_baq{{baq}}/CM019112.1_allSamples_allSites_GL{{GL}}_baq{{baq}}.saf.{{ext}}'.format(ANGSD_DIR), chrom=CHROMOSOMES, ext=['gz','idx','pos.gz'], GL=['1','2'], baq=['0','1','2'])
         # NGSLD

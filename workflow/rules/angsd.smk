@@ -314,14 +314,16 @@ rule subset_angsd_gl:
         gl = rules.angsd_gl_allSites.output.gls
     output:
         '{0}/gl/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}_maf{{maf}}.beagle.gz'.format(ANGSD_DIR)
-    log: 'logs/subset_angsd_gl/{chrom}_{site}_{maf}_subset_gl.log'
+    log: 'logs/subset_angsd_gl/{chrom}_{site}_maf{maf}_subset_gl.log'
+    params:
+        unzip_out='{0}/gl/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}_maf{{maf}}.beagle'.format(ANGSD_DIR)
     wildcard_constraints:
         site='0fold|4fold'
     shell:
         """
-        ( zcat {input.gl} | head -n1 > {output} &&
-        zgrep -wFf {input.subset} {input.gl} >> {output} &&
-        gzip {output} ) 2> {log}
+        ( zcat {input.gl} | sed -n 1p > {params.unzip_out} &&
+        zcat {input.gl} | awk 'NR==FNR{{A[$1]; next}} $1 in A' {input.subset} - >> {params.unzip_out} &&
+        gzip {params.unzip_out} ) 2> {log}
         """
 
 rule subset_angsd_maf:
@@ -331,53 +333,55 @@ rule subset_angsd_maf:
         mafs = rules.angsd_gl_allSites.output.mafs
     output:
         '{0}/gl/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}_maf{{maf}}.mafs.gz'.format(ANGSD_DIR)
-    log: 'logs/subset_angsd_maf/{chrom}_{site}_{maf}_subset_maf.log'
+    log: 'logs/subset_angsd_maf/{chrom}_{site}_maf{maf}_subset_maf.log'
+    params:
+        unzip_out='{0}/gl/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}_maf{{maf}}.mafs'.format(ANGSD_DIR)
     wildcard_constraints:
         site='0fold|4fold'
     shell:
         """
-        ( zcat {input.mafs} | head -n1 > {output} &&
-        zgrep -wFf {input.subset} {input.mafs} >> {output} &&
-        gzip {output} ) 2> {log}
+        ( zcat {input.mafs} | sed -n 1p  > {params.unzip_out} &&
+        zcat {input.mafs} | awk 'NR==FNR{{A[$1]; next}} $2 in A' {input.subset} - >> {params.unzip_out} &&
+        gzip {params.unzip_out} ) 2> {log}
         """
 
-# rule concat_angsd_gl:
-#     input:
-#         get_angsd_gl_toConcat
-#     output:
-#         '{0}/gl/{{site}}/genolike_allSamples_withMaf{{minMaf}}.beagle.gz'.format(ANGSD_DIR)
-#     log: 'logs/concat_angsd_gl/concat_angsd_gl_withMaf{{minMaf}}.log'
-#     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933' 
-#     shell:
-#         """
-#         first=1
-#         for f in {input}; do
-#             if [ "$first"  ]; then
-#                 zcat "$f"
-#                 first=
-#             else
-#                 zcat "$f"| tail -n +2
-#             fi
-#         done | bgzip -c > {output} 2> {log}
-#         """
-# 
-# rule concat_angsd_mafs:
-#     input:
-#         get_angsd_maf_toConcat
-#     output:
-#         '{0}/genolike_allSamples_withMaf{{minMaf}}.mafs.gz'.format(ANGSD_DIR)
-#     log: 'logs/concat_angsd_mafs/concat_angsd_mafs_withMaf{{minMaf}}.log'
-#     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933' 
-#     shell:
-#         """
-#         first=1
-#         for f in {input}; do
-#             if [ "$first"  ]; then
-#                 zcat "$f"
-#                 first=
-#             else
-#                 zcat "$f"| tail -n +2
-#             fi
-#         done | bgzip -c > {output} 2> {log}
-#         """
+rule concat_angsd_gl:
+    input:
+        get_angsd_gl_toConcat
+    output:
+        '{0}/gl/{{site}}/allSamples_allChroms_{{site}}_maf{{maf}}.beagle.gz'.format(ANGSD_DIR)
+    log: 'logs/concat_angsd_gl/concat_angsd_gl_{site}_maf{maf}.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    shell:
+        """
+        first=1
+        for f in {input}; do
+            if [ "$first"  ]; then
+                zcat "$f"
+                first=
+            else
+                zcat "$f"| tail -n +2
+            fi
+        done | bgzip -c > {output} 2> {log}
+        """
+
+rule concat_angsd_mafs:
+    input:
+        get_angsd_maf_toConcat
+    output:
+        '{0}/gl/{{site}}/allSamples_allChroms_{{site}}_maf{{maf}}.mafs.gz'.format(ANGSD_DIR)
+    log: 'logs/concat_angsd_mafs/concat_angsd_mafs_{site}_maf{maf}.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933' 
+    shell:
+        """
+        first=1
+        for f in {input}; do
+            if [ "$first"  ]; then
+                zcat "$f"
+                first=
+            else
+                zcat "$f"| tail -n +2
+            fi
+        done | bgzip -c > {output} 2> {log}
+        """
 
