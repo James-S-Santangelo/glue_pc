@@ -10,6 +10,7 @@ paths:
 
 files:
   reference_genome: /scratch/santang3/data/ref_genome/GCA_005869975.1_AgR_To_v5_genomic.fna
+  gff: /scratch/santang3/data/gff/TrR.v5.renamed_reformated.gtf.gz
 
 variant_calling:
   sample: s_7_7

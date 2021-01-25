@@ -25,16 +25,33 @@ def get_node_tabix_files(wildcards):
     node_indices = [i for i in all_indices if wildcards.chrom in i]
     return node_indices
 
-def get_angsd_gl_toConcat(wildcards):
-    if wildcards.minMAF == '0.05':
-        gls = expand(rules.angsd_withMaf.output.gls, chrom=CHROMOSOMES, maf=['0.05'])
-    else:
-        gls = expand(rules.angsd_full.output.gls, chrom=CHROMOSOMES)
-    return gls
 
-def get_angsd_maf_toConcat(wildcards):
-    if wildcards.minMAF == '0.05':
-        mafs = expand(rules.angsd_withMaf.output.mafs, chrom=CHROMOSOMES, maf=['0.05'])
+def get_angsd_stats_toConcat(wildcards):
+    if wildcards.site == '0fold':
+        return expand(rules.angsd_diversity_neutrality_stats_specificSites.output, chrom=CHROMOSOMES, site='0fold')
+    elif wildcards.site == '4fold':
+        return expand(rules.angsd_diversity_neutrality_stats_specificSites.output, chrom=CHROMOSOMES, site='4fold')
     else:
-        mafs = expand(rules.angsd_full.output.mafs, chrom=CHROMOSOMES)
-    return mafs
+        return expand(rules.angsd_diversity_neutrality_stats_allSites.output, chrom=CHROMOSOMES, site='allSites')
+
+def get_angsd_sfs_toConcat(wildcards):
+    if wildcards.site == '0fold':
+        return expand(rules.angsd_estimate_sfs_specificSites.output, chrom=CHROMOSOMES, site='0fold')
+    elif wildcards.site == '4fold':
+        return expand(rules.angsd_estimate_sfs_specificSites.output, chrom=CHROMOSOMES, site='4fold')
+    else:
+        return expand(rules.angsd_estimate_sfs_allSites.output, chrom=CHROMOSOMES, site='allSites')
+
+# def get_angsd_gl_toConcat(wildcards):
+#     if wildcards.minMAF == '0.05':
+#         gls = expand(rules.angsd_withMaf.output.gls, chrom=CHROMOSOMES, maf=['0.05'])
+#     else:
+#         gls = expand(rules.angsd_full.output.gls, chrom=CHROMOSOMES)
+#     return gls
+# 
+# def get_angsd_maf_toConcat(wildcards):
+#     if wildcards.minMAF == '0.05':
+#         mafs = expand(rules.angsd_withMaf.output.mafs, chrom=CHROMOSOMES, maf=['0.05'])
+#     else:
+#         mafs = expand(rules.angsd_full.output.mafs, chrom=CHROMOSOMES)
+#     return mafs

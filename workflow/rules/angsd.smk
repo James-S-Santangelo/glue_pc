@@ -142,7 +142,7 @@ rule angsd_estimate_sfs_allSites:
     wildcard_constraints:
         site='allSites'
     resources:
-        mem_mb = lambda wildcards, attempt: attempt * 30000,
+        mem_mb = lambda wildcards, attempt: attempt * 60000,
         time = '06:00:00'
     shell:
         """
@@ -162,7 +162,7 @@ rule angsd_estimate_sfs_specificSites:
     wildcard_constraints:
         site='0fold|4fold'
     resources:
-        mem_mb = lambda wildcards, attempt: attempt * 30000,
+        mem_mb = lambda wildcards, attempt: attempt * 60000,
         time = '06:00:00'
     shell:
         """
@@ -196,7 +196,8 @@ rule angsd_estimate_thetas_specificSites:
     input:
         saf_idx = rules.angsd_saf_likelihood_allSites.output.saf_idx,
         sfs = rules.angsd_estimate_sfs_allSites.output,
-        sites = rules.split_angsd_sites_byChrom.output
+        sites = rules.split_angsd_sites_byChrom.output,
+        idx = rules.angsd_index_sites.output
     output:
         idx = '{0}/summary_stats/thetas/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}.thetas.idx'.format(ANGSD_DIR),
         thet = '{0}/summary_stats/thetas/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}.thetas.gz'.format(ANGSD_DIR)
@@ -251,44 +252,100 @@ rule angsd_diversity_neutrality_stats_specificSites:
         thetaStat do_stat {input} 2> {log}
         """
 
-# rule concat_angsd_stats:
-#     input:
-#         expand(rules.angsd_diversity_neutrality_stats.output, chrom=CHROMOSOMES)
-#     output:
-#         '{0}/summary_stats/thetas/allSamples_{{site}}_diversityNeutrality.thetas.idx.pestPG'.format(ANGSD_DIR)
-#     log: 'logs/concat_angsd_stats/concat_angsd_stats.log'
-#     shell:
-#         """
-#         first=1
-#         for f in {input}; do
-#             if [ "$first"  ]; then
-#                 cat "$f"
-#                 first=
-#             else
-#                 cat "$f"| tail -n +2
-#             fi
-#         done > {output} 2> {log}
-#         """
-# 
-# rule concat_sfs_allSites:
-#     input:
-#         expand(rules.sfs_allSites.output, chrom=CHROMOSOMES)
-#     output:
-#         '{0}/sfs/allSites/allSamples_allSites_allChroms.sfs'.format(ANGSD_DIR)
-#     log: 'logs/concat_sfs_allSites/concat_sfs_allSites.log'
-#     run:
-#         shell('cat {input} > temp.txt 2> {log}')
-#         import pandas as pd
-#         sfs_allChroms = pd.read_table('temp.txt', delimiter = '\t')
-#         sfs_sum = sfs_allChroms.sum(axis=0) 
-#         sfs_sum.to_csv(output[0], sep = '\t', header = None)
-#         shell('rm temp.txt')
+rule concat_angsd_stats:
+    input:
+        get_angsd_stats_toConcat
+    output:
+        '{0}/summary_stats/thetas/{{site}}/allSamples_{{site}}_diversityNeutrality.thetas.idx.pestPG'.format(ANGSD_DIR)
+    log: 'logs/concat_angsd_stats_specificSites/{site}_concat_angsd_stats.log'
+    shell:
+        """
+        first=1
+        for f in {input}; do
+            if [ "$first"  ]; then
+                cat "$f"
+                first=
+            else
+                cat "$f"| tail -n +2
+            fi
+        done > {output} 2> {log}
+        """
+
+rule concat_sfs:
+    input:
+        get_angsd_sfs_toConcat
+    output:
+        temp('{0}/sfs/{{site}}/allSamples_{{site}}_allChroms.cat'.format(ANGSD_DIR))
+    log: 'logs/concat_sfs/{site}_concat_sfs.log'
+    shell:
+        """
+        cat {input} > {output} 2> {log}
+        """
+
+rule sum_sfs:
+    input:
+        rules.concat_sfs.output
+    output:
+        '{0}/sfs/{{site}}/allSamples_{{site}}_allChroms.sfs'.format(ANGSD_DIR)
+    run:
+        import pandas as pd
+        sfs_allChroms = pd.read_table(input[0], sep = ' ', header = None)
+        sfs_sum = sfs_allChroms.sum(axis=0) 
+        sfs_sum.to_csv(output[0], sep = '\t', header = None)
+        
+
+rule files_for_angsd_site_subset:
+    input:
+        rules.split_angsd_sites_byChrom.output
+    output:
+        gl = '{0}/angsd_sites/{{chrom}}/{{chrom}}_{{site}}_gl.positions'.format(PROGRAM_RESOURCE_DIR),
+        maf = '{0}/angsd_sites/{{chrom}}/{{chrom}}_{{site}}_maf.positions'.format(PROGRAM_RESOURCE_DIR)
+    log: 'logs/files_for_angsd_site_subset/{chrom}_{site}_subsetFile.log'
+    shell:
+        """
+        ( sed 's/\t/_/g' {input} > {output.gl};
+        cut -f2 {input} > {output.maf} ) 2> {log}
+        """
+
+rule subset_angsd_gl:
+    input:
+        sites = rules.split_angsd_sites_byChrom.output,
+        subset = rules.files_for_angsd_site_subset.output.gl,
+        gl = rules.angsd_gl_allSites.output.gls
+    output:
+        '{0}/gl/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}_maf{{maf}}.beagle.gz'.format(ANGSD_DIR)
+    log: 'logs/subset_angsd_gl/{chrom}_{site}_{maf}_subset_gl.log'
+    wildcard_constraints:
+        site='0fold|4fold'
+    shell:
+        """
+        ( zcat {input.gl} | head -n1 > {output} &&
+        zgrep -wFf {input.subset} {input.gl} >> {output} &&
+        gzip {output} ) 2> {log}
+        """
+
+rule subset_angsd_maf:
+    input:
+        sites = rules.split_angsd_sites_byChrom.output,
+        subset = rules.files_for_angsd_site_subset.output.maf,
+        mafs = rules.angsd_gl_allSites.output.mafs
+    output:
+        '{0}/gl/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}_maf{{maf}}.mafs.gz'.format(ANGSD_DIR)
+    log: 'logs/subset_angsd_maf/{chrom}_{site}_{maf}_subset_maf.log'
+    wildcard_constraints:
+        site='0fold|4fold'
+    shell:
+        """
+        ( zcat {input.mafs} | head -n1 > {output} &&
+        zgrep -wFf {input.subset} {input.mafs} >> {output} &&
+        gzip {output} ) 2> {log}
+        """
 
 # rule concat_angsd_gl:
 #     input:
 #         get_angsd_gl_toConcat
 #     output:
-#         '{0}/genolike_allSamples_withMaf{{minMaf}}.beagle.gz'.format(ANGSD_DIR)
+#         '{0}/gl/{{site}}/genolike_allSamples_withMaf{{minMaf}}.beagle.gz'.format(ANGSD_DIR)
 #     log: 'logs/concat_angsd_gl/concat_angsd_gl_withMaf{{minMaf}}.log'
 #     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933' 
 #     shell:
