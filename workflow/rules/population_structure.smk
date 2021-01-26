@@ -20,6 +20,29 @@ rule pcangsd:
             > {{log}}
         """.format(POP_STRUC_DIR)
 
+rule ngsadmix:
+    input:
+        rules.concat_angsd_gl.output
+    output:
+        '{0}/ngsadmix/K{{k}}/allSamples_ngsadmix_{{site}}_maf{{maf}}_K{{k}}_seed{{seed}}.fopt.gz'.format(POP_STRUC_DIR),
+        '{0}/ngsadmix/K{{k}}/allSamples_ngsadmix_{{site}}_maf{{maf}}_K{{k}}_seed{{seed}}.qopt'.format(POP_STRUC_DIR)
+    log: 'logs/ngsadmix/{site}_maf{maf}_K{k}_seed{seed}_ngsadmix.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    threads: 10
+    wildcard_constraints:
+        site = '4fold'
+    resources:
+        mem_mb = lambda wildcards, attempt: attempt * 4000,
+        time = '01:00:00'
+    shell:
+        """
+        NGSadmix -likes {{input}} \
+            -K {{wildcards.k}} \
+            -seed {{wildcards.seed}} \
+            -P {{threads}} \
+            -outfiles {0}/ngsadmix/K{{wildcards.k}}/allSamples_ngsadmix_{{wildcards.site}}_maf{{wildcards.maf}}_K{{wildcards.k}}_seed{{wildcards.seed}} 2> {{log}}
+        """.format(POP_STRUC_DIR)
+
 rule create_pos_file_for_ngsLD:
     input:
         rules.angsd_gl_allSites.output.mafs
