@@ -352,6 +352,8 @@ rule concat_angsd_gl:
         '{0}/gl/{{site}}/allSamples_allChroms_{{site}}_maf{{maf}}.beagle.gz'.format(ANGSD_DIR)
     log: 'logs/concat_angsd_gl/concat_angsd_gl_{site}_maf{maf}.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    wildcard_constraints:
+        site='0fold|4fold'
     shell:
         """
         first=1
@@ -371,7 +373,9 @@ rule concat_angsd_mafs:
     output:
         '{0}/gl/{{site}}/allSamples_allChroms_{{site}}_maf{{maf}}.mafs.gz'.format(ANGSD_DIR)
     log: 'logs/concat_angsd_mafs/concat_angsd_mafs_{site}_maf{maf}.log'
-    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933' 
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    wildcard_constraints:
+        site='0fold|4fold'
     shell:
         """
         first=1
@@ -385,3 +389,13 @@ rule concat_angsd_mafs:
         done | bgzip -c > {output} 2> {log}
         """
 
+rule angsd_done:
+    input:
+        expand('{0}/depth/{{chrom}}/{{chrom}}_allSamples_allSites.depth{{ext}}'.format(ANGSD_DIR), chrom=CHROMOSOMES, ext=['Sample', 'Global']),
+        expand('{0}/summary_stats/thetas/{{site}}/allSamples_{{site}}_diversityNeutrality.thetas.idx.pestPG'.format(ANGSD_DIR), site=['allSites','0fold','4fold']),
+        expand('{0}/sfs/{{site}}/allSamples_{{site}}_allChroms.sfs'.format(ANGSD_DIR), site=['allSites','0fold','4fold']),
+        expand('{0}/gl/{{site}}/allSamples_allChroms_{{site}}_maf{{maf}}.{{ext}}.gz'.format(ANGSD_DIR), maf=['0.05'], ext=['beagle', 'mafs'], site=['0fold', '4fold'])
+    output:
+        '{0}/angsd.done'.format(ANGSD_DIR)
+    shell:
+        "touch {output}"
