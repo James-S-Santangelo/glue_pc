@@ -1,3 +1,25 @@
+rule pcangsd:
+    input:
+        rules.concat_angsd_gl.output
+    output:
+        '{0}/pcangsd/allSamples_{{site}}_maf{{maf}}_pcangsd.cov'.format(POP_STRUC_DIR),
+        '{0}/pcangsd/allSamples_{{site}}_maf{{maf}}_pcangsd.admix.Q.npy'.format(POP_STRUC_DIR)
+    log: 'logs/pcangsd/{site}_maf{maf}_pcangsd.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:pcangsd_v0.99'
+    threads: 10
+    resources:
+        mem_mb = lambda wildcards, attempt: attempt * 4000,
+        time = '01:00:00'
+    shell:
+        """
+        python3 /opt/pcangsd/pcangsd.py \
+            -beagle {{input}} \
+            -admix \
+            -o {0}/pcangsd/allSamples_{{wildcards.site}}_maf{{wildcards.maf}}_pcangsd \
+            -threads {{threads}} \
+            > {{log}}
+        """.format(POP_STRUC_DIR)
+
 rule create_pos_file_for_ngsLD:
     input:
         rules.angsd_gl_allSites.output.mafs

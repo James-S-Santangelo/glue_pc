@@ -21,6 +21,7 @@ VARIANT_DIR = '{0}/variants'.format(config['results_prefix'])
 PROGRAM_RESOURCE_DIR = '{0}/program_resources'.format(config['results_prefix'])
 ANGSD_DIR = '{0}/angsd'.format(config['results_prefix'])
 NGSLD_DIR = '{0}/ngsld'.format(config['results_prefix'])
+POP_STRUC_DIR = '{0}/population_structure'.format(config['results_prefix'])
 
 REFERENCE_GENOME = config['files']['reference_genome']
 GFF_FILE = config['files']['gff']
@@ -53,7 +54,8 @@ rule all:
         #expand('{0}/depth/{{chrom}}/{{chrom}}_allSamples_allSites.depth{{ext}}'.format(ANGSD_DIR), chrom=CHROMOSOMES, ext=['Sample', 'Global']),
         expand('{0}/summary_stats/thetas/{{site}}/allSamples_{{site}}_diversityNeutrality.thetas.idx.pestPG'.format(ANGSD_DIR), site=['allSites','0fold','4fold']),
         expand('{0}/sfs/{{site}}/allSamples_{{site}}_allChroms.sfs'.format(ANGSD_DIR), site=['allSites','0fold','4fold']),
-        expand('{0}/gl/{{site}}/allSamples_allChroms_{{site}}_maf{{maf}}.{{ext}}.gz'.format(ANGSD_DIR), maf=['0.05'], ext=['beagle', 'mafs'], site=['0fold', '4fold'])
+        expand('{0}/gl/{{site}}/allSamples_allChroms_{{site}}_maf{{maf}}.{{ext}}.gz'.format(ANGSD_DIR), maf=['0.05'], ext=['beagle', 'mafs'], site=['0fold', '4fold']),
+        expand('{0}/pcangsd/allSamples_{{site}}_maf{{maf}}_pcangsd.{{ext}}'.format(POP_STRUC_DIR), site=['4fold', '0fold'], ext=['cov', 'admix.Q.npy'], maf=['0.05'])
         # Param tests
         #expand('{0}/test_params/GL{{GL}}_baq{{baq}}/CM019112.1_allSamples_allSites_GL{{GL}}_baq{{baq}}.saf.{{ext}}'.format(ANGSD_DIR), chrom=CHROMOSOMES, ext=['gz','idx','pos.gz'], GL=['1','2'], baq=['0','1','2'])
         # NGSLD
