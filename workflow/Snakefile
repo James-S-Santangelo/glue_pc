@@ -60,8 +60,7 @@ rule all:
         expand('{0}/pcangsd/allSamples_{{site}}_maf{{maf}}_pcangsd.{{ext}}'.format(POP_STRUC_DIR), site=['4fold', '0fold'], ext=['cov', 'admix.Q.npy'], maf=['0.05']),
         expand('{0}/ngsadmix/K{{k}}/allSamples_ngsadmix_{{site}}_maf{{maf}}_K{{k}}_seed{{seed}}.fopt.gz'.format(POP_STRUC_DIR), k=NGSADMIX_K, seed=NGSADMIX_SEEDS, site=['4fold'], maf=['0.05']),
         # Param tests
-        expand('{0}/test_params/GL{{GL}}_baq{{baq}}/CM019112.1_allSamples_allSites_GL{{GL}}_baq{{baq}}.saf.{{ext}}'.format(ANGSD_DIR), chrom=CHROMOSOMES, ext=['gz','idx','pos.gz'], GL=['1','2'], baq=['0','1','2']),
-        '{0}/supplemental/angsd_baq_gl_test/test.out'.format(FIGURES_DIR) 
+        expand('{0}/test_params/GL{{GL}}_baq{{baq}}/CM019112.1_allSamples_allSites_GL{{GL}}_baq{{baq}}.saf.{{ext}}'.format(ANGSD_DIR), chrom=CHROMOSOMES, ext=['gz','idx','pos.gz'], GL=['1','2'], baq=['0','1','2'])
         # NGSLD
         #expand('{0}/pruned/{{chrom}}/{{chrom}}_withMaf{{maf}}_pruned.id'.format(NGSLD_DIR), chrom=CHROMOSOMES, maf=['0.05']),
 
