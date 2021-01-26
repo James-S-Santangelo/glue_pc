@@ -1,8 +1,10 @@
 # Sample IDs as list
-samples: ../resources/testSamples.txt
+# samples: ../resources/testSamples.txt
+samples: ../resources/sequencedPlants_phenotypesHabitat.txt
 chromosomes: ../resources/chromosome_file.txt
 
-results_prefix: ../results_test
+# results_prefix: ../results_test
+results_prefix: ../results
 data_prefix: /scratch/research/projects/trifolium/toronto_gwsd/data
 
 paths:
@@ -10,6 +12,7 @@ paths:
 
 files:
   reference_genome: /scratch/research/references/trifolium/repens/GCA_005869975.1_AgR_To_v5/GCA_005869975.1_AgR_To_v5_genomic.fna
+  gff: /scratch/research/references/trifolium/repens/GCA_005869975.1_AgR_To_v5/annotation_file/TrR.v5.renamed_reformated.gtf.gz
 
 variant_calling:
   sample: s_117_6  # Name of representative sample (i.e., with 'average' genome-wide coverage)

@@ -47,4 +47,11 @@ rule test_angsd_sfs_baq_GL:
         realSFS {input} -P {threads} -fold 1 > {output} 2> {log}
         """
         
-
+rule angsd_baq_gl_analysis:
+    input:
+        expand(rules.test_angsd_sfs_baq_GL.output, baq=['0','1','2'], GL=['1','2'])
+    output:
+        '{0}/supplemental/angsd_baq_gl_test/test.out'.format(FIGURES_DIR)
+    conda: '../envs/notebooks.yaml'
+    notebook:
+        'notebooks/angsd_baq_gl_analysis.r.ipynb'
