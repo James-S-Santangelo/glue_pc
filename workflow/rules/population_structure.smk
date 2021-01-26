@@ -33,7 +33,7 @@ rule ngsadmix:
         site = '4fold'
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 4000,
-        time = '01:00:00'
+        time = '02:00:00'
     shell:
         """
         NGSadmix -likes {{input}} \
