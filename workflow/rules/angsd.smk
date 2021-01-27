@@ -403,12 +403,25 @@ rule extract_sample_angsd:
                     sample = bam.split('_merged')[0]
                     fout.write('{0}\n'.format(sample))
 
+rule sum_site_depth:
+    input:
+        rules.angsd_saf_likelihood_allSites.output.counts
+    output:
+        '{0}/depth/{{chrom}}/{{chrom}}_sum_site_depths.txt'.format(ANGSD_DIR)
+    log: 'logs/{chrom}_sum_site_depths.log'
+    shell:
+        """
+        zcat {input} | tail -n +2 |\
+            awk '{{ for(i=1; i<=NF;i++) j+=$i; print j; j=0  }}' - > {output} 2> {log}
+        """
+
 rule angsd_done:
     input:
         expand('{0}/depth/{{chrom}}/{{chrom}}_allSamples_allSites.depth{{ext}}'.format(ANGSD_DIR), chrom=CHROMOSOMES, ext=['Sample', 'Global']),
         expand('{0}/summary_stats/thetas/{{site}}/allSamples_{{site}}_diversityNeutrality.thetas.idx.pestPG'.format(ANGSD_DIR), site=['allSites','0fold','4fold']),
         expand('{0}/sfs/{{site}}/allSamples_{{site}}_allChroms.sfs'.format(ANGSD_DIR), site=['allSites','0fold','4fold']),
         expand('{0}/gl/{{site}}/allSamples_allChroms_{{site}}_maf{{maf}}.{{ext}}.gz'.format(ANGSD_DIR), maf=['0.05'], ext=['beagle', 'mafs'], site=['0fold', '4fold']),
+        expand('{0}/depth/{{chrom}}/{{chrom}}_sum_site_depths.txt'.format(ANGSD_DIR), chrom=CHROMOSOMES),
         rules.extract_sample_angsd.output
     output:
         '{0}/angsd.done'.format(ANGSD_DIR)
