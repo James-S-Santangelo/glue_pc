@@ -389,12 +389,27 @@ rule concat_angsd_mafs:
         done | bgzip -c > {output} 2> {log}
         """
 
+rule extract_sample_angsd:
+    input:
+        rules.create_bam_list.output
+    output:
+        '{0}/angsd_sample_order.txt'.format(PROGRAM_RESOURCE_DIR)
+    run:
+        with open(output[0], 'w') as fout:
+            with open(input[0], 'r') as fin:
+                for line in fin:
+                    sline = line.strip().split('/')
+                    bam = sline[-1]
+                    sample = bam.split('_merged')[0]
+                    fout.write('{0}\n'.format(sample))
+
 rule angsd_done:
     input:
         expand('{0}/depth/{{chrom}}/{{chrom}}_allSamples_allSites.depth{{ext}}'.format(ANGSD_DIR), chrom=CHROMOSOMES, ext=['Sample', 'Global']),
         expand('{0}/summary_stats/thetas/{{site}}/allSamples_{{site}}_diversityNeutrality.thetas.idx.pestPG'.format(ANGSD_DIR), site=['allSites','0fold','4fold']),
         expand('{0}/sfs/{{site}}/allSamples_{{site}}_allChroms.sfs'.format(ANGSD_DIR), site=['allSites','0fold','4fold']),
-        expand('{0}/gl/{{site}}/allSamples_allChroms_{{site}}_maf{{maf}}.{{ext}}.gz'.format(ANGSD_DIR), maf=['0.05'], ext=['beagle', 'mafs'], site=['0fold', '4fold'])
+        expand('{0}/gl/{{site}}/allSamples_allChroms_{{site}}_maf{{maf}}.{{ext}}.gz'.format(ANGSD_DIR), maf=['0.05'], ext=['beagle', 'mafs'], site=['0fold', '4fold']),
+        rules.extract_sample_angsd.output
     output:
         '{0}/angsd.done'.format(ANGSD_DIR)
     shell:
