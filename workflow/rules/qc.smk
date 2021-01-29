@@ -125,3 +125,21 @@ rule bamutil_validate:
             --verbose 2> {output}
         """
 
+rule subset_matk_rbcl:
+    input:
+        rules.samtools_markdup.output
+    output:
+        '{0}/plastid_genes/{{gene}}/{{sample}}_{{gene}}.bam'.format(BAM_DIR)
+    log: 'logs/subset_matk_rbcl/{sample}_{gene}.log'
+    conda: '../envs/qc.yaml'
+    threads: 4
+    resources:
+        mem_mb = lambda wildcards, attempt: attempt * 2000,
+        time = '00:30:00'
+    shell:
+        """
+        samtools view -L ../../resources/{wildcards.gene}.region \
+            -@ {threads} \
+            {input} > {wildcards.sample}_{wildcards.gene}.bam 2> {log}
+        """
+
