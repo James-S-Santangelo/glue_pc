@@ -7,4 +7,3 @@ dependencies:
   - bamtools=2.5.1
   - multiqc=1.9
   - bamutil=1.0.14
-  - samtools=1.10

@@ -51,7 +51,6 @@ include: 'rules/common.smk'
 rule all:
    input:
         # Trimming, mapping, and QC
-        expand('{0}/plastid_genes/{{gene}}/{{sample}}_{{gene}}.bam'.format(BAM_DIR), gene=['rbcl','matk'], sample=SAMPLES),
         '{0}/multiqc/multiqc_report.html'.format(QC_DIR), 
         # Variant calling
         '{0}/variant_calling.done'.format(VARIANT_DIR),

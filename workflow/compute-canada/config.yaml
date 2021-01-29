@@ -19,3 +19,5 @@ use-singularity: True
 singularity-args: "--bind /scratch"
 keep-going: True
 notemp: True
+conda-frontend: "mamba"
+conda-cleanup-pkgs: "cache"

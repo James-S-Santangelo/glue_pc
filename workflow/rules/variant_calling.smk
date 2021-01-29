@@ -44,6 +44,36 @@ rule create_bam_list:
             for bam in input:
                 f.write('{0}\n'.format(bam))
 
+rule bcftools_chloroplast_variants:
+    input:
+        rules.create_bam_list.output
+    output:
+        '{0}/chloroplast/allSamples_chloroplast.vcf.gz'.format(VARIANT_DIR)
+    log: 'logs/bcftools_chloroplast_variants/bcftools_chloroplast_variants.log'
+    conda: '../envs/variant_calling.yaml'
+    threads: 10
+    resources:
+        mem_mb = lambda wildcards, attempt: attempt * 8000,
+        time = '02:00:00'
+    shell:
+        """
+        ( bcftools mpileup \
+            --bam-list {{input}} \
+            --fasta-ref {0} \
+            --min-MQ 30 \
+            --min-BQ 20 \
+            --regions VCDJ01010680.1 \
+            --threads {{threads}} \
+            --output-type u |
+            bcftools call \
+                --output-type z \
+                --ploidy 1 \
+                --regions VCDJ01010680.1 \
+                --threads {{threads}} \
+                --multiallelic-caller
+                --output {{output}} ) 2> {{log}}
+        """.format(REFERENCE_GENOME)
+
 rule freebayes_call_variants:
     input:
         bams = rules.create_bam_list.output,
@@ -185,7 +215,8 @@ rule variant_calling_done:
     input:
         expand(rules.bcftools_split_variants.output, chrom=CHROMOSOMES, site_type=['snps','indels','invariant','mnps','other']),
         expand(rules.tabix_vcf.output, chrom=CHROMOSOMES, site_type=['snps','indels','invariant','mnps','other']),
-        expand(rules.vcf_to_zarr.output, chrom=CHROMOSOMES, site_type=['snps','invariant'])
+        expand(rules.vcf_to_zarr.output, chrom=CHROMOSOMES, site_type=['snps','invariant']),
+        '{0}/chloroplast/allSamples_chloroplast.vcf.gz'.format(VARIANT_DIR)
     output:
         '{0}/variant_calling.done'.format(VARIANT_DIR)
     shell:
