@@ -38,7 +38,7 @@ rule freebayes_call_variants:
         bams = rules.create_bam_list.output,
         regions = rules.region_files_forFreebayes.output
     output:
-        temp('{0}/vcf/{{chrom}}/{{chrom}}_{{node}}_allSamples.vcf'.format(VARIANT_DIR))
+        temp('{0}/vcf/{{chrom}}/{{chrom}}_{{node}}_allSamples.vcf'.format(FREEBAYES_DIR))
     log: 'logs/freebayes/{chrom}__{node}_freebayes.log'
     conda: '../envs/variant_calling.yaml'
     resources:
@@ -61,7 +61,7 @@ rule bgzip_vcf:
     input:
         rules.freebayes_call_variants.output
     output:
-        temp('{0}/vcf/{{chrom}}/{{chrom}}_{{node}}_allSamples.vcf.gz'.format(VARIANT_DIR))
+        temp('{0}/vcf/{{chrom}}/{{chrom}}_{{node}}_allSamples.vcf.gz'.format(FREEBAYES_DIR))
     log: 'logs/bgzip/{chrom}_{node}_bgzip.log'
     conda: '../envs/variant_calling.yaml',
     threads: CORES_PER_NODE
@@ -78,7 +78,7 @@ rule tabix_node_vcf:
     input: 
         rules.bgzip_vcf.output
     output:
-        temp('{0}/vcf/{{chrom}}/{{chrom}}_{{node}}_allSamples.vcf.gz.tbi'.format(VARIANT_DIR))
+        temp('{0}/vcf/{{chrom}}/{{chrom}}_{{node}}_allSamples.vcf.gz.tbi'.format(FREEBAYES_DIR))
     log: 'logs/tabix_node_vcf/{chrom}_{node}_tabix.log'
     conda: '../envs/variant_calling.yaml'
     resources:
@@ -94,7 +94,7 @@ rule concat_vcfs:
         node_vcfs = get_node_vcfs,
         node_indices = get_node_tabix_files
     output:
-        '{0}/vcf/{{chrom}}/{{chrom}}_allSamples.vcf.gz'.format(VARIANT_DIR)
+        '{0}/vcf/{{chrom}}/{{chrom}}_allSamples.vcf.gz'.format(FREEBAYES_DIR)
     log: 'logs/concat_vcfs/{chrom}_concat_vcfs.log'
     conda: '../envs/variant_calling.yaml'
     threads: 8
@@ -120,7 +120,7 @@ rule bcftools_split_variants:
     input:
         vcf = rules.concat_vcfs.output
     output:
-        '{0}/vcf/{{chrom}}/{{chrom}}_allSamples_{{site_type}}_sorted.vcf.gz'.format(VARIANT_DIR)
+        '{0}/vcf/{{chrom}}/{{chrom}}_allSamples_{{site_type}}_sorted.vcf.gz'.format(FREEBAYES_DIR)
     log: 'logs/bcftools_split_variants/{chrom}_bcftools_split_variants_{site_type}.log'
     conda: '../envs/variant_calling.yaml'
     wildcard_constraints:
@@ -147,7 +147,7 @@ rule tabix_vcf:
     input:
         rules.bcftools_split_variants.output
     output:
-        '{0}/vcf/{{chrom}}/{{chrom}}_allSamples_{{site_type}}_sorted.vcf.gz.tbi'.format(VARIANT_DIR)
+        '{0}/vcf/{{chrom}}/{{chrom}}_allSamples_{{site_type}}_sorted.vcf.gz.tbi'.format(FREEBAYES_DIR)
     log: 'logs/tabix/{chrom}_tabix_{site_type}.log'
     conda: '../envs/variant_calling.yaml'
     shell:
@@ -159,7 +159,7 @@ rule vcf_to_zarr:
     input:
         rules.bcftools_split_variants.output
     output:
-        directory('{0}/zarr_db/{{chrom}}/{{chrom}}_allSamples_{{site_type}}_sorted.zarr'.format(VARIANT_DIR))
+        directory('{0}/zarr_db/{{chrom}}/{{chrom}}_allSamples_{{site_type}}_sorted.zarr'.format(FREEBAYES_DIR))
     log: 'logs/vcf_to_zarr/{chrom}_vcf_to_zarr_{site_type}.log'
     conda: '../envs/variant_calling.yaml'
     wildcard_constraints:
@@ -170,13 +170,13 @@ rule vcf_to_zarr:
     script:
         "../scripts/python/vcf_to_zarr.py"
 
-rule variant_calling_done:
+rule freebayes_done:
     input:
         expand(rules.bcftools_split_variants.output, chrom=CHROMOSOMES, site_type=['snps','indels','invariant','mnps','other']),
         expand(rules.tabix_vcf.output, chrom=CHROMOSOMES, site_type=['snps','indels','invariant','mnps','other']),
         expand(rules.vcf_to_zarr.output, chrom=CHROMOSOMES, site_type=['snps','invariant'])
     output:
-        '{0}/variant_calling.done'.format(VARIANT_DIR)
+        '{0}/freebayes.done'.format(FREEBAYES_DIR)
     shell:
         """
         touch {output}

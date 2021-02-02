@@ -22,7 +22,7 @@ TRIMMED_READ_DIR = '{0}/trimmed_reads'.format(config['raw_read_prefix'])
 QC_DIR = '{0}/qc'.format(config['results_prefix'])
 SPECIES_ID_DIR = '{0}/species_id'.format(config['results_prefix'])
 BAM_DIR = '{0}/bam'.format(config['results_prefix'])
-VARIANT_DIR = '{0}/variants'.format(config['results_prefix'])
+FREEBAYES_DIR = '{0}/freebayes'.format(config['results_prefix'])
 PROGRAM_RESOURCE_DIR = '{0}/program_resources'.format(config['results_prefix'])
 ANGSD_DIR = '{0}/angsd'.format(config['results_prefix'])
 NGSLD_DIR = '{0}/ngsld'.format(config['results_prefix'])
@@ -31,7 +31,6 @@ FIGURES_DIR = '{0}/figures'.format(config['results_prefix'])
 
 # Parameters for variant calling with freebayes
 SAMPLES_TO_EXCLUDE = config['samples_to_exclude']
-print(SAMPLES_TO_EXCLUDE)
 REPRESENTATIVE_SAMPLE = config['freebayes']['sample']
 NODES_PER_CHROM = config['freebayes']['nodes_per_chrom']
 CORES_PER_NODE = config['freebayes']['cores_per_node']
@@ -48,7 +47,7 @@ NGSADMIX_SEEDS = [x for x in range(1, 11)]
 wildcard_constraints:
     chrom='|'.join([x for x in CHROMOSOMES])
 
-localrules: create_tmp_dir, create_bam_list, region_files_forFreebayes, variant_calling_done, concat_angsd_stats, create_pos_file_for_ngsLD, concat_sfs, sum_sfs, convert_sites_for_angsd, split_angsd_sites_byChrom, angsd_index_sites, files_for_angsd_site_subset, subset_angsd_gl, subset_angsd_maf, extract_sample_angsd, angsd_done, chloroplast_gene_fasta, index_chloroplast_gene_vcf, concat_fasta
+localrules: create_tmp_dir, create_bam_list, region_files_forFreebayes, freebayes_done, concat_angsd_stats, create_pos_file_for_ngsLD, concat_sfs, sum_sfs, convert_sites_for_angsd, split_angsd_sites_byChrom, angsd_index_sites, files_for_angsd_site_subset, subset_angsd_gl, subset_angsd_maf, extract_sample_angsd, angsd_done, chloroplast_gene_fasta, index_chloroplast_gene_vcf, concat_fasta
 
 include: 'rules/common.smk'
 
@@ -59,8 +58,8 @@ rule all:
         # Trimming, mapping, and QC
         '{0}/multiqc/multiqc_report.html'.format(QC_DIR),
         '{0}/species_id.done'.format(SPECIES_ID_DIR), 
-        # Variant calling
-        '{0}/variant_calling.done'.format(VARIANT_DIR),
+        # Freebayes
+        '{0}/freebayes.done'.format(FREEBAYES_DIR),
         # Angsd
         '{0}/angsd.done'.format(ANGSD_DIR),
         # Population structure
