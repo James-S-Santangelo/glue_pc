@@ -1,19 +1,14 @@
 # Sample IDs as list
-samples: ../resources/sequencedPlants_phenotypesHabitat.txt
+samples: ../resources/low1_libraryConcentrations.csv
 chromosomes: ../resources/chromosome_file.txt
 
 results_prefix: ../results
-raw_read_prefix: /scratch/santang3/data 
-temp_dir: /scratch/santang3/tmp 
+raw_read_prefix: /scratch/santang3/glue-low1
+temp_dir: /scratch/santang3/gluw-low1/tmp
 
 files:
-  reference_genome: /scratch/santang3/data/ref_genome/GCA_005869975.1_AgR_To_v5_genomic.fna
-  gff: /scratch/santang3/data/gff/TrR.v5.renamed_reformated.gtf.gz
+  reference_genome: /home/santang3/projects/def-johnso73/clover-ref/ref_genome/GCA_005869975.1_AgR_To_v5_genomic.fna
+  gff: /home/santang3/projects/def-johnso73/clover-ref/gff/TrR.v5.renamed_reformated.gtf.gz
 
 # Samples to exclude based on QC (e.g., different species, low coverage, etc.) 
-samples_to_exclude: ['s_7_14', 's_54_9', 's_97_4', 's_23_12', 's_23_17']
-
-freebayes:
-  sample: s_7_7
-  nodes_per_chrom: 12
-  cores_per_node: 32
+# samples_to_exclude: ['s_7_14', 's_54_9', 's_97_4', 's_23_12', 's_23_17']
