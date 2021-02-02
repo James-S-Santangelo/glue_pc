@@ -3,16 +3,17 @@ samples: ../resources/sequencedPlants_phenotypesHabitat.txt
 chromosomes: ../resources/chromosome_file.txt
 
 results_prefix: ../results
-data_prefix: /scratch/santang3/data 
-
-paths:
-  temp_dir: /scratch/santang3/tmp 
+raw_read_prefix: /scratch/santang3/data 
+temp_dir: /scratch/santang3/tmp 
 
 files:
   reference_genome: /scratch/santang3/data/ref_genome/GCA_005869975.1_AgR_To_v5_genomic.fna
   gff: /scratch/santang3/data/gff/TrR.v5.renamed_reformated.gtf.gz
 
-variant_calling:
+# Samples to exclude based on QC (e.g., different species, low coverage, etc.) 
+samples_to_exclude: ['7_14', '54_9', '97_4', '23_12', '23_17']
+
+freebayes:
   sample: s_7_7
   nodes_per_chrom: 12
   cores_per_node: 32

@@ -5,17 +5,22 @@ from snakemake.utils import min_version
 
 min_version('5.26.1')
 
-#container: 'continuumio/miniconda3:4.9.1'
-
 configfile: '../config/hpcnode.yaml'
 
+# Samples and chromosomes as list
 SAMPLES = pd.read_table(config['samples'])['Sample'].tolist()
 CHROMOSOMES = pd.read_table(config['chromosomes'], header=None).iloc[:,0].tolist()
 
-TMPDIR = config['paths']['temp_dir']
-RAW_READ_DIR = '{0}/raw_data'.format(config['data_prefix'])
-TRIMMED_READ_DIR = '{0}/trimmed_reads'.format(config['data_prefix'])
+# Reference genome
+REFERENCE_GENOME = config['files']['reference_genome']
+GFF_FILE = config['files']['gff']
+
+# Paths for output files
+TMPDIR = config['temp_dir']
+RAW_READ_DIR = '{0}/raw_data'.format(config['raw_read_prefix'])
+TRIMMED_READ_DIR = '{0}/trimmed_reads'.format(config['raw_read_prefix'])
 QC_DIR = '{0}/qc'.format(config['results_prefix'])
+SPECIES_ID_DIR = '{0}/species_id'.format(config['results_prefix'])
 BAM_DIR = '{0}/bam'.format(config['results_prefix'])
 VARIANT_DIR = '{0}/variants'.format(config['results_prefix'])
 PROGRAM_RESOURCE_DIR = '{0}/program_resources'.format(config['results_prefix'])
@@ -23,20 +28,20 @@ ANGSD_DIR = '{0}/angsd'.format(config['results_prefix'])
 NGSLD_DIR = '{0}/ngsld'.format(config['results_prefix'])
 POP_STRUC_DIR = '{0}/population_structure'.format(config['results_prefix'])
 FIGURES_DIR = '{0}/figures'.format(config['results_prefix'])
-SPECIES_ID_DIR = '{0}/species_id'.format(config['results_prefix'])
 
-REFERENCE_GENOME = config['files']['reference_genome']
-GFF_FILE = config['files']['gff']
-
-REPRESENTATIVE_SAMPLE = config['variant_calling']['sample']
-NODES_PER_CHROM = config['variant_calling']['nodes_per_chrom']
-CORES_PER_NODE = config['variant_calling']['cores_per_node']
+# Parameters for variant calling with freebayes
+SAMPLES_TO_EXCLUDE = config['samples_to_exclude']
+print(SAMPLES_TO_EXCLUDE)
+REPRESENTATIVE_SAMPLE = config['freebayes']['sample']
+NODES_PER_CHROM = config['freebayes']['nodes_per_chrom']
+CORES_PER_NODE = config['freebayes']['cores_per_node']
 NODES = ['node{0:0=2d}'.format(x + 1) for x in range(NODES_PER_CHROM)]
 if NODES_PER_CHROM == 1:
     NUM_REGIONS_PER_CHROM = CORES_PER_NODE
 elif NODES_PER_CHROM > 1:
     NUM_REGIONS_PER_CHROM = NODES_PER_CHROM * CORES_PER_NODE
 
+# Parameters for Admixture analysis 
 NGSADMIX_K = [x for x in range(1, 11)]
 NGSADMIX_SEEDS = [x for x in range(1, 11)]
 

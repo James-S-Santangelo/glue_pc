@@ -33,17 +33,6 @@ rule region_files_forFreebayes:
             {1}/{{wildcards.chrom}}_regions/{{wildcards.chrom}}_node 2> {{log}}
         """.format(CORES_PER_NODE, PROGRAM_RESOURCE_DIR)
 
-rule create_bam_list:
-    input:
-        expand(rules.samtools_markdup.output.bam, sample=SAMPLES)
-    output:
-        '{0}/freebayes_bams.list'.format(PROGRAM_RESOURCE_DIR)
-    log: 'logs/create_bam_list/create_bam_list.log'
-    run:
-        with open(output[0], 'w') as f:
-            for bam in input:
-                f.write('{0}\n'.format(bam))
-
 rule freebayes_call_variants:
     input:
         bams = rules.create_bam_list.output,

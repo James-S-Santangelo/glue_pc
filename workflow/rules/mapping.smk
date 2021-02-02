@@ -91,5 +91,16 @@ rule index_bam:
         samtools index -@ {threads} {input} 2> {log}
         """
 
+rule create_bam_list:
+    input:
+        expand(rules.samtools_markdup.output.bam, sample=SAMPLES)
+    output:
+        '{0}/bam_paths.list'.format(PROGRAM_RESOURCE_DIR)
+    log: 'logs/create_bam_list/create_bam_list.log'
+    run:
+        with open(output[0], 'w') as f:
+            for bam in input:
+                f.write('{0}\n'.format(bam))
+
 
 
