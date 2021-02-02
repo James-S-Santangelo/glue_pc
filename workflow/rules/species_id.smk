@@ -30,7 +30,7 @@ rule chloroplast_gene_fasta:
     input:
        REFERENCE_GENOME
     output:
-       '{0}/{{gene}}/gene.fna'.format(SPECIES_ID_DIR)
+       '{0}/{{gene}}/{{gene}}.fna'.format(SPECIES_ID_DIR)
     log: 'logs/chloroplast_gene_fasta/{gene}_fasta.log'
     conda: '../envs/species_id.yaml'
     params:
@@ -72,7 +72,7 @@ rule chloroplast_gene_consensus:
         vcf = rules.reheader_chloroplast_gene_vcf.output,
         idx = rules.index_chloroplast_gene_vcf.output
     output:
-        '{0}/{{gene}}/consensus_fasta/{{sample}}_{{gene}}.fna'.format(SPECIES_ID_DIR)
+        temp('{0}/{{gene}}/consensus_fasta/{{sample}}_{{gene}}.fna'.format(SPECIES_ID_DIR))
     log: 'logs/{gene}_consensus/{sample}_{gene}_consensus.log'
     conda: '../envs/species_id.yaml'
     shell:
@@ -81,3 +81,30 @@ rule chloroplast_gene_consensus:
             --sample {wildcards.sample} \
             {input.vcf} > {output} 2> {log}
         """
+
+rule concat_fasta:
+    input:
+        get_fastas_to_concat
+    output:
+        '{0}/{{gene}}/consensus_fasta/allSamples_{{gene}}.fasta'.format(SPECIES_ID_DIR)
+    log: 'logs/concat_fasta/{gene}_concat_fastas.log'
+    run:
+        import os
+        with open(output[0], 'w') as fout:
+            for fasta in input:
+                sample = os.path.basename(fasta).split('_{0}'.format(wildcards.gene))[0]
+                with open(fasta, 'r') as fin:
+                    lines = fin.readlines()
+                    seq = ''.join(line.strip() for line in lines[1:])
+                    fout.write('>{0};{1}\n{2}\n'.format(sample, wildcards.gene, seq))
+
+rule species_id_done:
+    input:
+        expand(rules.concat_fasta.output, gene = ['rbcl','matk'])
+    output:
+        '{0}/species_id.done'.format(SPECIES_ID_DIR)
+    shell:
+        """
+        touch {output}
+        """
+

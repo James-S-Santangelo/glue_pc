@@ -8,6 +8,12 @@ def create_raw_read_dict(RAW_READ_DIR, SAMPLES):
         raw_read_dict[sample] = {'R1': R1, 'R2': R2}
     return raw_read_dict
 
+def get_fastas_to_concat(wildcards):
+    if wildcards.gene == 'rbcl':
+        return expand(rules.chloroplast_gene_consensus.output, sample=SAMPLES, gene='rbcl')
+    elif wildcards.gene == 'matk':
+        return expand(rules.chloroplast_gene_consensus.output, sample=SAMPLES, gene='matk')
+
 def get_representative_bam(wildcards):
     bam_index_files = expand(rules.index_bam.output, sample=SAMPLES)
     for i in bam_index_files:
