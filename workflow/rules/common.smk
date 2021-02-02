@@ -14,24 +14,6 @@ def get_fastas_to_concat(wildcards):
     elif wildcards.gene == 'matk':
         return expand(rules.chloroplast_gene_consensus.output, sample=SAMPLES, gene='matk')
 
-def get_representative_bam(wildcards):
-    bam_index_files = expand(rules.index_bam.output, sample=SAMPLES)
-    for i in bam_index_files:
-        if REPRESENTATIVE_SAMPLE in i:
-            bam = os.path.splitext(i)[0]
-    return bam
-
-def get_node_vcfs(wildcards):
-    all_vcfs = expand(rules.bgzip_vcf.output, chrom=CHROMOSOMES, node=NODES)
-    node_vcfs = [vcf for vcf in all_vcfs if wildcards.chrom in vcf]
-    return node_vcfs
-
-def get_node_tabix_files(wildcards):
-    all_indices = expand(rules.tabix_node_vcf.output, chrom=CHROMOSOMES, node=NODES)
-    node_indices = [i for i in all_indices if wildcards.chrom in i]
-    return node_indices
-
-
 def get_angsd_stats_toConcat(wildcards):
     if wildcards.site == '0fold':
         return expand(rules.angsd_diversity_neutrality_stats_specificSites.output, chrom=CHROMOSOMES, site='0fold')

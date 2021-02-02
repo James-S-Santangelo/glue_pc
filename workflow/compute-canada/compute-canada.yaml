@@ -3,7 +3,7 @@
 
 __default__:
   job-name: '{rule}_{wildcards}'
-  account: 'def-nessrobe'
+  account: 'def-johnso73'
   output: 'slurm_logs/{rule}/{rule}_{wildcards}.out'
   error: 'slurm_logs/{rule}/{rule}_{wildcards}.err'
   mail-type: 'FAIL'

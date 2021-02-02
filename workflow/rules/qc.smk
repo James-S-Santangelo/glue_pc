@@ -50,7 +50,7 @@ rule qualimap_bam_qc:
         bam = rules.samtools_markdup.output.bam,
         index = rules.index_bam.output
     output:
-        temp(directory('{0}/qualimap/{{sample}}_qualimap_bamqc'.format(QC_DIR)))
+        directory('{0}/qualimap/{{sample}}_qualimap_bamqc'.format(QC_DIR))
     log: 'logs/qualimap/{sample}_bamqc.log'
     conda: '../envs/qc.yaml'
     threads: 8
@@ -78,10 +78,29 @@ rule bamtools_stats:
     conda: '../envs/qc.yaml'
     log: 'logs/bamtools_stats/{sample}_bamtools_stats.log'
     resources:
+        mem_mb = 4000,
         time = '01:00:00'
     shell:
         """
         bamtools stats -in {input.bam} > {output} 2> {log}
+        """
+
+rule bamutil_validate:
+    input:
+        bam = rules.samtools_markdup.output,
+        index = rules.index_bam.output
+    output:
+        '{0}/bamutil_validate/{{sample}}_validation.txt'.format(QC_DIR)
+    log: 'logs/bamutil_validate/{sample}_validation.log'
+    conda: '../envs/qc.yaml'
+    resources:
+        mem_mb = 4000,
+        time = '01:00:00'
+    shell:
+        """
+        bam validate --in {input.bam} \
+            --so_coord \
+            --verbose 2> {output}
         """
 
 rule multiqc:
@@ -107,22 +126,3 @@ rule multiqc:
             --config ../config/multiqc_config.yaml \
             {{input}} 2> {{log}}
         """.format(QC_DIR)
-
-rule bamutil_validate:
-    input:
-        bam = rules.samtools_markdup.output,
-        index = rules.index_bam.output
-    output:
-        '{0}/bamutil_validate/{{sample}}_validation.txt'.format(QC_DIR)
-    log: 'logs/bamutil_validate/{sample}_validation.log'
-    conda: '../envs/qc.yaml'
-    resources:
-        time = '01:00:00'
-    shell:
-        """
-        bam validate --in {input.bam} \
-            --so_coord \
-            --verbose 2> {output}
-        """
-
-

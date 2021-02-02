@@ -5,7 +5,7 @@ rule bwa_map_unpaired:
     output:
         temp('{0}/unpaired/{{sample}}_unpaired_sorted.bam'.format(BAM_DIR))
     params:
-        r"-R '@RG\tID:${sample}\tCN:NOVOGENE\tPL:ILLUMINA\tPM:NOVASEQ.S4\tSM:${sample}'"
+        r"-R '@RG\tID:{sample}\tCN:NOVOGENE\tPL:ILLUMINA\tPM:NOVASEQ.S4\tSM:{sample}'"
     conda: '../envs/mapping.yaml'
     log: 'logs/bwa_map_unpaired/{sample}_bwa_map.unpaired.log'
     threads: 2
@@ -26,7 +26,7 @@ rule bwa_map_paired:
     output:
         temp('{0}/paired/{{sample}}_paired_sorted.bam'.format(BAM_DIR))
     params:
-        r"-R '@RG\tID:${sample}\tCN:NOVOGENE\tPL:ILLUMINA\tPM:NOVASEQ.S4\tSM:${sample}'"
+        r"-R '@RG\tID:{sample}\tCN:NOVOGENE\tPL:ILLUMINA\tPM:NOVASEQ.S4\tSM:{sample}'"
     conda: '../envs/mapping.yaml'
     log: 'logs/bwa_map_paired/{sample}_bwa_map.paired.log'
     threads: 6
