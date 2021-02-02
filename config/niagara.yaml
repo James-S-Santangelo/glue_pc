@@ -11,7 +11,7 @@ files:
   gff: /scratch/n/nessrobe/santang3/data/gff/TrR.v5.renamed_reformated.gtf.gz
 
 # Samples to exclude based on QC (e.g., different species, low coverage, etc.) 
-samples_to_exclude: ['7_14', '54_9', '97_4', '23_12', '23_17']
+samples_to_exclude: ['s_7_14', 's_54_9', 's_97_4', 's_23_12', 's_23_17']
 
 freebayes:
   sample: s_7_7
