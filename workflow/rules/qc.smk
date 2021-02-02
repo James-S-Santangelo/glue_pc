@@ -55,7 +55,7 @@ rule qualimap_bam_qc:
     conda: '../envs/qc.yaml'
     threads: 8
     resources:
-        mem_mb = lambda wildcards, threads, input, attempt: attempt * (int(input.size_mb) * threads),
+        mem_mb = lambda wildcards, threads, input, attempt: attempt * 4000,
         time = '01:00:00'
     shell:
         """

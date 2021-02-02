@@ -28,6 +28,9 @@ NGSLD_DIR = '{0}/ngsld'.format(config['results_prefix'])
 POP_STRUC_DIR = '{0}/population_structure'.format(config['results_prefix'])
 FIGURES_DIR = '{0}/figures'.format(config['results_prefix'])
 
+# Parameters
+CORES_PER_NODE = config['cluster']['cores_per_node']
+
 wildcard_constraints:
     chrom='|'.join([x for x in CHROMOSOMES])
 

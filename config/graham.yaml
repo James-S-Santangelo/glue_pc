@@ -12,3 +12,6 @@ files:
 
 # Samples to exclude based on QC (e.g., different species, low coverage, etc.) 
 # samples_to_exclude: ['s_7_14', 's_54_9', 's_97_4', 's_23_12', 's_23_17']
+
+cluster:
+  cores_per_node: 32
