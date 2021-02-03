@@ -56,7 +56,7 @@ rule qualimap_bam_qc:
     threads: 8
     resources:
         mem_mb = lambda wildcards, threads, input, attempt: attempt * 4000,
-        time = '01:00:00'
+        time = lambda wildcards, attempt: str(attempt * 1) + ":00:00"
     shell:
         """
         unset DISPLAY;
@@ -110,7 +110,8 @@ rule multiqc:
        fastp = expand('{0}/fastp_trim_reports/{{sample}}_fastp.json'.format(QC_DIR), sample=SAMPLES),
        qualimap = expand('{0}/qualimap/{{sample}}_qualimap_bamqc'.format(QC_DIR), sample=SAMPLES),
        bamstats = expand('{0}/bamtools_stats/{{sample}}_bamtools.stats'.format(QC_DIR), sample=SAMPLES),
-       bamutil = expand('{0}/bamutil_validate/{{sample}}_validation.txt'.format(QC_DIR), sample=SAMPLES)
+       bamutil = expand('{0}/bamutil_validate/{{sample}}_validation.txt'.format(QC_DIR), sample=SAMPLES),
+       qc_results = '{0}'.format(QC_DIR)
     output:
         '{0}/multiqc/multiqc_report.html'.format(QC_DIR)
     conda: '../envs/qc.yaml'
@@ -122,7 +123,8 @@ rule multiqc:
         """
         multiqc --verbose \
             --dirs \
+            --force \
             --outdir {0}/multiqc \
             --config ../config/multiqc_config.yaml \
-            {{input}} 2> {{log}}
+            {{input.qc_results}} 2> {{log}}
         """.format(QC_DIR)

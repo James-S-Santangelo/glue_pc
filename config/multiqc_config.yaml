@@ -1,6 +1,6 @@
 extra_fn_clean_exts:
   - type: regex_keep
-    pattern: '^*_[\d]*_[\d]{1,2}'
+    pattern: '^.*_[\d]*_[\d]{1,2}'
 
 run_modules:
   - fastqc

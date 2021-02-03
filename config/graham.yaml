@@ -4,7 +4,7 @@ chromosomes: ../resources/chromosome_file.txt
 
 results_prefix: ../results
 raw_read_prefix: /scratch/santang3/glue-low1
-temp_dir: /scratch/santang3/gluw-low1/tmp
+temp_dir: /scratch/santang3/glue-low1/tmp
 
 files:
   reference_genome: /home/santang3/projects/def-johnso73/clover-ref/ref_genome/GCA_005869975.1_AgR_To_v5_genomic.fna
