@@ -117,7 +117,7 @@ rule multiqc:
     conda: '../envs/qc.yaml'
     log: 'logs/multiqc/multiqc.log'
     resources:
-        mem_mb = lambda wildcards, attempt: attempt * 5000,
+        mem_mb = lambda wildcards, attempt: attempt * 10000,
         time = '01:00:00'
     shell:
         """
