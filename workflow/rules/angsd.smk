@@ -6,32 +6,129 @@ rule angsd_depth:
         glo = '{0}/depth/{{chrom}}/{{chrom}}_allSamples_allSites.depthGlobal'.format(ANGSD_DIR)
     log: 'logs/angsd_depth/{chrom}_angsd_depth.log'
     conda: '../envs/angsd.yaml'
+    params:
+        out = '{0}/depth/{{chrom}}/{{chrom}}_allSamples_allSites'.format(ANGSD_DIR)
     resources:
         nodes = 1,
         ntasks = CORES_PER_NODE,
         time = '12:00:00'
     shell:
         """
-        angsd -bam {{input.bams}} \
-            -nThreads {{resources.ntasks}} \
+        angsd -bam {input.bams} \
+            -nThreads {resources.ntasks} \
             -doDepth 1 \
             -doCounts 1 \
-            -r {{wildcards.chrom}} \
+            -r {wildcards.chrom} \
             -minMapQ 30 \
             -minQ 20 \
             -maxDepth 4500 \
-            -out {0}/depth/{{wildcards.chrom}}/{{wildcards.chrom}}_allSamples_allSites
-        """.format(ANGSD_DIR)
+            -out {params.out} 2> {log}
+        """
 
+
+rule angsd_saf_likelihood_allSites:
+    input:
+        bams = rules.create_bam_list_varCall.output,
+        ref = REFERENCE_GENOME
+    output:
+        saf = '{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.saf.gz'.format(ANGSD_DIR),
+        saf_idx = '{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.saf.idx'.format(ANGSD_DIR),
+        saf_pos ='{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.saf.pos.gz'.format(ANGSD_DIR),
+        pos = '{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.pos.gz'.format(ANGSD_DIR),
+        counts = '{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.counts.gz'.format(ANGSD_DIR)
+    log: 'logs/angsd_saf_likelihood_allSites/{chrom}_allSites_angsd_saf.log'
+    conda: '../envs/angsd.yaml'
+    params:
+        out = '{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites'.format(ANGSD_DIR)
+    resources:
+        nodes = 1,
+        ntasks = CORES_PER_NODE,
+        time = '12:00:00'
+    wildcard_constraints:
+        site='allSites'
+    shell:
+        """
+        angsd -GL 1 \
+            -out {params.out} \
+            -nThreads {resources.ntasks} \
+            -doCounts 1 \
+            -dumpCounts 2 \
+            -setMinDepthInd 1 \
+            -setMaxDepth 4500 \
+            -baq 2 \
+            -ref {input.ref} \
+            -minInd 60 \
+            -minQ 20 \
+            -minMapQ 30 \
+            -doSaf 1 \
+            -anc {1} \
+            -r {wildcards.chrom} \
+            -bam {input.bams} 2> {log}
+        """
+
+rule angsd_gl_allSites:
+    input:
+        bams = rules.create_bam_list_varCall.output,
+        ref = REFERENCE_GENOME
+    output:
+        gls = '{0}/gl/allSites/{{chrom}}/{{chrom}}_allSamples_allSites_maf{{maf}}.beagle.gz'.format(ANGSD_DIR),
+        mafs = '{0}/gl/allSites/{{chrom}}/{{chrom}}_allSamples_allSites_maf{{maf}}.mafs.gz'.format(ANGSD_DIR),
+    log: 'logs/angsd_gl_allSites/{chrom}_allSites_maf{maf}_angsd_gl.log'
+    conda: '../envs/angsd.yaml'
+    params:
+        out = '{0}/gl/allSites/{{chrom}}/{{chrom}}_allSamples_allSites_maf{{maf}}'.format(ANGSD_DIR)
+    resources:
+        nodes = 1,
+        ntasks = CORES_PER_NODE,
+        time = '12:00:00'
+    wildcard_constraints:
+        site='allSites'
+    shell:
+        """
+        angsd -GL 1 \
+            -out {params.out} \
+            -nThreads {resources.ntasks} \
+            -doGlf 2 \
+            -doMajorMinor 1 \
+            -SNP_pval 1e-6 \
+            -doMaf 1 \
+            -doCounts 1 \
+            -setMinDepthInd 3 \
+            -setMaxDepth 4500 \
+            -baq 2 \
+            -ref {input.ref} \
+            -minInd 96 \
+            -minQ 20 \
+            -minMapQ 30 \
+            -minMaf {wildcards.maf} \
+            -r {wildcards.chrom} \
+            -bam {input.bams} 2> {log}
+        """
+ 
 rule convert_sites_for_angsd:
     input:
-        rules.get_fourfold_zerofold.output
+        get_bed_to_subset
     output:
-        '{0}/angsd_sites/Trepens_{{site}}.sites'.format(PROGRAM_RESOURCE_DIR), 
+        '{0}/angsd_sites/Trepens_{{site}}.sites'.format(PROGRAM_RESOURCE_DIR) 
     log: 'logs/convert_sites_for_angsd/convert_{site}_for_angsd.log'
+    wildcard_constraints:
+        site='0fold|4fold'
     shell:
         """
         awk '{{print $1"\t"$2+1}}' {input} > {output} 2> {log}
+        """
+
+rule extract_angsd_allSites:
+    input:
+        rules.angsd_saf_likelihood_allSites.output.pos
+    output:
+        '{0}/angsd_sites/{{chrom}}/{{chrom}}_Trepens_allSites.sites'.format(PROGRAM_RESOURCE_DIR)
+    log: 'logs/extract_angsd_allSites/{chrom}_extract_allSites.log'
+    wildcard_constraints:
+        site = 'allSites'
+    shell:
+        """
+        zcat {input} | tail -n +2 | cut -f1,2 > {output} 2> {log}
         """
 
 rule split_angsd_sites_byChrom:
@@ -39,7 +136,7 @@ rule split_angsd_sites_byChrom:
         rules.convert_sites_for_angsd.output
     output:
         '{0}/angsd_sites/{{chrom}}/{{chrom}}_Trepens_{{site}}.sites'.format(PROGRAM_RESOURCE_DIR)
-    log: 'logs/split_angsd_sites_byChrom/{{chrom}}/{{chrom}}_{{site}}_split_angsd_sites.log'
+    log: 'logs/split_angsd_sites_byChrom/{chrom}/{chrom}_{site}_split_angsd_sites.log'
     shell:
         """
         grep {wildcards.chrom} {input} > {output} 2> {log}
@@ -58,200 +155,60 @@ rule angsd_index_sites:
         angsd sites index {input} 2> {log}
         """
 
-rule angsd_saf_likelihood_allSites:
+rule angsd_estimate_sfs:
     input:
-        bams = rules.create_bam_list_varCall.output
-    output:
-        saf = '{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.saf.gz'.format(ANGSD_DIR),
-        saf_idx = '{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.saf.idx'.format(ANGSD_DIR),
-        saf_pos ='{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.saf.pos.gz'.format(ANGSD_DIR),
-        pos = '{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.pos.gz'.format(ANGSD_DIR),
-        counts = '{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.counts.gz'.format(ANGSD_DIR)
-    log: 'logs/angsd_saf_likelihood_allSites/{chrom}_allSites_angsd_saf.log'
-    conda: '../envs/angsd.yaml'
-    resources:
-        nodes = 1,
-        ntasks = CORES_PER_NODE,
-        time = '12:00:00'
-    wildcard_constraints:
-        site='allSites'
-    shell:
-        """
-        angsd -GL 1 \
-            -out {0}/sfs/allSites/{{wildcards.chrom}}/{{wildcards.chrom}}_allSamples_allSites \
-            -nThreads {{resources.ntasks}} \
-            -doCounts 1 \
-            -dumpCounts 2 \
-            -setMinDepthInd 1 \
-            -setMaxDepth 4500 \
-            -baq 2 \
-            -ref {1} \
-            -minInd 60 \
-            -minQ 20 \
-            -minMapQ 30 \
-            -doSaf 1 \
-            -anc {1} \
-            -r {{wildcards.chrom}} \
-            -bam {{input.bams}} 2> {{log}}
-        """.format(ANGSD_DIR, REFERENCE_GENOME)
-
-rule angsd_gl_allSites:
-    input:
-        bams = rules.create_bam_list_varCall.output
-    output:
-        gls = '{0}/gl/allSites/{{chrom}}/{{chrom}}_allSamples_allSites_maf{{maf}}.beagle.gz'.format(ANGSD_DIR),
-        mafs = '{0}/gl/allSites/{{chrom}}/{{chrom}}_allSamples_allSites_maf{{maf}}.mafs.gz'.format(ANGSD_DIR),
-    log: 'logs/angsd_gl_allSites/{chrom}_allSites_maf{maf}_angsd_gl.log'
-    conda: '../envs/angsd.yaml'
-    resources:
-        nodes = 1,
-        ntasks = CORES_PER_NODE,
-        time = '12:00:00'
-    wildcard_constraints:
-        site='allSites'
-    shell:
-        """
-        angsd -GL 1 \
-            -out {0}/gl/allSites/{{wildcards.chrom}}/{{wildcards.chrom}}_allSamples_allSites_maf{{wildcards.maf}} \
-            -nThreads {{resources.ntasks}} \
-            -doGlf 2 \
-            -doMajorMinor 1 \
-            -SNP_pval 1e-6 \
-            -doMaf 1 \
-            -doCounts 1 \
-            -setMinDepthInd 3 \
-            -setMaxDepth 4500 \
-            -baq 2 \
-            -ref {1} \
-            -minInd 96 \
-            -minQ 20 \
-            -minMapQ 30 \
-            -minMaf {{wildcards.maf}} \
-            -r {{wildcards.chrom}} \
-            -bam {{input.bams}} 2> {{log}}
-        """.format(ANGSD_DIR, REFERENCE_GENOME)
- 
-rule angsd_estimate_sfs_allSites:
-    input:
-        rules.angsd_saf_likelihood_allSites.output.saf_idx 
-    output:
-        temp('{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.sfs'.format(ANGSD_DIR))
-    log: 'logs/angsd_estimate_sfs_allSites/{chrom}_allSites_sfs.log'
-    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
-    threads: 10
-    wildcard_constraints:
-        site='allSites'
-    resources:
-        mem_mb = lambda wildcards, attempt: attempt * 60000,
-        time = '06:00:00'
-    shell:
-        """
-        realSFS {input} -P {threads} -fold 1 > {output} 2> {log}
-        """
-
-rule angsd_estimate_sfs_specificSites:
-    input:
-        saf = rules.angsd_saf_likelihood_allSites.output.saf_idx,
-        idx = rules.angsd_index_sites.output,
-        sites = rules.split_angsd_sites_byChrom.output
+        unpack(angsd_sfs_input) 
     output:
         temp('{0}/sfs/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}.sfs'.format(ANGSD_DIR))
-    log: 'logs/angsd_estimate_sfs_specificSites/{chrom}_{site}_sfs.log'
+    log: 'logs/angsd_estimate_sfs/{chrom}_{site}_sfs.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     threads: 10
-    wildcard_constraints:
-        site='0fold|4fold'
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 60000,
-        time = '06:00:00'
+        time = '03:00:00'
     shell:
         """
-        realSFS {input.saf} -P {threads} -sites {input.sites} -fold 1 > {output} 2> {log}
+        realSFS {input.saf_idx} -P {threads} -sites {input.sites} -fold 1 > {output} 2> {log}
         """
 
-rule angsd_estimate_thetas_allSites:
+rule angsd_estimate_thetas:
     input:
-        saf_idx = rules.angsd_saf_likelihood_allSites.output.saf_idx,
-        sfs = rules.angsd_estimate_sfs_allSites.output
-    output:
-        idx = '{0}/summary_stats/thetas/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.thetas.idx'.format(ANGSD_DIR),
-        thet = '{0}/summary_stats/thetas/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.thetas.gz'.format(ANGSD_DIR)
-    log: 'logs/angsd_estimate_thetas_allSites/{chrom}_allSites_thetas.log'
-    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
-    threads: 10
-    wildcard_constraints:
-        site='allSites'
-    resources:
-        mem_mb = lambda wildcards, attempt: attempt * 10000,
-        time = '06:00:00'
-    shell:
-        """
-        realSFS saf2theta {{input.saf_idx}} \
-            -P {{threads}} \
-            -sfs {{input.sfs}} \
-            -outname {0}/summary_stats/thetas/allSites/{{wildcards.chrom}}/{{wildcards.chrom}}_allSamples_allSites 2> {{log}}
-        """.format(ANGSD_DIR)
-
-rule angsd_estimate_thetas_specificSites:
-    input:
-        saf_idx = rules.angsd_saf_likelihood_allSites.output.saf_idx,
-        sfs = rules.angsd_estimate_sfs_allSites.output,
-        sites = rules.split_angsd_sites_byChrom.output,
-        idx = rules.angsd_index_sites.output
+        unpack(angsd_estimate_thetas_input)
     output:
         idx = '{0}/summary_stats/thetas/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}.thetas.idx'.format(ANGSD_DIR),
         thet = '{0}/summary_stats/thetas/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}.thetas.gz'.format(ANGSD_DIR)
-    log: 'logs/angsd_estimate_thetas_specificSites/{chrom}_{site}_thetas.log'
+    log: 'logs/angsd_estimate_thetas/{chrom}_{site}_thetas.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     threads: 10
-    wildcard_constraints:
-        site='0fold|4fold'
+    params:
+        out = '{0}/summary_stats/thetas/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}'.format(ANGSD_DIR)
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 10000,
-        time = '06:00:00'
+        time = '03:00:00'
     shell:
         """
-        realSFS saf2theta {{input.saf_idx}} \
-            -P {{threads}} \
-            -sfs {{input.sfs}} \
-            -sites {{input.sites}} \
-            -outname {0}/summary_stats/thetas/{{wildcards.site}}/{{wildcards.chrom}}/{{wildcards.chrom}}_allSamples_{{wildcards.site}} 2> {{log}}
-        """.format(ANGSD_DIR)
+        realSFS saf2theta {input.saf_idx} \
+            -P {threads} \
+            -sfs {input.sfs} \
+            -sites {input.sites} \
+            -outname {params.out} 2> {log}
+        """
 
-rule angsd_diversity_neutrality_stats_allSites:
+rule angsd_diversity_neutrality_stats:
     input:
-        rules.angsd_estimate_thetas_allSites.output.idx
+        rules.angsd_estimate_thetas.output.idx
     output:
-       temp( '{0}/summary_stats/thetas/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.thetas.idx.pestPG'.format(ANGSD_DIR))
-    log: 'logs/angsd_diversity_neutrality_stats_allSites/{chrom}_allSites_diversity_neutrality.log'
+       temp( '{0}/summary_stats/thetas/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}.thetas.idx.pestPG'.format(ANGSD_DIR))
+    log: 'logs/angsd_diversity_neutrality_stats/{chrom}_{site}_diversity_neutrality.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 4000,
-        time = '06:00:00'
-    wildcard_constraints:
-        site='allSites'
+        time = '03:00:00'
     shell:
         """
         thetaStat do_stat {input} 2> {log}
         """
  
-rule angsd_diversity_neutrality_stats_specificSites:
-    input:
-        rules.angsd_estimate_thetas_specificSites.output.idx
-    output:
-        temp('{0}/summary_stats/thetas/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}.thetas.idx.pestPG'.format(ANGSD_DIR))
-    log: 'logs/angsd_diversity_neutrality_stats_specificSites/{chrom}}_{site}_diversity_neutrality.log'
-    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
-    resources:
-        mem_mb = lambda wildcards, attempt: attempt * 4000,
-        time = '06:00:00'
-    wildcard_constraints:
-        site='0fold|4fold'
-    shell:
-        """
-        thetaStat do_stat {input} 2> {log}
-        """
-
 rule concat_angsd_stats:
     input:
         get_angsd_stats_toConcat
@@ -403,25 +360,12 @@ rule extract_sample_angsd:
                     sample = bam.split('_merged')[0]
                     fout.write('{0}\n'.format(sample))
 
-rule sum_site_depth:
-    input:
-        rules.angsd_saf_likelihood_allSites.output.counts
-    output:
-        '{0}/depth/{{chrom}}/{{chrom}}_sum_site_depths.txt'.format(ANGSD_DIR)
-    log: 'logs/{chrom}_sum_site_depths.log'
-    shell:
-        """
-        zcat {input} | tail -n +2 |\
-            awk '{{ for(i=1; i<=NF;i++) j+=$i; print j; j=0  }}' - > {output} 2> {log}
-        """
-
 rule angsd_done:
     input:
         expand('{0}/depth/{{chrom}}/{{chrom}}_allSamples_allSites.depth{{ext}}'.format(ANGSD_DIR), chrom=CHROMOSOMES, ext=['Sample', 'Global']),
         expand('{0}/summary_stats/thetas/{{site}}/allSamples_{{site}}_diversityNeutrality.thetas.idx.pestPG'.format(ANGSD_DIR), site=['allSites','0fold','4fold']),
         expand('{0}/sfs/{{site}}/allSamples_{{site}}_allChroms.sfs'.format(ANGSD_DIR), site=['allSites','0fold','4fold']),
         expand('{0}/gl/{{site}}/allSamples_allChroms_{{site}}_maf{{maf}}.{{ext}}.gz'.format(ANGSD_DIR), maf=['0.05'], ext=['beagle', 'mafs'], site=['0fold', '4fold']),
-        expand('{0}/depth/{{chrom}}/{{chrom}}_sum_site_depths.txt'.format(ANGSD_DIR), chrom=CHROMOSOMES),
         rules.extract_sample_angsd.output
     output:
         '{0}/angsd.done'.format(ANGSD_DIR)
