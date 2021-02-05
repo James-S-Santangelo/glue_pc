@@ -91,7 +91,7 @@ rule index_bam:
         samtools index -@ {threads} {input} 2> {log}
         """
 
-rule create_bam_list:
+rule create_bam_list_varCall:
     input:
         expand(rules.samtools_markdup.output.bam, sample=SAMPLES)
     output:
