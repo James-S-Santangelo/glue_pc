@@ -34,7 +34,7 @@ CORES_PER_NODE = config['cluster']['cores_per_node']
 wildcard_constraints:
     chrom='|'.join([x for x in CHROMOSOMES])
 
-localrules: create_tmp_dir, create_bam_list_varCall, create_bam_list_forSpeciesID, concat_angsd_stats, create_pos_file_for_ngsLD, concat_sfs, sum_sfs, convert_sites_for_angsd, split_angsd_sites_byChrom, angsd_index_sites, files_for_angsd_site_subset, subset_angsd_gl, subset_angsd_maf, extract_sample_angsd, angsd_done, chloroplast_gene_fasta, index_chloroplast_gene_vcf, concat_fasta
+localrules: create_tmp_dir, create_bam_list_varCall, create_bam_list_forSpeciesID, concat_angsd_stats, create_pos_file_for_ngsLD, concat_sfs, sum_sfs, convert_sites_for_angsd, split_angsd_sites_byChrom, angsd_index_sites, files_for_angsd_site_subset, subset_angsd_gl, subset_angsd_maf, extract_sample_angsd, angsd_done, chloroplast_gene_fasta, index_chloroplast_gene_vcf, concat_fasta, download_nr_database
 
 include: 'rules/common.smk'
 
@@ -44,7 +44,7 @@ rule all:
    input:
         # Trimming, mapping, and QC
         '{0}/multiqc/multiqc_report.html'.format(QC_DIR),
-        '{0}/species_id.done'.format(SPECIES_ID_DIR)
+        '{0}/species_id.done'.format(SPECIES_ID_DIR),
         #'{0}/species_id.done'.format(SPECIES_ID_DIR), 
         # Freebayes
         #'{0}/freebayes.done'.format(FREEBAYES_DIR),

@@ -100,9 +100,21 @@ rule concat_fasta:
                     seq = ''.join(line.strip() for line in lines[1:])
                     fout.write('>{0};{1}\n{2}\n'.format(sample, wildcards.gene, seq))
 
+rule download_nr_database:
+    output:
+        '{0}/ncbi_nr_database/nr.gz'.format(PROGRAM_RESOURCE_DIR)
+    log: 'logs/download_nr_database/download_nr_database.log'
+    params:
+        out = '{0}/ncbi_nr_database/'.format(PROGRAM_RESOURCE_DIR)
+    shell:
+        """
+        wget https://ftp.ncbi.nlm.nih.gov/blast/db/FASTA/nr.gz -P {params.out} 2> {log}
+        """
+
 rule species_id_done:
     input:
-        expand(rules.concat_fasta.output, gene = ['rbcl','matk'])
+        expand(rules.concat_fasta.output, gene = ['rbcl','matk']),
+        '{0}/ncbi_nr_database/nr.gz'.format(PROGRAM_RESOURCE_DIR)
     output:
         '{0}/species_id.done'.format(SPECIES_ID_DIR)
     shell:

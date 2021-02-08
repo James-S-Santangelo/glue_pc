@@ -4,3 +4,4 @@ channels:
 dependencies:
   - samtools=1.10
   - bcftools=1.10.2
+  - blast=2.10.1
