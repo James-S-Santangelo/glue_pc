@@ -15,3 +15,6 @@ files:
 
 cluster:
   cores_per_node: 32
+
+species_id:
+  num_nt_db_files: 33  # Number of database files for NCBI's nt database (ftp://ftp.ncbi.nlm.nih.gov/blast/db/)

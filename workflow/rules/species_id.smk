@@ -100,21 +100,53 @@ rule concat_fasta:
                     seq = ''.join(line.strip() for line in lines[1:])
                     fout.write('>{0};{1}\n{2}\n'.format(sample, wildcards.gene, seq))
 
-rule download_nr_database:
+rule download_nt_database:
     output:
-        '{0}/ncbi_nr_database/nr.gz'.format(PROGRAM_RESOURCE_DIR)
-    log: 'logs/download_nr_database/download_nr_database.log'
+        file_db = temp(expand('{0}/ncbi_nt_database/nt.{{num}}.{{ext}}'.format(PROGRAM_RESOURCE_DIR), num=NT_DB_FILE, ext=NT_DB_FILE_EXT)), 
+        db = temp(expand('{0}/ncbi_nt_database/nt.{{ext}}'.format(PROGRAM_RESOURCE_DIR), ext=NT_DB_FINAL_EXT)),
+        taxon = temp(expand('{0}/ncbi_nt_database/taxdb.{{ext}}'.format(PROGRAM_RESOURCE_DIR), ext=['btd', 'bti'])),
+        done = '{0}/ncbi_nt_database/nt_db_download.done'.format(PROGRAM_RESOURCE_DIR)
+    log: 'logs/download_nt_database/download_nt_database.log'
+    conda: '../envs/species_id.yaml'
     params:
-        out = '{0}/ncbi_nr_database/'.format(PROGRAM_RESOURCE_DIR)
+        out = '{0}/ncbi_nt_database/'.format(PROGRAM_RESOURCE_DIR)
     shell:
         """
-        wget https://ftp.ncbi.nlm.nih.gov/blast/db/FASTA/nr.gz -P {params.out} 2> {log}
+        update_blastdb.pl --decompress nt 2> {log}
+        mv nt* {params.out};
+        touch {output.done}
+        """
+
+rule blast_chloroplast_genes:
+    input:
+        fasta = rules.concat_fasta.output,
+        done = rules.download_nt_database.output.done
+    output:
+        '{0}/{{gene}}/{{gene}}_blast_results.txt'.format(SPECIES_ID_DIR)
+    log: 'logs/blast_chloroplast_genes/{gene}_blast.log'
+    conda: '../envs/species_id.yaml'
+    threads: 6
+    resources:
+        mem_mb = lambda wildcards, attempt: attempt * 4000,
+        time = '03:00:00'
+    params:
+        db = '{0}/ncbi_nt_database/nt'.format(PROGRAM_RESOURCE_DIR),
+        outfmt = "'6 qseqid qlen sseqid slen evalue bitscore lenth pident qcovhsp ssciname scomname'"
+    shell:
+        """
+        blastn -query {input.fasta} \
+            -db {params.db} \
+            -out {output} \
+            -num_threads {threads} \
+            -max_hsps 1 \
+            -max_target_seqs 1 \
+            -outfmt {params.outfmt} 2> {log}
         """
 
 rule species_id_done:
     input:
         expand(rules.concat_fasta.output, gene = ['rbcl','matk']),
-        '{0}/ncbi_nr_database/nr.gz'.format(PROGRAM_RESOURCE_DIR)
+        expand(rules.blast_chloroplast_genes.output, gene = ['rbcl','matk'])
     output:
         '{0}/species_id.done'.format(SPECIES_ID_DIR)
     shell:
