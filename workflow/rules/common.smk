@@ -14,21 +14,62 @@ def get_fastas_to_concat(wildcards):
     elif wildcards.gene == 'matk':
         return expand(rules.chloroplast_gene_consensus.output, sample=SAMPLES, gene='matk')
 
+def get_representative_bam(wildcards):
+    bam_index_files = expand(rules.index_bam.output, sample=SAMPLES)
+    for i in bam_index_files:
+        if REPRESENTATIVE_SAMPLE in i:
+            bam = os.path.splitext(i)[0]
+    return bam
+
+def get_node_vcfs(wildcards):
+    all_vcfs = expand(rules.bgzip_vcf.output, chrom=CHROMOSOMES, node=NODES)
+    node_vcfs = [vcf for vcf in all_vcfs if wildcards.chrom in vcf]
+    return node_vcfs
+
+def get_node_tabix_files(wildcards):
+    all_indices = expand(rules.tabix_node_vcf.output, chrom=CHROMOSOMES, node=NODES)
+    node_indices = [i for i in all_indices if wildcards.chrom in i]
+    return node_indices
+
+def get_bed_to_subset(wildcards):
+    all_bed_files = expand(rules.get_fourfold_zerofold.output, site=['0fold','4fold'])
+    bed = [bed for bed in all_bed_files if wildcards.site in os.path.basename(bed)]
+    return bed
+
+def angsd_sfs_input(wildcards):
+    saf_idx = rules.angsd_saf_likelihood_allSites.output.saf_idx
+    sites_idx = rules.angsd_index_sites.output.idx
+    if wildcards.site == 'allSites':
+        sites = rules.extract_angsd_allSites.output
+    else:
+        sites = rules.split_angsd_sites_byChrom.output
+    return { 'saf_idx' : saf_idx, 'sites_idx' : sites_idx, 'sites' : sites }
+
+def angsd_estimate_thetas_input(wildcards):
+    saf_idx = rules.angsd_saf_likelihood_allSites.output.saf_idx
+    sfs = rules.angsd_estimate_sfs.output
+    sites_idx = rules.angsd_index_sites.output.idx
+    if wildcards.site == 'allSites':
+        sites = rules.extract_angsd_allSites.output
+    else:
+        sites = rules.split_angsd_sites_byChrom.output
+    return { 'saf_idx' : saf_idx, 'sfs' : sfs, 'sites_idx' : sites_idx, 'sites' : sites }
+
 def get_angsd_stats_toConcat(wildcards):
     if wildcards.site == '0fold':
-        return expand(rules.angsd_diversity_neutrality_stats_specificSites.output, chrom=CHROMOSOMES, site='0fold')
+        return expand(rules.angsd_diversity_neutrality_stats.output, chrom=CHROMOSOMES, site='0fold')
     elif wildcards.site == '4fold':
-        return expand(rules.angsd_diversity_neutrality_stats_specificSites.output, chrom=CHROMOSOMES, site='4fold')
+        return expand(rules.angsd_diversity_neutrality_stats.output, chrom=CHROMOSOMES, site='4fold')
     else:
-        return expand(rules.angsd_diversity_neutrality_stats_allSites.output, chrom=CHROMOSOMES, site='allSites')
+        return expand(rules.angsd_diversity_neutrality_stats.output, chrom=CHROMOSOMES, site='allSites')
 
 def get_angsd_sfs_toConcat(wildcards):
     if wildcards.site == '0fold':
-        return expand(rules.angsd_estimate_sfs_specificSites.output, chrom=CHROMOSOMES, site='0fold')
+        return expand(rules.angsd_estimate_sfs.output, chrom=CHROMOSOMES, site='0fold')
     elif wildcards.site == '4fold':
-        return expand(rules.angsd_estimate_sfs_specificSites.output, chrom=CHROMOSOMES, site='4fold')
+        return expand(rules.angsd_estimate_sfs.output, chrom=CHROMOSOMES, site='4fold')
     else:
-        return expand(rules.angsd_estimate_sfs_allSites.output, chrom=CHROMOSOMES, site='allSites')
+        return expand(rules.angsd_estimate_sfs.output, chrom=CHROMOSOMES, site='allSites')
 
 def get_angsd_gl_toConcat(wildcards):
     if wildcards.site == '0fold' and wildcards.maf == '0.05':
