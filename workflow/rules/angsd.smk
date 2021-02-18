@@ -1,6 +1,6 @@
 rule angsd_depth:
     input:
-        bams = rules.create_bam_list_varCall.output
+        bams = rules.create_bam_list_allSamples.output
     output:
         sam = '{0}/depth/{{chrom}}/{{chrom}}_allSamples_allSites.depthSample'.format(ANGSD_DIR),
         glo = '{0}/depth/{{chrom}}/{{chrom}}_allSamples_allSites.depthGlobal'.format(ANGSD_DIR)
@@ -21,14 +21,14 @@ rule angsd_depth:
             -r {wildcards.chrom} \
             -minMapQ 30 \
             -minQ 20 \
-            -maxDepth 4500 \
+            -maxDepth 10000 \
             -out {params.out} 2> {log}
         """
 
 
 rule angsd_saf_likelihood_allSites:
     input:
-        bams = rules.create_bam_list_varCall.output,
+        bams = rules.create_bam_list_allSamples.output,
         ref = REFERENCE_GENOME
     output:
         saf = '{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.saf.gz'.format(ANGSD_DIR),
@@ -61,14 +61,14 @@ rule angsd_saf_likelihood_allSites:
             -minQ 20 \
             -minMapQ 30 \
             -doSaf 1 \
-            -anc {1} \
+            -anc {input.ref} \
             -r {wildcards.chrom} \
             -bam {input.bams} 2> {log}
         """
 
 rule angsd_gl_allSites:
     input:
-        bams = rules.create_bam_list_varCall.output,
+        bams = rules.create_bam_list_allSamples.output,
         ref = REFERENCE_GENOME
     output:
         gls = '{0}/gl/allSites/{{chrom}}/{{chrom}}_allSamples_allSites_maf{{maf}}.beagle.gz'.format(ANGSD_DIR),
@@ -348,7 +348,7 @@ rule concat_angsd_mafs:
 
 rule extract_sample_angsd:
     input:
-        rules.create_bam_list_varCall.output
+        rules.create_bam_list_allSamples.output
     output:
         '{0}/angsd_sample_order.txt'.format(PROGRAM_RESOURCE_DIR)
     run:

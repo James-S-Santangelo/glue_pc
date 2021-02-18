@@ -38,23 +38,23 @@ NT_DB_FINAL_EXT = ['nal', 'ndb', 'nos', 'not', 'ntf', 'nto']
 wildcard_constraints:
     chrom='|'.join([x for x in CHROMOSOMES])
 
-localrules: create_tmp_dir, create_bam_list_varCall, create_bam_list_forSpeciesID, concat_angsd_stats, create_pos_file_for_ngsLD, concat_sfs, sum_sfs, convert_sites_for_angsd, split_angsd_sites_byChrom, angsd_index_sites, files_for_angsd_site_subset, subset_angsd_gl, subset_angsd_maf, extract_sample_angsd, angsd_done, chloroplast_gene_fasta, index_chloroplast_gene_vcf, concat_fasta, download_nt_database, single_sample_sfs_done
+localrules: create_tmp_dir, create_bam_list_allSamples, create_bam_list_forSpeciesID, concat_angsd_stats, create_pos_file_for_ngsLD, concat_sfs, sum_sfs, convert_sites_for_angsd, split_angsd_sites_byChrom, angsd_index_sites, files_for_angsd_site_subset, subset_angsd_gl, subset_angsd_maf, extract_sample_angsd, angsd_done, chloroplast_gene_fasta, index_chloroplast_gene_vcf, concat_fasta, download_nt_database, single_sample_sfs_done
 
 include: 'rules/common.smk'
 
-raw_read_dict = create_raw_read_dict(RAW_READ_DIR, SAMPLES)
+#raw_read_dict = create_raw_read_dict(RAW_READ_DIR, SAMPLES)
 
 rule all:
    input:
         # Trimming, mapping, and QC
-        '{0}/multiqc/multiqc_report.html'.format(QC_DIR),
-        '{0}/species_id.done'.format(SPECIES_ID_DIR),
-        '{0}/single_sample_sfs.done'.format(SS_SFS_DIR),
+        #'{0}/multiqc/multiqc_report.html'.format(QC_DIR),
+        #'{0}/species_id.done'.format(SPECIES_ID_DIR),
+        #'{0}/single_sample_sfs.done'.format(SS_SFS_DIR),
         #'{0}/species_id.done'.format(SPECIES_ID_DIR), 
         # Freebayes
         #'{0}/freebayes.done'.format(FREEBAYES_DIR),
         # Angsd
-        #'{0}/angsd.done'.format(ANGSD_DIR),
+        '{0}/angsd.done'.format(ANGSD_DIR),
         # Population structure
         #expand('{0}/pcangsd/allSamples_{{site}}_maf{{maf}}_pcangsd.{{ext}}'.format(POP_STRUC_DIR), site=['4fold', '0fold'], ext=['cov', 'admix.Q.npy'], maf=['0.05']),
         #expand('{0}/ngsadmix/K{{k}}/allSamples_ngsadmix_{{site}}_maf{{maf}}_K{{k}}_seed{{seed}}.fopt.gz'.format(POP_STRUC_DIR), k=NGSADMIX_K, seed=NGSADMIX_SEEDS, site=['4fold'], maf=['0.05']),
