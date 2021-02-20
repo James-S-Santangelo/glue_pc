@@ -31,6 +31,7 @@ FIGURES_DIR = '{0}/figures'.format(config['results_prefix'])
 
 # Parameters
 CORES_PER_NODE = config['cluster']['cores_per_node']
+SAMPLES_TO_EXCLUDE = config['samples_to_exclude']
 NT_DB_FILE = ['%02d' % x for x in range(0, config['species_id']['num_nt_db_files'])]
 NT_DB_FILE_EXT = ['nhd', 'nhi', 'nhr', 'nhn', 'nnd', 'nni', 'nog', 'nsq', 'tar.gz.md5']
 NT_DB_FINAL_EXT = ['nal', 'ndb', 'nos', 'not', 'ntf', 'nto']

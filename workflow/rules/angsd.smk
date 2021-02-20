@@ -48,16 +48,17 @@ rule angsd_saf_likelihood_allSites:
         site='allSites'
     shell:
         """
+        NUM_IND=$( wc -l < {input.bams} );
+        MIN_IND=$(( NUM_IND*50/100 ));
         angsd -GL 1 \
             -out {params.out} \
             -nThreads {resources.ntasks} \
             -doCounts 1 \
             -dumpCounts 2 \
-            -setMinDepthInd 1 \
-            -setMaxDepth 4500 \
+            -setMaxDepth 1250 \
             -baq 2 \
             -ref {input.ref} \
-            -minInd 60 \
+            -minInd $MIN_IND \
             -minQ 20 \
             -minMapQ 30 \
             -doSaf 1 \
@@ -71,12 +72,12 @@ rule angsd_gl_allSites:
         bams = rules.create_bam_list_allSamples.output,
         ref = REFERENCE_GENOME
     output:
-        gls = '{0}/gl/allSites/{{chrom}}/{{chrom}}_allSamples_allSites_maf{{maf}}.beagle.gz'.format(ANGSD_DIR),
-        mafs = '{0}/gl/allSites/{{chrom}}/{{chrom}}_allSamples_allSites_maf{{maf}}.mafs.gz'.format(ANGSD_DIR),
+        gls = '{0}/gls/allSites/{{chrom}}/{{chrom}}_allSamples_allSites_maf{{maf}}.beagle.gz'.format(ANGSD_DIR),
+        mafs = '{0}/gls/allSites/{{chrom}}/{{chrom}}_allSamples_allSites_maf{{maf}}.mafs.gz'.format(ANGSD_DIR),
     log: 'logs/angsd_gl_allSites/{chrom}_allSites_maf{maf}_angsd_gl.log'
     conda: '../envs/angsd.yaml'
     params:
-        out = '{0}/gl/allSites/{{chrom}}/{{chrom}}_allSamples_allSites_maf{{maf}}'.format(ANGSD_DIR)
+        out = '{0}/gls/allSites/{{chrom}}/{{chrom}}_allSamples_allSites_maf{{maf}}'.format(ANGSD_DIR)
     resources:
         nodes = 1,
         ntasks = CORES_PER_NODE,
@@ -85,6 +86,8 @@ rule angsd_gl_allSites:
         site='allSites'
     shell:
         """
+        NUM_IND=$( wc -l < {input.bams} );
+        MIN_IND=$(( NUM_IND*50/100 ));
         angsd -GL 1 \
             -out {params.out} \
             -nThreads {resources.ntasks} \
@@ -93,11 +96,10 @@ rule angsd_gl_allSites:
             -SNP_pval 1e-6 \
             -doMaf 1 \
             -doCounts 1 \
-            -setMinDepthInd 3 \
-            -setMaxDepth 4500 \
+            -setMaxDepth 1250 \
             -baq 2 \
             -ref {input.ref} \
-            -minInd 96 \
+            -minInd $MIN_IND \
             -minQ 20 \
             -minMapQ 30 \
             -minMaf {wildcards.maf} \

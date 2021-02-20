@@ -102,7 +102,8 @@ rule create_bam_list_allSamples:
         with open(output[0], 'w') as f:
             for bam in input:
                 sample = os.path.basename(bam).split('_merged')[0]
-                f.write('{0}\n'.format(bam))
+                if sample not in SAMPLES_TO_EXCLUDE:
+                    f.write('{0}\n'.format(bam))
 
 
 

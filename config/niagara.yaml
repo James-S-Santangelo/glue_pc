@@ -14,7 +14,10 @@ files:
 #samples_to_exclude: ['s_7_14', 's_54_9', 's_97_4', 's_23_12', 's_23_17']
 
 cluster:
-  cores_per_node: 32
+  cores_per_node: 40
 
 species_id:
   num_nt_db_files: 33  # Number of database files for NCBI's nt database (ftp://ftp.ncbi.nlm.nih.gov/blast/db/)
+
+# Samples to exclude based on QC
+samples_to_exclude: ["Calgary_25_13", "Linkoping_8_8", "Melbourne_2_3", "Paris_15_14", "Paris_3_9"]
