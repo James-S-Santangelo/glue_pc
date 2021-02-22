@@ -32,7 +32,7 @@ def get_node_tabix_files(wildcards):
     return node_indices
 
 def get_bed_to_subset(wildcards):
-    all_bed_files = expand(rules.get_fourfold_zerofold.output, site=['0fold','4fold'])
+    all_bed_files = rules.get_fourfold_zerofold.output
     bed = [bed for bed in all_bed_files if wildcards.site in os.path.basename(bed)]
     return bed
 

@@ -1,5 +1,15 @@
+rule clone_degeneracy:
+    output:
+        temp(directory('Degeneracy'))
+    log: 'logs/clone_degeneracy/clone_degeneracy.log'
+    shell:
+        """
+        git clone https://github.com/James-S-Santangelo/Degeneracy.git
+        """
+
 rule get_fourfold_zerofold:
     input:
+        degen = rules.clone_degeneracy.output,
         ref = REFERENCE_GENOME,
         gff = GFF_FILE
     output:
@@ -13,9 +23,9 @@ rule get_fourfold_zerofold:
         time = '04:00:00'
     shell:
         """
-        ( git clone https://github.com/James-S-Santangelo/Degeneracy.git &&
-        cd Degeneracy &&
-        get_4fold_sites.sh {input.gff} {input.ref} {params.outpath} &&
+        OUT_ABS=$( cd {params.outpath}; pwd )
+        ( cd {input.degen} &&
+        bash get_4fold_sites.sh {input.gff} {input.ref} $OUT_ABS &&
         rm -rf Degeneracy ) 2> {log}
         """
 
