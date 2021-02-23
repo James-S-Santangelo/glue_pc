@@ -1,0 +1,178 @@
+---
+title: "GLUE environmental analyses: Predicting cyanogenesis clines"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  pdf_document:
+    toc: true
+    toc_depth: 2
+urlcolor: blue
+---
+
+```{r, include=FALSE}
+# Load required packages
+library(MASS)
+library(tidyverse)
+library(broom)
+library(heplots)
+library(candisc)
+library(ggord)
+library(InPosition)
+library(factoextra)
+library(FactoMineR)
+library(ggpubr)
+library(gridExtra)
+library(vegan)
+library(wesanderson)
+library(glmnet)
+library(olsrr)
+source("../scripts/r/utilityFunctions.R")
+
+# Theme used for plotting
+ng1 <- theme(aspect.ratio=0.7,panel.background = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.border=element_blank(),
+          axis.line.x = element_line(color="black",size=1),
+          axis.line.y = element_line(color="black",size=1),
+          axis.ticks=element_line(color="black"),
+          axis.text=element_text(color="black",size=15),
+          axis.title=element_text(color="black",size=1),
+          axis.title.y=element_text(vjust=2,size=17),
+          axis.title.x=element_text(vjust=0.1,size=17),
+          axis.text.x=element_text(size=15),
+          axis.text.y=element_text(size=15),
+          strip.text.x = element_text(size = 10, colour = "black",face = "bold"),
+          strip.background = element_rect(colour="black"),
+          legend.position = "top", legend.direction="vertical",
+          legend.text=element_text(size=17), legend.key = element_rect(fill = "white"),
+          legend.title = element_text(size=17),legend.key.size = unit(1.0, "cm"))
+```
+
+## Load in data
+
+`all.data` is a concatenated dataset with the population-mean HCN frequencies and environmental data for every city. 
+  
+```{r}
+# Load all populaion-mean dataframes and bind to single dataframe
+inpath <- "../data/clean/popMeans_allCities_withEnviro/"
+csv.files <- list.files(path = inpath, pattern="*.csv")
+all.data <- c()
+for (i in 1:length(csv.files)){
+  data <- read.csv(paste0(inpath, csv.files[i])) %>% dplyr::select(city, 
+                                                                   std_distance, 
+                                                                   freqHCN, 
+                                                                   matches("*Mean$"))
+  all.data <- rbind(all.data,data)
+}
+```
+
+## Set up data for use in regression
+
+```{r, message=FALSE, warning=FALSE, fig.show='hide', results='hide'}
+result.stats.obs <- calculate.stats(all.data,permute=FALSE,number.extreme.sites=2)
+D.UR <- result.stats.obs$D.UR  # Distance matrix
+V.angle.UR <- result.stats.obs$V.angle.UR # Angle matrix
+env.slopes <- as.matrix(result.stats.obs$slope.matrix[,1:9]) # Slopes of each environmental variable from robust regression
+avg.env.res <- as.matrix(avg.env.per.city(all.data)[,-1]) # Mean value of environmental values by city
+
+# Contribution of each city to ...
+res.dist <- mult.dispersion(all.data,number.extreme.sites=5)
+res.dist.metric <- multi.disp.analysis(res.dist,plot.disp=FALSE)
+```
+
+**Question:** `res.dist.metric` reports the contribution of each city to something. What is this 'something'?
+
+```{r, message=FALSE}
+# modelling slopes of HCN
+var.names <- c("AI","PET","DEM","GMIS","NDSI","sLST","sNDVI","sLST","sNDVI")
+colnames(env.slopes) <- var.names
+slopes.HCN <- slope.freqHCN(all.data,number.extreme.sites=1) # OLS and RLM slopes for HCN against distance for each city
+var.names <- c("mAI","mPET","mDEM","mGMIS","mNDSI","msLST","msNDVI","msLST","msNDVI")
+colnames(avg.env.res) <- var.names
+# the second columns of slopes.HCN$slopes are the rlm slopes
+df <- data.frame(HCNslopes=slopes.HCN$slopes[,2],env.slopes,avg.env.res)
+```
+
+```{r}
+head(df)
+```
+
+**Question:** Why are `sLST` and `sNDVI` duplicated? Same with `msLST` and `msNDVI`. Presublably the 's' stands for 'summer' and the other should be 'winter' ('w')?
+
+## Run linear models
+
+Linear regressions fit with OLS:
+  - Response: Slope of HCN vs. standardized distance
+  - Predictor: One of `city contribution`, `distance matrix`, `environmental slope matrix`, `average environmental values matrix`
+
+### City contribution
+
+```{r}
+summary(lm(HCNslopes ~ res.dist.metric$contribution,data=df))
+```
+
+### Distance matrix
+
+```{r}
+summary(lm(HCNslopes ~ D.UR,data=df)) 
+```
+
+### Environmental slope matrix
+
+```{r}
+summary(lm(HCNslopes ~ env.slopes,data=df)) 
+```
+
+### Average environmental value
+
+```{r}
+summary(lm(HCNslopes ~ avg.env.res,data=df)) 
+```
+
+Below: Multiple regression with the RLM slopes of HCN frequencies as a response and the distance matrix, environmental slope matrix, and average environmental value matrix as predictors.
+
+```{r}
+# contributions combined of all predictors
+preds <- cbind(D.UR,env.slopes,avg.env.res)
+df <- data.frame(HCNslopes=slopes.HCN$slopes[,2],preds) 
+summary(lm(slopes.HCN$slopes[,2] ~ preds,data=df)) #Adjusted R-squared:  0.08356; p-value: 0.04706
+```
+
+**Based on the univariate and multiple regressions above, slopes in HCN seem to be best predicted by the slopes of the environmental variables**
+
+## LASSO model selection
+
+Regression with 'shrinkage' where coefficients are regularized by penalizing the sum of the absolute values of the coefficients:
+  - Aimed at reducing the variance inherent in OLS regression
+  - Simultaneously performs parameter shrinkage and model selection since in LASSO, penalization can result in parameters being set to 0
+
+```{r}
+# a model considering interactions among predictors
+interactions.terms <- model.matrix( ~.^2, data=data.frame(scale(preds)))[,-1] # remove intercept
+```
+
+```{r}
+# LASSO model selection
+cvfit <- cv.glmnet(interactions.terms,slopes.HCN$slopes[,2])
+plot(cvfit)
+```
+
+Using 10-fold cross-validation, the shrinkage coefficient lambda is `r cvfit$lambda.min`. 
+
+**Questions:** 
+
+  1. With such a small dataset (~144 cities), 10-fold CV is likely to have both high variance, and high bias. Do you think it's worth considering Leave-one out CV in this case, which should reduce bias (but still have high variance).
+  2. Rather than using CV, which optimizes based on the models predictive ability, why not select lambda by optimizing for the model's fit to the data using AIC or BIC?
+  3. Given that our predictors are likely correlated and LASSO can sometimes struggle with colinearity, should we consider something like Elastic Net (i.e., LASSO + Ridge)? 
+  4. I'm not familiar with the implementation of LASSO below; I've only implemented LASSO using `glmnet` for machine learning. Just to make sure I understand, the code below effectively removes coefficients that were shrunk to 0 and refits the model using OLS, correct? 
+
+```{r}
+# coef(cvfit, s = "lambda.min")
+non.zero.pred <- which(coef(cvfit, s = "lambda.min")!=0)[2:length(which(coef(cvfit, s = "lambda.min")!=0))]-1
+# colnames(interactions.terms[,non.zero.pred])
+# select non-zero slopes:
+int <- interactions.terms[,non.zero.pred]
+lm.inter <- lm(scale(slopes.HCN$slopes[,2]) ~ int)
+summary(lm.inter); # Adjusted R-squared:  0.272
+```
+

@@ -1,0 +1,374 @@
+---
+title: "GLUE environmental analyses"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  pdf_document:
+    toc: true
+    toc_depth: 2
+urlcolor: blue
+---
+
+```{r, include=FALSE}
+# Load required packages
+library(MASS)
+library(tidyverse)
+library(heplots)
+library(candisc)
+library(ggord)
+library(InPosition)
+library(factoextra)
+library(FactoMineR)
+library(ggpubr)
+library(gridExtra)
+library(vegan)
+library(wesanderson)
+source("../scripts/r/utilityFunctions.R")
+
+# Theme used for plotting
+ng1 <- theme(aspect.ratio=0.7,panel.background = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.border=element_blank(),
+          axis.line.x = element_line(color="black",size=1),
+          axis.line.y = element_line(color="black",size=1),
+          axis.ticks=element_line(color="black"),
+          axis.text=element_text(color="black",size=15),
+          axis.title=element_text(color="black",size=1),
+          axis.title.y=element_text(vjust=2,size=17),
+          axis.title.x=element_text(vjust=0.1,size=17),
+          axis.text.x=element_text(size=15),
+          axis.text.y=element_text(size=15),
+          strip.text.x = element_text(size = 10, colour = "black",face = "bold"),
+          strip.background = element_rect(colour="black"),
+          legend.position = "top", legend.direction="vertical",
+          legend.text=element_text(size=17), legend.key = element_rect(fill = "white"),
+          legend.title = element_text(size=17),legend.key.size = unit(1.0, "cm"))
+```
+
+**The section headings in this document are based on the 4 questions and sets of analyses we outlined in a previous meeting. I've summarised the major points in
+each subheading, but a refresher of the meeting can be found [HERE](https://www.notion.so/GLUE-Stats-38b7cb700de041bb861d573334c21fb8).**
+
+# Urban-rural differences in mean multivariate environmental variables
+
+**Question for section:** Are the absolute multivariate mean values the same between urban and rural environments?
+
+  -  **Analyses:** Compare mean values from robust regression, implemented in ordination, standardized with permutation test.
+  
+```{r}
+# Load all populaion-mean dataframes and bind to single dataframe
+inpath <- "../data/clean/popMeans_allCities_withEnviro/"
+csv.files <- list.files(path = inpath, pattern="*.csv")
+all.data <- c()
+for (i in 1:length(csv.files)){
+  data <- read.csv(paste0(inpath, csv.files[i])) %>% dplyr::select(city, 
+                                                                   std_distance, 
+                                                                   freqHCN, 
+                                                                   matches("*Mean$"))
+  all.data <- rbind(all.data,data)
+}
+```
+
+## Step 1: Predicted values from robust regression
+
+`generate.pred.values` performs a robuts regression with mean environmental values as the response variable and standardised distance
+to the urban core as a predictor. Done for each variable and city separately. 
+
+```{r}
+result.pred <- generate.pred.values(all.data,permute=FALSE)
+```
+
+```{r}
+# Predicted values
+Predicted.Values <- result.pred$Predicted.Values
+
+# Original values
+Original.Values <- result.pred$Original.Values # Raw data used in robust regression
+
+# Extreme values of urban and rural environmental variables from predicted dataset
+ExtremeValues <- pick.extreme.values(Predicted.Values,Original.Values,number.extreme.sites=1)
+UrbanPredExtremes <- as.matrix(ExtremeValues$UrbanPredExtremes)
+RuralPredExtremes <- as.matrix(ExtremeValues$RuralPredExtremes)
+
+# Vector of city names
+city.names <- unique(ExtremeValues$city.names)
+n.cities <- length(unique(city.names))
+habitat <- c(rep("Urban", n.cities), rep("Rural", n.cities))
+```
+
+## Step 2: Perform ordination of predicted values
+
+```{r}
+# PCA of urban and rural extreme environmental variables
+# RDA from vegan package perform PCA if no predictor is provided
+enviroPCA <- rda(rbind(UrbanPredExtremes,RuralPredExtremes), 
+           scale = TRUE, na.action = "na.omit")
+```
+
+From the PCA, we can plot the multivariate environmental centroid for each city, colored by habitat.
+We can also layer on the variable loadings and if we wanted to we coulld connect habitats within cities 
+by lines (not shown)
+
+```{r, echo=FALSE}
+
+# Retrieve PC scores of urban/rural sites per city
+df_sites  <- data.frame(scores(enviroPCA, display = "sites", scaling = "species")[,1:2]) %>%
+  cbind(., city.names, habitat)
+
+# Extract RDA1 and PC1 species scores
+df2_species  <- data.frame(scores(enviroPCA, display = "species", scaling = "species")[,1:2]) 
+
+# Create RDA biplot
+enviroPCA_plot <- ggplot(df_sites, aes(x = PC1, y = PC2)) +
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  # geom_line(aes(group = city.names), alpha = 0.7) +
+  geom_point(size = 2.75, shape = 21, colour = "black", aes(fill =  habitat)) +
+  stat_ellipse(aes(colour = habitat), size = 1.5, type = "norm", level = 0.95) +
+  xlab("PC1 (38.1%)") + ylab("PC2 (27.5%)") +
+  scale_colour_manual(values = c("#00A08A", "#F98400")) +
+  scale_fill_manual(values = c("#00A08A", "#F98400")) +
+  ng1 + theme(legend.position = "top",
+              legend.direction="horizontal",
+              legend.text = element_text(size=15),
+              legend.key = element_rect(fill = "white"),
+              legend.title = element_blank(),
+              legend.key.size = unit(0.5, "cm"),
+              legend.spacing.x = unit(0.1, "cm"))
+# enviroPCA_plot
+
+# Add eigenvectors to PCA plot
+enviroPCA_plot_withArrows <- enviroPCA_plot +
+  geom_segment(data = df2_species, aes(x = 0, xend = PC1, y=0, yend = PC2), 
+               color = "black", size = 1, arrow = arrow(length = unit(0.02, "npc")),
+               alpha = 0.7) +
+  geom_text(data = df2_species, 
+            aes(x = PC1, y = PC2, label = rownames(df2_species),
+                hjust = "inward", vjust =  0.5 * (1 - sign(PC1))), 
+            # hjust = 0.5 * (1 - sign(RDA1)), vjust = 0.5 * (1 - sign(PC1))), 
+            color = "black", size = 2.5) 
+# enviroPCA_plot_withArrows
+
+grid.arrange(enviroPCA_plot, enviroPCA_plot_withArrows, ncol = 2)
+```
+
+## Step 3: Permutation test
+
+We discussed using a permutation test to control for bias in the multivariate environmental analysis. 
+
+  - **Question for Pedro:** What's the bias?
+
+Presumably, this is done using the `permutation.tests` function from Pedro's code. However, this code 
+currently produces strange output where the P-values for all terms are identical and a direct function of
+the number of permutations (see below). I'm only showing 5 permutations since it takes a while to run but
+it illustrates the problem. 
+
+```{r}
+# Code taken from Code V3
+# Can only test for interaction if number.extreme.sites >= 2
+permutation.tests(all.data,n.perm=5,number.extreme.sites=2)
+```
+
+- **Questions for Pedro:**
+
+  - Why are all the P-values from the permutation test identical?
+  - Why can't the interaction be tested when `number.extreme.sites = 1`? With a single rural and urban site per city, we 
+  should still be able to test whether the effect of habitat on environmental variables varies across cities, no? What am I
+  misunderstanding?
+  
+# Urban-rural differences in mean multivariate environmental variables
+
+**Question for section:** Are the absolute multivariate mean values the same between urban and rural environments?
+
+  -  **Analyses:** Compare variance among urban and rural sites in each city->using multivariate Levene’s test->calc residuals from robust regression in analysis
+  #1->Calculate residuals from 5 most urban and 5 most rural (average these?)-> should be single “mean residual value” for each urban enviro and each rural enviro
+  per city
+
+The results below just recapitulate those send by Pedro in the PDF along with V3 of the code. 
+
+```{r, include=FALSE}
+# Urban-rural variance in environmental variables between cities
+enviroVariance <- mult.dispersion(all.data, number.extreme.sites = 5)
+```
+
+```{r, include = FALSE}
+city.df.all <- enviroVariance$city.df.all
+```
+
+## Step 1: Box's M-test
+
+Tests for homogeneity between two covariance matrices. In our case, these two matrices are the predicted urban and rural values for each of the environmental variables
+
+```{r}
+enviroVariance$box
+```
+
+```{r}
+plot(enviroVariance$box)
+```
+
+## Step 2: Levene's test and Cannonical Discriminant Analysis
+
+```{r}
+enviroVariance$levine_lm
+```
+
+```{r}
+Anova(enviroVariance$levine_lm)
+```
+
+```{r}
+enviroVariance$levene_can
+```
+
+## Step 3: PCA on standardised environmental variables
+
+For 5 most urban and 5 most rural populations, this analysis performs a Levene's test for homogeneity of variances and scales observations 
+from the F-statistic from this test. These scaled environmental values are then fed into a PCA. This is what that PCA looks like:
+
+```{r, echo=FALSE}
+# Retrieve PC scores of urban/rural sites per city
+
+df_sites  <- data.frame(enviroVariance$pca_stand$ind$coord)[,1:2] %>%
+  cbind(., enviroVariance$pca_stand$groups) %>% 
+  rename("habitat" = "enviroVariance$pca_stand$groups")
+
+contrib <- data.frame(enviroVariance$pca_stand$var$contrib) %>% 
+  dplyr::select(Dim.1) %>% 
+  rename("contrib" = "Dim.1")
+
+# Extract RDA1 and PC1 species scores
+df2_species  <- data.frame(enviroVariance$pca_stand$var$coord)[,1:2] %>% 
+  cbind(., contrib)
+
+# Create RDA biplot
+enviroVar_PCAplot <- ggplot(df_sites, aes(x = Dim.1, y = Dim.2)) +
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  # geom_line(aes(group = city.names), alpha = 0.7) +
+  geom_point(size = 2.75, shape = 21, colour = "black", aes(fill =  habitat)) +
+  stat_ellipse(aes(colour = habitat), size = 1.5, type = "norm", level = 0.95) +
+  xlab("PC1 (74.4%)") + ylab("PC2 (6.6%)") +
+  scale_colour_manual(values = c("#00A08A", "#F98400")) +
+  scale_fill_manual(values = c("#00A08A", "#F98400")) +
+  ng1 + theme(legend.position = "top",
+              legend.direction="horizontal",
+              legend.text = element_text(size=15),
+              legend.key = element_rect(fill = "white"),
+              legend.title = element_blank(),
+              legend.key.size = unit(0.5, "cm"),
+              legend.spacing.x = unit(0.1, "cm"))
+
+# Add eigenvectors to PCA plot
+pal <- wes_palette("Darjeeling1", 3, type = "continuous")
+enviroVar_PCAplot_withArrows <- ggplot() +
+  geom_hline(yintercept = 0, size = 1, linetype = "dashed", alpha = 0.7) +
+  geom_segment(data = df2_species, aes(x = 0, xend = Dim.1, y=0, yend = Dim.2, color = contrib), 
+               size = 1, arrow = arrow(length = unit(0.02, "npc")), alpha = 0.7) +
+  geom_text(data = df2_species,
+            aes(x = Dim.1, y = Dim.2, label = rownames(df2_species),
+                hjust = "inward", vjust =  0.5 * (1 - sign(Dim.1))),
+            # hjust = 0.5 * (1 - sign(RDA1)), vjust = 0.5 * (1 - sign(PC1))),
+            color = "black", size = 3.5) + 
+  xlab("PC1 (74.4%)") + ylab("PC2 (6.6%)") +
+  # scale_color_gradientn(colours = pal, trans = "reverse") +
+  scale_colour_gradientn(colours = rev(pal), breaks = c(5, 10, 15, 20, 25)) +
+  ng1 + theme(legend.position = "top",
+              legend.direction="horizontal",
+              # legend.title = element_blank(),
+              legend.key.size = unit(0.5, "cm"),
+              legend.spacing.x = unit(0.1, "cm"),
+              legend.text = element_text(size=10)) +
+  guides(color = guide_colourbar(barwidth = 10, barheight = 0.5))
+
+grid.arrange(enviroVar_PCAplot, enviroVar_PCAplot_withArrows, ncol = 2)
+```
+
+**Question for Pedro**
+
+  - Why are there 1,400 points in the PCA? I thought we taking the mean of the robust regression residuals for the 5 most urban and rural populations so that there
+  should only be # points = 2 x # cities. Is this approach analogous? It doesn't use the residuals from the robust regression as we previously discussed.
+
+
+# Differences in rate and direction of environmental change
+
+**Question for section:** Is the direction/rate the same across cities?
+
+  -  **Analyses:** What’s the test?->Pca of slopes -> tests if cities vary in environmental response to urbanization
+
+This analysis is not currently implemented. However, we previously discussed doing a PCA of the slopes from the rpbust regression. This is
+easily done using some of the existing results from the analyses. 
+
+```{r}
+# Get slopes from robust regression for each environmental variable and city
+slopes <- result.pred$slopes
+```
+
+```{r}
+slopes_noNA <- na.omit(slopes) # Can't have missing values. results in N = 144
+slopes_pca <- rda(as.matrix(slopes_noNA %>% dplyr::select(-city)), scale = TRUE)
+```
+
+Here is what that PCA looks like:
+
+```{r, echo=FALSE}
+# Retrieve PC scores of urban/rural sites per city
+df_sites  <- data.frame(scores(slopes_pca, display = "sites", scaling = "species")[,1:2]) %>%
+  cbind(., slopes_noNA %>% dplyr::select(city))
+
+# Extract RDA1 and PC1 species scores
+df2_species  <- data.frame(scores(slopes_pca, display = "species", scaling = "species")[,1:2]) 
+
+# Create RDA biplot
+slopesPCA_plot <- ggplot(df_sites, aes(x = PC1, y = PC2)) +
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  geom_point(size = 2.75, shape = 21, colour = "black", fill = "black") +
+  xlab("PC1 (34.6%)") + ylab("PC2 (21.8%)") +
+  ng1
+
+# Add eigenvectors to PCA plot
+slopesPCA_plot_withArrows <- slopesPCA_plot +
+  geom_segment(data = df2_species, aes(x = 0, xend = PC1, y=0, yend = PC2), 
+               color = "black", size = 1, arrow = arrow(length = unit(0.02, "npc")),
+               alpha = 0.7) +
+  geom_text(data = df2_species, 
+            aes(x = PC1, y = PC2, label = rownames(df2_species),
+                hjust = "inward", vjust =  0.5 * (1 - sign(PC1))), 
+            # hjust = 0.5 * (1 - sign(RDA1)), vjust = 0.5 * (1 - sign(PC1))), 
+            color = "black", size = 2.5) 
+slopesPCA_plot_withArrows
+```
+```{r}
+slopes_noNA %>% filter(city == "Little_Rock")
+```
+
+The PCA is usefult for describing similarities in the *rate* of multivariate environmental change. Most cities seem pretty similar in the rate of change, although there are some clear outliers. 
+
+The largest outlier is Little Rock, due to its insanely large slope value for DEM. In fact, a lot of the slopes seem to be dubious. The DEM slope value for Little Rock is 1266. However, running this robust regression on its own shows a different slope value (-34, see below).
+
+```{r}
+Little_Rock <- all.data %>% 
+  filter(city == "Little_Rock")
+
+rlm(DEM_Mean ~ std_distance, data = Little_Rock)
+```
+
+**Questions for Pedro:**
+
+  - Any idea why the slope values from the robust regressions are so different? Indeed, all the slopes returned by `generate.pred.values` that I've looked at seem
+  incorrect. I haven't done much digging yet so it may be a simple error somewhere.
+
+**Questions**:
+
+  - What about the *direction* of change? It's not clear to me how the direction of change from the slopes (i.e., + or -) relates to the values in the PCA so I'm 
+  not sure how informative the PCA is at describing variation in direction of change across cities.
+  - Could we use the vector magnitudes and angle direction dataframes to somehow address these questions?
+
+# Environmental predictors of HCN frequencies
+
+**Question for section:** Does urban enviro change predict evolution in HCN?
+
+  -  **Analyses:** Can use 1, 2 and 3 to predict evolutionary change ->standard linear model where evolution is measured as range of change in frequency of HCN
+  within pops vs urbanization. Could also consider interactions between how 1, 2, and 3 affect evolutionary change
+  
+We have not done this yet.
