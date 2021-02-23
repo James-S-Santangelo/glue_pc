@@ -1,0 +1,12 @@
+.DS_Store
+.Rhistory
+.Rproj.user/
+data/
+*.ipynb
+analysis/
+notebooks/*.pdf
+misc/
+*.pyc
+*venv
+renv/Library
+*.pdf
