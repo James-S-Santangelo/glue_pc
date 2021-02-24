@@ -70,6 +70,7 @@ include: 'rules/single_sample_sfs.smk'
 include: 'rules/param_tests.smk'
 include: 'rules/angsd.smk'
 include: 'rules/population_structure.smk'
+include: 'rules/notebooks.smk'
 
 rule clean:
     params:

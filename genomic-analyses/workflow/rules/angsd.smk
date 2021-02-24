@@ -215,7 +215,7 @@ rule concat_angsd_stats:
     input:
         get_angsd_stats_toConcat
     output:
-        '{0}/summary_stats/thetas/{{site}}/allSamples_{{site}}_diversityNeutrality.thetas.idx.pestPG'.format(ANGSD_DIR)
+        '{0}/summary_stats/thetas/{{site}}/allSamples_{{site}}_diversityNeutrality_allChroms.thetas.idx.pestPG'.format(ANGSD_DIR)
     log: 'logs/concat_angsd_stats_specificSites/{site}_concat_angsd_stats.log'
     shell:
         """
@@ -364,10 +364,11 @@ rule extract_sample_angsd:
 
 rule angsd_done:
     input:
-        expand('{0}/depth/{{chrom}}/{{chrom}}_allSamples_allSites.depth{{ext}}'.format(ANGSD_DIR), chrom=CHROMOSOMES, ext=['Sample', 'Global']),
-        expand('{0}/summary_stats/thetas/{{site}}/allSamples_{{site}}_diversityNeutrality.thetas.idx.pestPG'.format(ANGSD_DIR), site=['allSites','0fold','4fold']),
-        expand('{0}/sfs/{{site}}/allSamples_{{site}}_allChroms.sfs'.format(ANGSD_DIR), site=['allSites','0fold','4fold']),
-        expand('{0}/gl/{{site}}/allSamples_allChroms_{{site}}_maf{{maf}}.{{ext}}.gz'.format(ANGSD_DIR), maf=['0.05'], ext=['beagle', 'mafs'], site=['0fold', '4fold']),
+        expand(rules.angsd_depth.output, chrom=CHROMOSOMES, ext=['Sample', 'Global']),
+        expand(rules.concat_angsd_stats.output, site=['allSites','0fold','4fold']),
+        expand(rules.concat_sfs.output, site=['allSites','0fold','4fold']),
+        expand(rules.concat_angsd_mafs.output, maf=['0.05'], site=['0fold', '4fold']),
+        expand(rules.concat_angsd_gl.output, maf=['0.05'], site=['0fold', '4fold']),
         rules.extract_sample_angsd.output
     output:
         '{0}/angsd.done'.format(ANGSD_DIR)

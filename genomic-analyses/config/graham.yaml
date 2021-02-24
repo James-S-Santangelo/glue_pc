@@ -10,9 +10,6 @@ files:
   reference_genome: /home/santang3/projects/def-johnso73/clover-ref/ref_genome/GCA_005869975.1_AgR_To_v5_genomic.fna
   gff: /home/santang3/projects/def-johnso73/clover-ref/gff/TrR.v5.renamed_reformated.gtf.gz
 
-# Samples to exclude based on QC (e.g., different species, low coverage, etc.) 
-# samples_to_exclude: ['s_7_14', 's_54_9', 's_97_4', 's_23_12', 's_23_17']
-
 cluster:
   cores_per_node: 32
 
