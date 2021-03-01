@@ -11,6 +11,10 @@ configfile: '../config/hpcnode.yaml'
 SAMPLES = pd.read_table(config['samples'], sep=',')['plantID'].tolist()
 CHROMOSOMES = pd.read_table(config['chromosomes'], header=None).iloc[:,0].tolist()
 
+# Toronto samples to include in analyses
+TOR_SAMPLES = pd.read_table(config['toronto_data']['samples'])['sample'].tolist()
+TOR_BAMS = config['toronto_data']['bams']
+
 # Reference genome
 REFERENCE_GENOME = config['files']['reference_genome']
 GFF_FILE = config['files']['gff']
@@ -39,7 +43,7 @@ NT_DB_FINAL_EXT = ['nal', 'ndb', 'nos', 'not', 'ntf', 'nto']
 wildcard_constraints:
     chrom='|'.join([x for x in CHROMOSOMES])
 
-localrules: create_tmp_dir, create_bam_list_allSamples, create_bam_list_forSpeciesID, concat_angsd_stats, concat_sfs, sum_sfs, convert_sites_for_angsd, split_angsd_sites_byChrom, angsd_index_sites, files_for_angsd_site_subset, subset_angsd_gl, subset_angsd_maf, extract_sample_angsd, angsd_done, chloroplast_gene_fasta, index_chloroplast_gene_vcf, concat_fasta, download_nt_database, single_sample_sfs_done, pop_structure_done, clone_degeneracy
+localrules: create_tmp_dir, create_bam_list_allSamples, create_bam_list_forSpeciesID, concat_angsd_stats, concat_sfs, sum_sfs, convert_sites_for_angsd, split_angsd_sites_byChrom, angsd_index_sites, files_for_angsd_site_subset, subset_angsd_gl, subset_angsd_maf, extract_sample_angsd, angsd_done, chloroplast_gene_fasta, index_chloroplast_gene_vcf, concat_fasta, download_nt_database, single_sample_sfs_done, pop_structure_done, clone_degeneracy, downsample_toronto_done
 
 include: 'rules/common.smk'
 
@@ -50,7 +54,9 @@ rule all:
         # Trimming, mapping, and QC
         '{0}/multiqc/multiqc_report.html'.format(QC_DIR),
         '{0}/single_sample_sfs.done'.format(SS_SFS_DIR),
-        '{0}/species_id.done'.format(SPECIES_ID_DIR), 
+        '{0}/species_id.done'.format(SPECIES_ID_DIR),
+        # Downsample Toronto data
+        '{0}/downsample_toronto.done'.format(BAM_DIR),
         # Angsd
         '{0}/angsd.done'.format(ANGSD_DIR),
         # Population structure
@@ -67,6 +73,7 @@ include: 'rules/mapping.smk'
 include: 'rules/qc.smk'
 include: 'rules/species_id.smk'
 include: 'rules/single_sample_sfs.smk'
+include: 'rules/toronto_downsample.smk'
 include: 'rules/param_tests.smk'
 include: 'rules/angsd.smk'
 include: 'rules/population_structure.smk'
