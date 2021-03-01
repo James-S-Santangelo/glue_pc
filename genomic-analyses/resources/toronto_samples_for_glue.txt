@@ -1,4 +1,5 @@
 sample	prefix	pop	plant	category	mean_coverage
+s_37_15	s	37	15	good	10.4273
 s_37_8	s	37	8	good	11.7885
 s_40_10	s	40	10	good	11.6823
 s_40_3	s	40	3	good	13.6465
@@ -17,3 +18,4 @@ s_83_13	s	83	13	good	15.7444
 s_83_14	s	83	14	good	14.5451
 s_83_18	s	83	18	good	13.9286
 s_83_5	s	83	5	good	13.7664
+s_83_9	s	83	9	good	12.108
