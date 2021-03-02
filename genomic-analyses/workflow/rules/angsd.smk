@@ -1,6 +1,34 @@
+rule create_bam_list_highQualSamples:
+    input:
+        expand(rules.samtools_markdup.output.bam, sample=SAMPLES)
+    output:
+        '{0}/bam_lists/highQualSamples_bams.list'.format(PROGRAM_RESOURCE_DIR)
+    log: 'logs/create_bam_list/highQualSamples_bam_list.log'
+    run:
+        import os
+        with open(output[0], 'w') as f:
+            for bam in input:
+                sample = os.path.basename(bam).split('_merged')[0]
+                if sample not in LOWQUAL_SAMPLES_TO_EXCLUDE:
+                    f.write('{0}\n'.format(bam))
+
+rule create_bam_list_allFinalSamples:
+    input:
+        expand(rules.samtools_markdup.output.bam, sample=SAMPLES)
+    output:
+        '{0}/bam_lists/allFinalSamples_bams.list'.format(PROGRAM_RESOURCE_DIR)
+    log: 'logs/create_bam_list/allFinalSamples_bam_list.log'
+    run:
+        import os
+        with open(output[0], 'w') as f:
+            for bam in input:
+                sample = os.path.basename(bam).split('_merged')[0]
+                if sample not in ALL_SAMPLES_TO_EXCLUDE:
+                    f.write('{0}\n'.format(bam))
+
 rule angsd_depth:
     input:
-        bams = rules.create_bam_list_allSamples.output
+        bams = rules.create_bam_list_allFinalSamples.output
     output:
         sam = '{0}/depth/{{chrom}}/{{chrom}}_allSamples_allSites.depthSample'.format(ANGSD_DIR),
         glo = '{0}/depth/{{chrom}}/{{chrom}}_allSamples_allSites.depthGlobal'.format(ANGSD_DIR)
@@ -25,21 +53,22 @@ rule angsd_depth:
             -out {params.out} 2> {log}
         """
 
-
 rule angsd_saf_likelihood_allSites:
     input:
-        bams = rules.create_bam_list_allSamples.output,
+        bams = rules.create_bam_list_allFinalSamples.output,
         ref = REFERENCE_GENOME
     output:
-        saf = '{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.saf.gz'.format(ANGSD_DIR),
-        saf_idx = '{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.saf.idx'.format(ANGSD_DIR),
-        saf_pos ='{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.saf.pos.gz'.format(ANGSD_DIR),
-        pos = '{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.pos.gz'.format(ANGSD_DIR),
-        counts = '{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites.counts.gz'.format(ANGSD_DIR)
+        saf = temp('{0}/sfs/allSites/{{chrom}}/{{chrom}}_allFinalSamples_allSites.saf.gz'.format(ANGSD_DIR)),
+        saf_idx = temp('{0}/sfs/allSites/{{chrom}}/{{chrom}}_allFinalSamples_allSites.saf.idx'.format(ANGSD_DIR)),
+        saf_pos = temp('{0}/sfs/allSites/{{chrom}}/{{chrom}}_allFinalSamples_allSites.saf.pos.gz'.format(ANGSD_DIR)),
+        pos = '{0}/sfs/allSites/{{chrom}}/{{chrom}}_allFinalSamples_allSites.pos.gz'.format(ANGSD_DIR),
+        counts = '{0}/sfs/allSites/{{chrom}}/{{chrom}}_allFinalSamples_allSites.counts.gz'.format(ANGSD_DIR)
     log: 'logs/angsd_saf_likelihood_allSites/{chrom}_allSites_angsd_saf.log'
     conda: '../envs/angsd.yaml'
     params:
-        out = '{0}/sfs/allSites/{{chrom}}/{{chrom}}_allSamples_allSites'.format(ANGSD_DIR)
+        out = '{0}/sfs/allSites/{{chrom}}/{{chrom}}_allFinalSamples_allSites'.format(ANGSD_DIR),
+        max_dp = ANGSD_MAX_DP,
+        min_dp_ind = ANGSD_MIN_DP_IND_SFS
     resources:
         nodes = 1,
         ntasks = CORES_PER_NODE,
@@ -55,7 +84,8 @@ rule angsd_saf_likelihood_allSites:
             -nThreads {resources.ntasks} \
             -doCounts 1 \
             -dumpCounts 2 \
-            -setMaxDepth 1250 \
+            -setMinDepthInd {params.min_dp_ind} \
+            -setMaxDepth {params.max_dp} \
             -baq 2 \
             -ref {input.ref} \
             -minInd $MIN_IND \
@@ -69,15 +99,17 @@ rule angsd_saf_likelihood_allSites:
 
 rule angsd_gl_allSites:
     input:
-        bams = rules.create_bam_list_allSamples.output,
+        bams = get_bams_for_angsd_gls,
         ref = REFERENCE_GENOME
     output:
-        gls = '{0}/gls/allSites/{{chrom}}/{{chrom}}_allSamples_allSites_maf{{maf}}.beagle.gz'.format(ANGSD_DIR),
-        mafs = '{0}/gls/allSites/{{chrom}}/{{chrom}}_allSamples_allSites_maf{{maf}}.mafs.gz'.format(ANGSD_DIR),
-    log: 'logs/angsd_gl_allSites/{chrom}_allSites_maf{maf}_angsd_gl.log'
+        gls = temp('{0}/gls/{{sample_set}}/allSites/{{chrom}}/{{chrom}}_{{sample_set}}_allSites_maf{{maf}}.beagle.gz'.format(ANGSD_DIR)),
+        mafs = temp('{0}/gls/{{sample_set}}/allSites/{{chrom}}/{{chrom}}_{{sample_set}}_allSites_maf{{maf}}.mafs.gz'.format(ANGSD_DIR)),
+    log: 'logs/angsd_gl_allSites/{chrom}_{sample_set}_allSites_maf{maf}_angsd_gl.log'
     conda: '../envs/angsd.yaml'
     params:
-        out = '{0}/gls/allSites/{{chrom}}/{{chrom}}_allSamples_allSites_maf{{maf}}'.format(ANGSD_DIR)
+        out = '{0}/gls/{{sample_set}}/allSites/{{chrom}}/{{chrom}}_{{sample_set}}_allSites_maf{{maf}}'.format(ANGSD_DIR),
+        max_dp = ANGSD_MAX_DP,
+        min_dp_ind = ANGSD_MIN_DP_IND_GL
     resources:
         nodes = 1,
         ntasks = CORES_PER_NODE,
@@ -87,7 +119,7 @@ rule angsd_gl_allSites:
     shell:
         """
         NUM_IND=$( wc -l < {input.bams} );
-        MIN_IND=$(( NUM_IND*50/100 ));
+        MIN_IND=$(( NUM_IND*80/100 ))
         angsd -GL 1 \
             -out {params.out} \
             -nThreads {resources.ntasks} \
@@ -96,7 +128,8 @@ rule angsd_gl_allSites:
             -SNP_pval 1e-6 \
             -doMaf 1 \
             -doCounts 1 \
-            -setMaxDepth 1250 \
+            -setMinDepthInd {params.min_dp_ind} \
+            -setMaxDepth {params.max_dp} \
             -baq 2 \
             -ref {input.ref} \
             -minInd $MIN_IND \
@@ -146,7 +179,7 @@ rule split_angsd_sites_byChrom:
 
 rule angsd_index_sites:
     input:
-        rules.split_angsd_sites_byChrom.output
+        get_sites_for_angsd_index
     output:
         binary = '{0}/angsd_sites/{{chrom}}/{{chrom}}_Trepens_{{site}}.sites.bin'.format(PROGRAM_RESOURCE_DIR),
         idx = '{0}/angsd_sites/{{chrom}}/{{chrom}}_Trepens_{{site}}.sites.idx'.format(PROGRAM_RESOURCE_DIR)
@@ -161,7 +194,7 @@ rule angsd_estimate_sfs:
     input:
         unpack(angsd_sfs_input) 
     output:
-        temp('{0}/sfs/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}.sfs'.format(ANGSD_DIR))
+        temp('{0}/sfs/{{site}}/{{chrom}}/{{chrom}}_allFinalSamples_{{site}}.sfs'.format(ANGSD_DIR))
     log: 'logs/angsd_estimate_sfs/{chrom}_{site}_sfs.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     threads: 10
@@ -177,13 +210,13 @@ rule angsd_estimate_thetas:
     input:
         unpack(angsd_estimate_thetas_input)
     output:
-        idx = '{0}/summary_stats/thetas/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}.thetas.idx'.format(ANGSD_DIR),
-        thet = '{0}/summary_stats/thetas/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}.thetas.gz'.format(ANGSD_DIR)
+        idx = '{0}/summary_stats/thetas/{{site}}/{{chrom}}/{{chrom}}_allFinalSamples_{{site}}.thetas.idx'.format(ANGSD_DIR),
+        thet = '{0}/summary_stats/thetas/{{site}}/{{chrom}}/{{chrom}}_allFinalSamples_{{site}}.thetas.gz'.format(ANGSD_DIR)
     log: 'logs/angsd_estimate_thetas/{chrom}_{site}_thetas.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     threads: 10
     params:
-        out = '{0}/summary_stats/thetas/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}'.format(ANGSD_DIR)
+        out = '{0}/summary_stats/thetas/{{site}}/{{chrom}}/{{chrom}}_allFinalSamples_{{site}}'.format(ANGSD_DIR)
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 10000,
         time = '03:00:00'
@@ -200,7 +233,7 @@ rule angsd_diversity_neutrality_stats:
     input:
         rules.angsd_estimate_thetas.output.idx
     output:
-       temp( '{0}/summary_stats/thetas/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}.thetas.idx.pestPG'.format(ANGSD_DIR))
+       temp( '{0}/summary_stats/thetas/{{site}}/{{chrom}}/{{chrom}}_allFinalSamples_{{site}}.thetas.idx.pestPG'.format(ANGSD_DIR))
     log: 'logs/angsd_diversity_neutrality_stats/{chrom}_{site}_diversity_neutrality.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     resources:
@@ -215,8 +248,8 @@ rule concat_angsd_stats:
     input:
         get_angsd_stats_toConcat
     output:
-        '{0}/summary_stats/thetas/{{site}}/allSamples_{{site}}_diversityNeutrality_allChroms.thetas.idx.pestPG'.format(ANGSD_DIR)
-    log: 'logs/concat_angsd_stats_specificSites/{site}_concat_angsd_stats.log'
+        '{0}/summary_stats/thetas/{{site}}/allFinalSamples_{{site}}_diversityNeutrality.thetas.idx.pestPG'.format(ANGSD_DIR)
+    log: 'logs/concat_angsd_stats_specificSites/allFinalSamples_{site}_concat_angsd_stats.log'
     shell:
         """
         first=1
@@ -234,7 +267,7 @@ rule concat_sfs:
     input:
         get_angsd_sfs_toConcat
     output:
-        '{0}/sfs/{{site}}/allSamples_{{site}}_allChroms.cat'.format(ANGSD_DIR)
+        '{0}/sfs/{{site}}/allFinalSamples_{{site}}_allChroms.cat'.format(ANGSD_DIR)
     log: 'logs/concat_sfs/{site}_concat_sfs.log'
     shell:
         """
@@ -245,7 +278,7 @@ rule sum_sfs:
     input:
         rules.concat_sfs.output
     output:
-        '{0}/sfs/{{site}}/allSamples_{{site}}_allChroms.sfs'.format(ANGSD_DIR)
+        '{0}/sfs/{{site}}/allFinalSamples_{{site}}_allChroms.sfs'.format(ANGSD_DIR)
     run:
         import pandas as pd
         sfs_allChroms = pd.read_table(input[0], sep = ' ', header = None)
@@ -272,10 +305,10 @@ rule subset_angsd_gl:
         subset = rules.files_for_angsd_site_subset.output.gl,
         gl = rules.angsd_gl_allSites.output.gls
     output:
-        '{0}/gl/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}_maf{{maf}}.beagle.gz'.format(ANGSD_DIR)
-    log: 'logs/subset_angsd_gl/{chrom}_{site}_maf{maf}_subset_gl.log'
+        '{0}/gls/{{sample_set}}/{{site}}/{{chrom}}/{{chrom}}_{{sample_set}}_{{site}}_maf{{maf}}.beagle.gz'.format(ANGSD_DIR)
+    log: 'logs/subset_angsd_gl/{chrom}_{sample_set}_{site}_maf{maf}_subset_gl.log'
     params:
-        unzip_out='{0}/gl/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}_maf{{maf}}.beagle'.format(ANGSD_DIR)
+        unzip_out='{0}/gls/{{sample_set}}/{{site}}/{{chrom}}/{{chrom}}_{{sample_set}}_{{site}}_maf{{maf}}.beagle'.format(ANGSD_DIR)
     wildcard_constraints:
         site='0fold|4fold'
     shell:
@@ -291,10 +324,10 @@ rule subset_angsd_maf:
         subset = rules.files_for_angsd_site_subset.output.maf,
         mafs = rules.angsd_gl_allSites.output.mafs
     output:
-        '{0}/gl/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}_maf{{maf}}.mafs.gz'.format(ANGSD_DIR)
-    log: 'logs/subset_angsd_maf/{chrom}_{site}_maf{maf}_subset_maf.log'
+        '{0}/gls/{{sample_set}}/{{site}}/{{chrom}}/{{chrom}}_{{sample_set}}_{{site}}_maf{{maf}}.mafs.gz'.format(ANGSD_DIR)
+    log: 'logs/subset_angsd_maf/{chrom}_{sample_set}_{site}_maf{maf}_subset_maf.log'
     params:
-        unzip_out='{0}/gl/{{site}}/{{chrom}}/{{chrom}}_allSamples_{{site}}_maf{{maf}}.mafs'.format(ANGSD_DIR)
+        unzip_out='{0}/gls/{{sample_set}}/{{site}}/{{chrom}}/{{chrom}}_{{sample_set}}_{{site}}_maf{{maf}}.mafs'.format(ANGSD_DIR)
     wildcard_constraints:
         site='0fold|4fold'
     shell:
@@ -308,11 +341,9 @@ rule concat_angsd_gl:
     input:
         get_angsd_gl_toConcat
     output:
-        '{0}/gl/{{site}}/allSamples_allChroms_{{site}}_maf{{maf}}.beagle.gz'.format(ANGSD_DIR)
-    log: 'logs/concat_angsd_gl/concat_angsd_gl_{site}_maf{maf}.log'
+        '{0}/gls/{{sample_set}}/{{site}}/allChroms_{{sample_set}}_{{site}}_maf{{maf}}.beagle.gz'.format(ANGSD_DIR)
+    log: 'logs/concat_angsd_gl/concat_angsd_gl_{sample_set}_{site}_maf{maf}.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
-    wildcard_constraints:
-        site='0fold|4fold'
     shell:
         """
         first=1
@@ -330,11 +361,9 @@ rule concat_angsd_mafs:
     input:
         get_angsd_maf_toConcat
     output:
-        '{0}/gl/{{site}}/allSamples_allChroms_{{site}}_maf{{maf}}.mafs.gz'.format(ANGSD_DIR)
-    log: 'logs/concat_angsd_mafs/concat_angsd_mafs_{site}_maf{maf}.log'
+        '{0}/gls/{{sample_set}}/{{site}}/allChroms_{{sample_set}}_{{site}}_maf{{maf}}.mafs.gz'.format(ANGSD_DIR)
+    log: 'logs/concat_angsd_mafs/concat_angsd_mafs_{sample_set}_{site}_maf{maf}.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
-    wildcard_constraints:
-        site='0fold|4fold'
     shell:
         """
         first=1
@@ -350,9 +379,9 @@ rule concat_angsd_mafs:
 
 rule extract_sample_angsd:
     input:
-        rules.create_bam_list_allSamples.output
+        get_bams_for_angsd_gls
     output:
-        '{0}/angsd_sample_order.txt'.format(PROGRAM_RESOURCE_DIR)
+        '{0}/angsd_{{sample_set}}_order.txt'.format(PROGRAM_RESOURCE_DIR)
     run:
         with open(output[0], 'w') as fout:
             with open(input[0], 'r') as fin:
@@ -364,12 +393,12 @@ rule extract_sample_angsd:
 
 rule angsd_done:
     input:
-        expand(rules.angsd_depth.output, chrom=CHROMOSOMES, ext=['Sample', 'Global']),
+        expand(rules.angsd_depth.output, chrom=CHROMOSOMES),
         expand(rules.concat_angsd_stats.output, site=['allSites','0fold','4fold']),
-        expand(rules.concat_sfs.output, site=['allSites','0fold','4fold']),
-        expand(rules.concat_angsd_mafs.output, maf=['0.05'], site=['0fold', '4fold']),
-        expand(rules.concat_angsd_gl.output, maf=['0.05'], site=['0fold', '4fold']),
-        rules.extract_sample_angsd.output
+        expand(rules.sum_sfs.output, site=['allSites','0fold','4fold']),
+        expand(rules.concat_angsd_gl.output, sample_set=['highQualSamples','finalSamples_relatedRemoved'], site=['allSites','0fold','4fold'], maf=['0.05']),
+        expand(rules.concat_angsd_mafs.output, sample_set=['highQualSamples','finalSamples_relatedRemoved'], site=['allSites','0fold','4fold'], maf=['0.05']),
+        expand(rules.extract_sample_angsd.output, sample_set=['highQualSamples','finalSamples_relatedRemoved'])
     output:
         '{0}/angsd.done'.format(ANGSD_DIR)
     shell:
