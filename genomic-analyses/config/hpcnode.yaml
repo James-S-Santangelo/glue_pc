@@ -6,6 +6,11 @@ results_prefix: ../results
 raw_read_prefix: /scratch/research/projects/trifolium/toronto_gwsd/data
 temp_dir: /scratch/santang3/tmp 
 
+# Include 10 urban and rural samples from Toronto data
+toronto_data:
+  bams: /scratch-deleted-2021-mar-20/santang3/toronto_gwsd/snakemake/results/bam/final
+  samples: ../resources/toronto_samples_for_glue.txt
+
 files:
   reference_genome: /research/references/trifolium/repens/GCA_005869975.1_AgR_To_v5/GCA_005869975.1_AgR_To_v5_genomic.fna
   gff: /research/references/trifolium/repens/GCA_005869975.1_AgR_To_v5/annotation_file/TrR.v5.renamed_reformated.gtf.gz
@@ -15,6 +20,12 @@ cluster:
 
 species_id:
   num_nt_db_files: 33  # Number of database files for NCBI's nt database (ftp://ftp.ncbi.nlm.nih.gov/blast/db/)
+
+# Parameters for variant calling and SFS estimation with ANGSD
+angsd:
+  max_dp: 2600  # 2 x mean coverage from qualimap x # samples
+  min_dp_ind_sfs: 1
+  min_dp_ind_gl: 3
 
 # Samples to exclude based on QC
 samples_to_exclude: ["Calgary_25_13", "Linkoping_8_8", "Melbourne_2_3", "Paris_15_14", "Paris_3_9"]

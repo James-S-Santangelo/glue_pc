@@ -40,6 +40,11 @@ NT_DB_FILE = ['%02d' % x for x in range(0, config['species_id']['num_nt_db_files
 NT_DB_FILE_EXT = ['nhd', 'nhi', 'nhr', 'nhn', 'nnd', 'nni', 'nog', 'nsq', 'tar.gz.md5']
 NT_DB_FINAL_EXT = ['nal', 'ndb', 'nos', 'not', 'ntf', 'nto']
 
+# Parameters for variant calling with ANGSD
+ANGSD_MAX_DP = config['angsd']['max_dp']
+ANGSD_MIN_DP_IND_SFS = config['angsd']['min_dp_ind_sfs']
+ANGSD_MIN_DP_IND_GL = config['angsd']['min_dp_ind_gl']
+
 wildcard_constraints:
     chrom='|'.join([x for x in CHROMOSOMES])
 

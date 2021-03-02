@@ -21,6 +21,12 @@ cluster:
 species_id:
   num_nt_db_files: 33  # Number of database files for NCBI's nt database (ftp://ftp.ncbi.nlm.nih.gov/blast/db/)
 
+# Parameters for variant calling and SFS estimation with ANGSD
+angsd:
+  max_dp: 2600  # 2 x mean coverage from qualimap x # samples
+  min_dp_ind_sfs: 1
+  min_dp_ind_gl: 3
+
 # Samples to exclude based on QC
 samples_to_exclude: ["Calgary_25_13", "Linkoping_8_8", "Melbourne_2_3", "Paris_15_14", "Paris_3_9"]
 
