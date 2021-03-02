@@ -16,12 +16,13 @@ rule qc_analysis_notebook:
         rules.multiqc.output,
         rules.single_sample_sfs_done.output
     output:
-        '{0}/supplemental/qc/mean_coverage_histogram.pdf'.format(FIGURES_DIR),
-        '{0}/supplemental/qc/general_error_rate_histogram.pdf'.format(FIGURES_DIR),
-        '{0}/supplemental/qc/aligned_vs_coverage_by_propVar_highErrorRemoved.pdf'.format(FIGURES_DIR),
-        '{0}/supplemental/qc/aligned_vs_coverage_by_propVar_highQualOnly.pdf'.format(FIGURES_DIR),
-        '{0}/tables/lowQualitySamples_by_city_and_habitat.txt'.format(FIGURES_DIR),
-        '{0}/lowQualitySamples_toRemove.txt'.format(PROGRAM_RESOURCE_DIR)
+        plot1 = '{0}/supplemental/qc/mean_coverage_histogram.pdf'.format(FIGURES_DIR),
+        plot2 = '{0}/supplemental/qc/general_error_rate_histogram.pdf'.format(FIGURES_DIR),
+        plot3 = '{0}/supplemental/qc/aligned_vs_coverage_by_propVar_highErrorRemoved.pdf'.format(FIGURES_DIR),
+        plot4 = '{0}/supplemental/qc/aligned_vs_coverage_by_propVar_highQualOnly.pdf'.format(FIGURES_DIR),
+        table1 = '{0}/tables/lowQualitySamples_by_city_and_habitat.txt'.format(FIGURES_DIR),
+        error_df = '{0}/highErrorRate_toRemove.txt'.format(PROGRAM_RESOURCE_DIR),
+        low_cov_df = '{0}/lowCoverageSamples_toRemove.txt'.format(PROGRAM_RESOURCE_DIR)
     conda: '../envs/notebooks.yaml'
     notebook:
         "../notebooks/qc_analysis.r.ipynb"
