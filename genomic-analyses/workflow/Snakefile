@@ -48,7 +48,7 @@ ANGSD_MIN_DP_IND_GL = config['angsd']['min_dp_ind_gl']
 wildcard_constraints:
     chrom='|'.join([x for x in CHROMOSOMES])
 
-localrules: create_tmp_dir, create_bam_list_allSamples, create_bam_list_forSpeciesID, concat_angsd_stats, concat_sfs, sum_sfs, convert_sites_for_angsd, split_angsd_sites_byChrom, angsd_index_sites, files_for_angsd_site_subset, subset_angsd_gl, subset_angsd_maf, extract_sample_angsd, angsd_done, chloroplast_gene_fasta, index_chloroplast_gene_vcf, concat_fasta, download_nt_database, single_sample_sfs_done, pop_structure_done, clone_degeneracy, downsample_toronto_done
+localrules: create_tmp_dir, create_bam_list_finalSamples_lowCovRemoved, create_bam_list_highErrorRemoved, create_bam_list_forSpeciesID, concat_angsd_stats, concat_sfs, sum_sfs, convert_sites_for_angsd, split_angsd_sites_byChrom, files_for_angsd_site_subset, subset_angsd_gl, subset_angsd_maf, extract_sample_angsd, angsd_done, chloroplast_gene_fasta, index_chloroplast_gene_vcf, concat_fasta, download_nt_database, single_sample_sfs_done, pop_structure_done, clone_degeneracy, downsample_toronto_done
 
 include: 'rules/common.smk'
 
@@ -75,14 +75,12 @@ rule create_tmp_dir:
 include: 'rules/ref.smk'
 include: 'rules/trimming.smk'
 include: 'rules/mapping.smk'
-include: 'rules/qc.smk'
 include: 'rules/species_id.smk'
 include: 'rules/single_sample_sfs.smk'
+include: 'rules/qc.smk'
 include: 'rules/toronto_downsample.smk'
-include: 'rules/param_tests.smk'
 include: 'rules/angsd.smk'
 include: 'rules/population_structure.smk'
-include: 'rules/notebooks.smk'
 
 rule clean:
     params:

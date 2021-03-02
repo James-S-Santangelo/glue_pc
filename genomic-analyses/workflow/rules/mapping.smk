@@ -91,19 +91,3 @@ rule index_bam:
         samtools index -@ {threads} {input} 2> {log}
         """
 
-rule create_bam_list_allSamples:
-    input:
-        expand(rules.samtools_markdup.output.bam, sample=SAMPLES)
-    output:
-        '{0}/bam_lists/allSamples_bams.list'.format(PROGRAM_RESOURCE_DIR)
-    log: 'logs/create_bam_list/create_bam_list.log'
-    run:
-        import os
-        with open(output[0], 'w') as f:
-            for bam in input:
-                sample = os.path.basename(bam).split('_merged')[0]
-                if sample not in SAMPLES_TO_EXCLUDE:
-                    f.write('{0}\n'.format(bam))
-
-
-
