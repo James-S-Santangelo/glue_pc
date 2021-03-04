@@ -45,7 +45,7 @@ ANGSD_MAX_DP = config['angsd']['max_dp']
 wildcard_constraints:
     chrom='|'.join([x for x in CHROMOSOMES])
 
-localrules: create_tmp_dir, create_bam_list_finalSamples_lowCovRemoved, create_bam_list_highErrorRemoved, create_bam_list_forSpeciesID, concat_angsd_stats, concat_sfs, sum_sfs, convert_sites_for_angsd, split_angsd_sites_byChrom, files_for_angsd_site_subset, subset_angsd_gl, subset_angsd_maf, extract_sample_angsd, angsd_done, chloroplast_gene_fasta, index_chloroplast_gene_vcf, concat_fasta, download_nt_database, single_sample_sfs_done, pop_structure_done, clone_degeneracy, downsample_toronto_done
+localrules: create_tmp_dir, create_bam_list_finalSamples_lowCovRemoved, create_bam_list_highErrorRemoved, create_bam_list_forSpeciesID, concat_angsd_stats, concat_sfs, sum_sfs, convert_sites_for_angsd, split_angsd_sites_byChrom, files_for_angsd_site_subset, subset_angsd_gl, subset_angsd_maf, extract_sample_angsd, angsd_done, chloroplast_gene_fasta, index_chloroplast_gene_vcf, concat_fasta, download_nt_database, single_sample_sfs_done, pop_structure_done, clone_degeneracy, downsample_toronto_done, extract_angsd_allSites, 
 
 include: 'rules/common.smk'
 
@@ -54,15 +54,15 @@ include: 'rules/common.smk'
 rule all:
    input:
         # Trimming, mapping, and QC
-        #'{0}/multiqc/multiqc_report.html'.format(QC_DIR),
-        #'{0}/single_sample_sfs.done'.format(SS_SFS_DIR),
-        #'{0}/species_id.done'.format(SPECIES_ID_DIR),
+        '{0}/multiqc/multiqc_report.html'.format(QC_DIR),
+        '{0}/single_sample_sfs.done'.format(SS_SFS_DIR),
+        '{0}/species_id.done'.format(SPECIES_ID_DIR),
         # Downsample Toronto data
-        #'{0}/downsample_toronto.done'.format(BAM_DIR),
+        '{0}/downsample_toronto.done'.format(BAM_DIR),
         # Angsd
         '{0}/angsd.done'.format(ANGSD_DIR),
         # Population structure
-        #'{0}/population_structure.done'.format(POP_STRUC_DIR)
+        '{0}/population_structure.done'.format(POP_STRUC_DIR)
         
 
 rule create_tmp_dir:

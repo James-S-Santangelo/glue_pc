@@ -174,8 +174,9 @@ rule extract_angsd_allSites:
         site = 'allSites'
     shell:
         """
-        ( zcat {input} | tail -n +2 | cut -f1,2 > {output} &&\
-            angsd sites index {output} ) 2> {log}
+        ( zcat {input} | tail -n +2 | cut -f1,2 > {output.sites} &&\
+            sleep 2m &&\
+            angsd sites index {output.sites} ) 2> {log}
         """
 
 rule split_angsd_sites_byChrom:
@@ -185,11 +186,13 @@ rule split_angsd_sites_byChrom:
         sites = '{0}/angsd_sites/{{chrom}}/{{chrom}}_Trepens_{{site}}.sites'.format(PROGRAM_RESOURCE_DIR),
         binary = '{0}/angsd_sites/{{chrom}}/{{chrom}}_Trepens_{{site}}.sites.bin'.format(PROGRAM_RESOURCE_DIR),
         idx = '{0}/angsd_sites/{{chrom}}/{{chrom}}_Trepens_{{site}}.sites.idx'.format(PROGRAM_RESOURCE_DIR)
-    log: 'logs/split_angsd_sites_byChrom/{chrom}/{chrom}_{site}_split_angsd_sites.log'
+    log: 'logs/split_angsd_sites_byChrom/{chrom}_{site}_split_angsd_sites.log'
+    conda: '../envs/angsd.yaml'
     shell:
         """
-        ( grep {wildcards.chrom} {input} > {output} &&\
-            angsd sites index {output} ) 2> {log}
+        ( grep {wildcards.chrom} {input} > {output.sites} &&\
+            sleep 2m &&\
+            angsd sites index {output.sites} ) 2> {log}
         """
 
 rule angsd_estimate_sfs:
@@ -281,11 +284,15 @@ rule sum_sfs:
         rules.concat_sfs.output
     output:
         '{0}/sfs/{{sample_set}}/{{site}}/{{sample_set}}_{{site}}_allChroms.sfs'.format(ANGSD_DIR)
+    log: 'logs/sum_sfs/{sample_set}_{site}.log'
     run:
         import pandas as pd
-        sfs_allChroms = pd.read_table(input[0], sep = ' ', header = None)
-        sfs_sum = sfs_allChroms.sum(axis=0) 
-        sfs_sum.to_csv(output[0], sep = '\t', header = None)
+        import sys
+        with open(log, 'w') as logfile:
+            sys.stderr = logfile
+            sfs_allChroms = pd.read_table(input[0], sep = ' ', header = None)
+            sfs_sum = sfs_allChroms.sum(axis=0) 
+            sfs_sum.to_csv(output[0], sep = '\t', header = None)
         
 
 rule files_for_angsd_site_subset:
