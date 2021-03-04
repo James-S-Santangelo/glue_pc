@@ -45,7 +45,7 @@ ANGSD_MAX_DP = config['angsd']['max_dp']
 wildcard_constraints:
     chrom='|'.join([x for x in CHROMOSOMES])
 
-localrules: create_tmp_dir, create_bam_list_finalSamples_lowCovRemoved, create_bam_list_highErrorRemoved, create_bam_list_forSpeciesID, concat_angsd_stats, concat_sfs, sum_sfs, convert_sites_for_angsd, split_angsd_sites_byChrom, files_for_angsd_site_subset, subset_angsd_gl, subset_angsd_maf, extract_sample_angsd, angsd_done, chloroplast_gene_fasta, index_chloroplast_gene_vcf, concat_fasta, download_nt_database, single_sample_sfs_done, pop_structure_done, clone_degeneracy, downsample_toronto_done, extract_angsd_allSites, 
+localrules: create_tmp_dir, create_bam_list_finalSamples_lowCovRemoved, create_bam_list_highErrorRemoved, create_bam_list_forSpeciesID, concat_angsd_stats, concat_sfs, sum_sfs, convert_sites_for_angsd, split_angsd_sites_byChrom, files_for_angsd_site_subset, subset_angsd_gl, subset_angsd_maf, extract_sample_angsd, angsd_done, chloroplast_gene_fasta, index_chloroplast_gene_vcf, concat_fasta, download_nt_database, single_sample_sfs_done, pop_structure_done, clone_degeneracy, downsample_toronto_done, extract_angsd_allSites, angsd_index_allSites, angsd_index_degenerate
 
 include: 'rules/common.smk'
 

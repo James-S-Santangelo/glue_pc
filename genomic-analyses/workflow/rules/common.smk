@@ -33,18 +33,22 @@ def angsd_sfs_input(wildcards):
     saf_idx = rules.angsd_saf_likelihood_allSites.output.saf_idx
     if wildcards.site == 'allSites':
         sites = rules.extract_angsd_allSites.output.sites
+        idx = rules.angsd_index_allSites.output.idx
     else:
         sites = rules.split_angsd_sites_byChrom.output.sites
-    return { 'saf_idx' : saf_idx, 'sites' : sites }
+        idx = rules.angsd_index_degenerate.output.idx
+    return { 'saf_idx' : saf_idx, 'sites' : sites, 'sites_idx' : idx }
 
 def angsd_estimate_thetas_input(wildcards):
     saf_idx = rules.angsd_saf_likelihood_allSites.output.saf_idx
     sfs = rules.angsd_estimate_sfs.output
     if wildcards.site == 'allSites':
         sites = rules.extract_angsd_allSites.output.sites
+        idx = rules.angsd_index_allSites.output.idx
     else:
         sites = rules.split_angsd_sites_byChrom.output.sites
-    return { 'saf_idx' : saf_idx, 'sfs' : sfs, 'sites' : sites }
+        idx = rules.angsd_index_degenerate.output.idx
+    return { 'saf_idx' : saf_idx, 'sfs' : sfs, 'sites' : sites, 'sites_idx' : idx }
 
 def get_angsd_stats_toConcat(wildcards):
     if wildcards.sample_set == 'highErrorRemoved':

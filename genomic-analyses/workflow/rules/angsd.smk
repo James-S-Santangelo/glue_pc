@@ -166,17 +166,10 @@ rule extract_angsd_allSites:
         rules.angsd_saf_likelihood_allSites.output.pos
     output:
         sites = '{0}/angsd_sites/{{chrom}}/{{sample_set}}_{{chrom}}_Trepens_allSites.sites'.format(PROGRAM_RESOURCE_DIR),
-        binary = '{0}/angsd_sites/{{chrom}}/{{sample_set}}_{{chrom}}_Trepens_allSites.sites.bin'.format(PROGRAM_RESOURCE_DIR),
-        idx = '{0}/angsd_sites/{{chrom}}/{{sample_set}}_{{chrom}}_Trepens_allSites.sites.idx'.format(PROGRAM_RESOURCE_DIR)
     log: 'logs/extract_angsd_allSites/{sample_set}_{chrom}_extract_allSites.log'
-    conda: '../envs/angsd.yaml'
-    wildcard_constraints:
-        site = 'allSites'
     shell:
         """
-        ( zcat {input} | tail -n +2 | cut -f1,2 > {output.sites} &&\
-            sleep 2m &&\
-            angsd sites index {output.sites} ) 2> {log}
+        zcat {input} | tail -n +2 | cut -f1,2 > {output.sites} 2> {log} 
         """
 
 rule split_angsd_sites_byChrom:
@@ -184,15 +177,36 @@ rule split_angsd_sites_byChrom:
         rules.convert_sites_for_angsd.output
     output:
         sites = '{0}/angsd_sites/{{chrom}}/{{chrom}}_Trepens_{{site}}.sites'.format(PROGRAM_RESOURCE_DIR),
-        binary = '{0}/angsd_sites/{{chrom}}/{{chrom}}_Trepens_{{site}}.sites.bin'.format(PROGRAM_RESOURCE_DIR),
-        idx = '{0}/angsd_sites/{{chrom}}/{{chrom}}_Trepens_{{site}}.sites.idx'.format(PROGRAM_RESOURCE_DIR)
     log: 'logs/split_angsd_sites_byChrom/{chrom}_{site}_split_angsd_sites.log'
+    shell:
+        """
+        grep {wildcards.chrom} {input} > {output.sites} 2> {log}
+        """
+
+rule angsd_index_allSites:
+    input:
+        rules.extract_angsd_allSites.output
+    output:
+        binary = '{0}/angsd_sites/{{chrom}}/{{sample_set}}_{{chrom}}_Trepens_allSites.sites.bin'.format(PROGRAM_RESOURCE_DIR),
+        idx = '{0}/angsd_sites/{{chrom}}/{{sample_set}}_{{chrom}}_Trepens_allSites.sites.idx'.format(PROGRAM_RESOURCE_DIR)
+    log: 'logs/angsd_index/{sample_set}_{chrom}_allSites_index.log'
     conda: '../envs/angsd.yaml'
     shell:
         """
-        ( grep {wildcards.chrom} {input} > {output.sites} &&\
-            sleep 2m &&\
-            angsd sites index {output.sites} ) 2> {log}
+        angsd sites index {input} 2> {log}
+        """
+
+rule angsd_index_degenerate:
+    input:
+        rules.split_angsd_sites_byChrom.output
+    output:
+        binary = '{0}/angsd_sites/{{chrom}}/{{chrom}}_Trepens_{{site}}.sites.bin'.format(PROGRAM_RESOURCE_DIR),
+        idx = '{0}/angsd_sites/{{chrom}}/{{chrom}}_Trepens_{{site}}.sites.idx'.format(PROGRAM_RESOURCE_DIR)
+    log: 'logs/angsd_index/{chrom}_{site}_index.log'
+    conda: '../envs/angsd.yaml'
+    shell:
+        """
+        angsd sites index {input} 2> {log}
         """
 
 rule angsd_estimate_sfs:
@@ -288,7 +302,7 @@ rule sum_sfs:
     run:
         import pandas as pd
         import sys
-        with open(log, 'w') as logfile:
+        with open(log[0], 'w') as logfile:
             sys.stderr = logfile
             sfs_allChroms = pd.read_table(input[0], sep = ' ', header = None)
             sfs_sum = sfs_allChroms.sum(axis=0) 
