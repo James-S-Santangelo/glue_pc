@@ -23,10 +23,6 @@ species_id:
 
 # Parameters for variant calling and SFS estimation with ANGSD
 angsd:
-  max_dp: 2600  # 2 x mean coverage from qualimap x # samples
-  min_dp_ind_sfs: 1
-  min_dp_ind_gl: 3
+  max_dp: 1250  # 2 x mean coverage from qualimap x # samples
 
-# Samples to exclude based on QC
-samples_to_exclude: ["Calgary_25_13", "Linkoping_8_8", "Melbourne_2_3", "Paris_15_14", "Paris_3_9"]
 

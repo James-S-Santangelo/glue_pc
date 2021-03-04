@@ -35,15 +35,12 @@ FIGURES_DIR = '{0}/figures'.format(config['results_prefix'])
 
 # Parameters
 CORES_PER_NODE = config['cluster']['cores_per_node']
-SAMPLES_TO_EXCLUDE = config['samples_to_exclude']
 NT_DB_FILE = ['%02d' % x for x in range(0, config['species_id']['num_nt_db_files'])]
 NT_DB_FILE_EXT = ['nhd', 'nhi', 'nhr', 'nhn', 'nnd', 'nni', 'nog', 'nsq', 'tar.gz.md5']
 NT_DB_FINAL_EXT = ['nal', 'ndb', 'nos', 'not', 'ntf', 'nto']
 
 # Parameters for variant calling with ANGSD
 ANGSD_MAX_DP = config['angsd']['max_dp']
-ANGSD_MIN_DP_IND_SFS = config['angsd']['min_dp_ind_sfs']
-ANGSD_MIN_DP_IND_GL = config['angsd']['min_dp_ind_gl']
 
 wildcard_constraints:
     chrom='|'.join([x for x in CHROMOSOMES])
@@ -57,15 +54,15 @@ include: 'rules/common.smk'
 rule all:
    input:
         # Trimming, mapping, and QC
-        '{0}/multiqc/multiqc_report.html'.format(QC_DIR),
-        '{0}/single_sample_sfs.done'.format(SS_SFS_DIR),
-        '{0}/species_id.done'.format(SPECIES_ID_DIR),
+        #'{0}/multiqc/multiqc_report.html'.format(QC_DIR),
+        #'{0}/single_sample_sfs.done'.format(SS_SFS_DIR),
+        #'{0}/species_id.done'.format(SPECIES_ID_DIR),
         # Downsample Toronto data
-        '{0}/downsample_toronto.done'.format(BAM_DIR),
+        #'{0}/downsample_toronto.done'.format(BAM_DIR),
         # Angsd
         '{0}/angsd.done'.format(ANGSD_DIR),
         # Population structure
-        '{0}/population_structure.done'.format(POP_STRUC_DIR)
+        #'{0}/population_structure.done'.format(POP_STRUC_DIR)
         
 
 rule create_tmp_dir:
