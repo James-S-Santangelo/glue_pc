@@ -1,11 +1,8 @@
-# Script to concatenate DDEP-3 and LOW-2 and assign lanes
-
-# Load required packages
-library(tidyverse)
+# Script to concatenate DEEP-3 and LOW-2 and assign lanes
 
 # Load datasets
-deep3 <- read_csv('data-clean/deep-3/plantsToPrep_deep3.csv')
-low2 <- read_csv('data-clean/low-2/plantsToPrep_low2.csv')
+deep3 <- read_csv('data/clean/deep3/plantsToPrep_deep3.csv')
+low2 <- read_csv('data/clean/low2/plantsToPrep_low2.csv')
 
 # Concatenate dataframe
 deep3_low2 <- bind_rows('deep3' = deep3, 'low2' = low2, .id = 'group')
@@ -28,4 +25,7 @@ deep3_low2 %>%
   group_by(lane) %>% 
   tally()
 
-write_csv(deep3_low2, path = 'data-clean/plantsToPrep_deep3_low2_withLanes.csv')
+outpath <- 'data/clean/'
+dir.create(outpath, showWarnings = FALSE)
+print(sprintf('DEEP3 and LOW2 concatenated file with lanes save to %s', outpath))
+write_csv(deep3_low2, paste0(outpath, 'plantsToPrep_deep3_low2_withLanes.csv'))

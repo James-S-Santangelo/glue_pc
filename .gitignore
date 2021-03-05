@@ -1,7 +1,6 @@
 .DS_Store
 .Rproj.user/
 .Rhistory
-data-clean/_previous*/
 Icon*
 renv/Library/
-data/
+data/clean/

@@ -1,0 +1,52 @@
+# Main script for running all steps of pipeline
+#
+# Author: James S. Santangelo
+
+###############
+#### SETUP ####
+###############
+
+# Load required packages
+library(tidyverse)
+
+#######################################
+#### STEP 1: Clean extraction data ####
+#######################################
+
+# Run script to clean extraction data for analysis
+source('scripts/data-processing/clean_extractionData.R')
+
+################################
+#### STEP 2a: LOW1 and LOW2 ####
+################################
+
+# Create datasheets with plants to sequence as part of LOW1 and LOW2
+source('scripts/data-processing/create_plantsToPrep_low1_low2.R')
+
+##############################################
+#### STEP 2b: LOW1 library concentrations ####
+##############################################
+
+# Add Illumina indices and clean post-PCR library concentrations
+source('scripts/data-processing/create_low1_libraryConcentrations.R')
+
+####################################
+#### STEP 2c: LOW1 sample sheet ####
+####################################
+
+# Create sample sheet with habitat info for downstream genomics analyses
+source('scripts/data-processing/create_low1_sampleSheet.R')
+
+#######################
+#### STEP 3: DEEP3 ####
+#######################
+
+# Create datasheets with plants to sequence as part of DEEP3
+source('scripts/data-processing/create_plantsToPrep_deep3.R')
+
+#############################################
+#### STEP 4: Add lanes to DEEP3 and LOW2 ####
+#############################################
+
+# Run script to concatenate and add sequencing lanes to DEEP3 and LOW2
+source('scripts/data-processing/concat_deep3_low2_addLanes.R')

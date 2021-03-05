@@ -2,22 +2,15 @@
 #
 # Authors: James S. Santangelo and Sophie Koch
 
-###############
-#### SETUP ####
-###############
-
-# Load required packages
-library(tidyverse)
-
 #######################
 #### LOW1 and LOW2 ####
 #######################
 
 ## Initially referred to as "Shallow Sequencing", this sampling scheme
 ## samples 10 urban and 10 rural individuals from each of 49 cities.
-## for low coverage (1X) whole genome sequencin (total N = 980)
+## for low coverage (1X) whole genome sequencing (total N = 980)
 
-## Due to time constaints, the sequencing scheme was modified as follows:
+## Due to time constraints, the sequencing scheme was modified as follows:
 ## LOW-1  is made up of 500 individuals spread across 25 cities and are used
 ## as part of GLUE paper 1. LOW-2 represents 150 individuals from each of an 
 ## additional 24 cities (3 urban, 3 rural per city). These will be part of a later
@@ -28,7 +21,7 @@ library(tidyverse)
 ## plants that will be sent for sequencing as part of LOW-2
 
 # Load data with extracted Toronto plants
-gluePlants <- read_csv("data-clean/extractions/allExtractions.csv",
+gluePlants <- read_csv("data/clean/extractions/allExtractions.csv",
                        col_types = "ccciccnnncccc") %>% 
   # filter(city != "Canberra") %>% 
   mutate(max_qubit = pmax(qubit_1, qubit_2, qubit_3, na.rm = TRUE)) %>% 
@@ -49,7 +42,7 @@ numToSample_by_pop <- goodPlants %>%
 #' each city for which we have DNA extracted. Individuals are
 #' selected as follows:
 #' 1a. Randomly select 10 plants with at least 10 ng/uL concentration.
-#' 1b. 10 individuals should b selected to span the 5 urban/rural populations
+#' 1b. 10 individuals should be selected to span the 5 urban/rural populations
 #' (i.e., 2 per population), wherever possible.
 #' 2. If fewer than 10 are available, select remaining number of plants
 #' with highest concentrations
@@ -158,7 +151,7 @@ plantsToPrep_low1_low2 <- map_dfr(df_list, sampleShallow) %>%
 ## This sheet was created after samples were already sent for sequencing and is generated
 ## here for completeness
 
-low1_low2_fisrtLanePrepped <- read_csv("data-raw/20210105_plantsToPrep_Low1_Low2_firstLanePrepped.csv") %>% 
+low1_low2_fisrtLanePrepped <- read_csv("resources/20210105_plantsToPrep_Low1_Low2_firstLanePrepped.csv") %>% 
   dplyr::select(continent, city, pop, individual, plantID, 'Batch/lane', "Date prepped", "Bioruptor_label")
 
 low1_prepped <- low1_low2_fisrtLanePrepped %>% 
@@ -182,12 +175,16 @@ sampledPlants_bySite_low1 <- low_1 %>%
   group_by(city, site) %>% 
   tally()
 
+outpath <- 'data/clean/low1/'
+dir.create(outpath)
+print(sprintf('Plants for LOW1 sequencing saved to %s', outpath))
+
 # Write plants to sample to disk, changing permissions in the process
-write_csv(low_1, "data-clean/low-1/plantsToPrep_low1.csv")
+write_csv(low_1, paste0(outpath, 'plantsToPrep_low1.csv'))
 
 # Write plants by pop and site to disk
-write_csv(sampledPlants_byPop_low1, "data-clean/low-1/sampledPlants_byPop_low1.csv")
-write_csv(sampledPlants_bySite_low1, "data-clean/low-1/sampledPlants_bySitelow1.csv")
+write_csv(sampledPlants_byPop_low1, paste0(outpath, 'samplePlants_byPop_low1.csv'))
+write_csv(sampledPlants_bySite_low1, paste0(outpath, 'sampledPlants_bySite_low1.csv'))
 
 
 ### LOW-2 ###
@@ -211,5 +208,9 @@ low2_toPrep <- low2_potentialPlants %>%
 low2_extraPlants <- low2_potentialPlants %>% 
   filter(!(plantID %in% low2_toPrep$plantID))
 
-write_csv(low2_toPrep, path = 'data-clean/low-2/plantsToPrep_low2.csv')
-write_csv(low2_extraPlants, path = 'data-clean/low-2/extraPlants_low2.csv')
+outpath <- 'data/clean/low2/'
+dir.create(outpath)
+print(sprintf('Plants for LOW2 sequencing saved to %s', outpath))
+
+write_csv(low2_toPrep, paste0(outpath, 'plantsToPrep_low2.csv'))
+write_csv(low2_extraPlants, paste0(outpath, 'extraPlants_low2.csv'))
