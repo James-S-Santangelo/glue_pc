@@ -1,19 +1,27 @@
 # Sample IDs as list
-samples: ../resources/sequencedPlants_phenotypesHabitat.txt
+samples: ../resources/low1_libraryConcentrations.csv
 chromosomes: ../resources/chromosome_file.txt
 
 results_prefix: ../results
 raw_read_prefix: /scratch/research/projects/trifolium/toronto_gwsd/data
 temp_dir: /scratch/santang3/tmp 
 
+# Include 10 urban and rural samples from Toronto data
+toronto_data:
+  bams: /scratch-deleted-2021-mar-20/santang3/toronto_gwsd/snakemake/results/bam/final
+  samples: ../resources/toronto_samples_for_glue.txt
+
 files:
-  reference_genome: /scratch/research/references/trifolium/repens/GCA_005869975.1_AgR_To_v5/GCA_005869975.1_AgR_To_v5_genomic.fna
-  gff: /scratch/research/references/trifolium/repens/GCA_005869975.1_AgR_To_v5/annotation_file/TrR.v5.renamed_reformated.gtf.gz
+  reference_genome: /research/references/trifolium/repens/GCA_005869975.1_AgR_To_v5/GCA_005869975.1_AgR_To_v5_genomic.fna
+  gff: /research/references/trifolium/repens/GCA_005869975.1_AgR_To_v5/annotation_file/TrR.v5.renamed_reformated.gtf.gz
 
-# Samples to exclude based on QC (e.g., different species, low coverage, etc.) 
-samples_to_exclude: ['s_7_14', 's_54_9', 's_97_4', 's_23_12', 's_23_17']
-
-freebayes:
-  sample: s_117_6  # Name of representative sample (i.e., with 'average' genome-wide coverage)
-  nodes_per_chrom: 1
+cluster:
   cores_per_node: 30
+
+species_id:
+  num_nt_db_files: 33  # Number of database files for NCBI's nt database (ftp://ftp.ncbi.nlm.nih.gov/blast/db/)
+
+# Parameters for variant calling and SFS estimation with ANGSD
+angsd:
+  max_dp: 1250  # 2 x mean coverage from qualimap x # samples
+

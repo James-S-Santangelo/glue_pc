@@ -3,15 +3,17 @@ samples: ../resources/low1_libraryConcentrations.csv
 chromosomes: ../resources/chromosome_file.txt
 
 results_prefix: ../results
-raw_read_prefix: /scratch/santang3/glue-low1
-temp_dir: /scratch/santang3/glue-low1/tmp
+raw_read_prefix: /scratch-deleted-2021-mar-20/santang3/glue-low1
+temp_dir: /scratch-deleted-2021-mar-20/santang3/glue-low1/tmp
+
+# Include 10 urban and rural samples from Toronto data
+toronto_data:
+  bams: /scratch-deleted-2021-mar-20/santang3/toronto_gwsd/snakemake/results/bam/final
+  samples: ../resources/toronto_samples_for_glue.txt
 
 files:
   reference_genome: /home/santang3/projects/def-johnso73/clover-ref/ref_genome/GCA_005869975.1_AgR_To_v5_genomic.fna
   gff: /home/santang3/projects/def-johnso73/clover-ref/gff/TrR.v5.renamed_reformated.gtf.gz
-
-# Samples to exclude based on QC (e.g., different species, low coverage, etc.) 
-# samples_to_exclude: ['s_7_14', 's_54_9', 's_97_4', 's_23_12', 's_23_17']
 
 cluster:
   cores_per_node: 32
@@ -19,6 +21,8 @@ cluster:
 species_id:
   num_nt_db_files: 33  # Number of database files for NCBI's nt database (ftp://ftp.ncbi.nlm.nih.gov/blast/db/)
 
-# Samples to exclude based on QC
-samples_to_exclude: ["Calgary_25_13", "Linkoping_8_8", "Melbourne_2_3", "Paris_15_14", "Paris_3_9"]
+# Parameters for variant calling and SFS estimation with ANGSD
+angsd:
+  max_dp: 1250  # 2 x mean coverage from qualimap x # samples
+
 
