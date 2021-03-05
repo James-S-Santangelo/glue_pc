@@ -1,12 +1,5 @@
 # Select plants to use for DEEP-3
 
-###############
-#### SETUP ####
-###############
-
-# Load required packages
-library(tidyverse)
-
 ################
 #### DEEP-3 ####
 ################
@@ -22,14 +15,14 @@ library(tidyverse)
 ## for which we have DNA extractions from the same 25 cities included in LOW-1.
 
 # Plants included as part of LOW-1 and LOW-2
-low1_prepped <- read_csv('data-clean/low-1/plantsToPrep_low1.csv')
-low2_prepped <- read_csv('data-clean/low-2/plantsToPrep_low2.csv')
+low1_prepped <- read_csv('data/clean/low1/plantsToPrep_low1.csv')
+low2_prepped <- read_csv('data/clean/low2/plantsToPrep_low2.csv')
 
 # Previous plants chosen as part of DEEP sequencing
-deepSample_previousPlants <- read_csv('data-clean/_previous_deepSampleSheets/plantsToPrep_deepSample_withBioruptorTubes.csv')
+deepSample_previousPlants <- read_csv('resources/plantsToPrep_deepSample_withBioruptorTubes.csv')
 
 # Datasheet with DNA extraction data
-extraction_data <- read_csv("data-clean/extractions/allExtractions.csv",
+extraction_data <- read_csv("data/clean/extractions/allExtractions.csv",
                          col_types = "ccciccnnncccc") %>% 
   mutate(max_qubit = pmax(qubit_1, qubit_2, qubit_3, na.rm = TRUE)) %>% 
   mutate(is_good = ifelse(max_qubit >= 10, 1, 0))
@@ -86,5 +79,8 @@ numGood_byCitySite <- deep3_allPlants %>%
   summarise(count_deep3Only = n()) %>% 
   mutate(count_withLow1 = count_deep3Only + 10)
 
-write_csv(deep3_allPlants, path = 'data-clean/deep-3/plantsToPrep_deep3.csv')
-write_csv(numGood_byCitySite, path = 'data-clean/deep-3/numPlants_byCitySite_deep3.csv')
+outpath <- 'data/clean/deep3/'
+dir.create(outpath, showWarnings = FALSE)
+print(sprintf('Plants for DEEP3 sequencing save to %s', outpath))
+write_csv(deep3_allPlants, paste0(outpath, 'plantsToPrep_deep3.csv'))
+write_csv(numGood_byCitySite, paste0(outpath, 'numPlants_byCitySite_deep3.csv'))

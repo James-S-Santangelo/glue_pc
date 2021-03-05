@@ -3,16 +3,13 @@
 #
 # Authors: James S. Santangelo and Sophie Koch
 
-# Load required packages
-library(tidyverse)
-
 ##################################################
 #### LOAD AND CONCATENATE RAW EXTRACTION DATA ####
 ##################################################
 
 # Read in data with Qubit concentrations for plants assayed by Beata
 # Some plants were re-extracted and assayed twice
-Qubit <- read_csv("data-raw/Qubit_extractions.csv", na = c("", "na")) %>% 
+Qubit <- read_csv("data/raw/Qubit_extractions.csv", na = c("", "na")) %>% 
   select(row, column, continent, name, pop, site, individual, "Qubit_ng.ul Ext 1", "Qubit_ng.ul Ext 2 (SK)", "original comments") %>% 
   rename("qubit_1" = "Qubit_ng.ul Ext 1",
          "qubit_2" = "Qubit_ng.ul Ext 2 (SK)",
@@ -24,8 +21,8 @@ Qubit <- read_csv("data-raw/Qubit_extractions.csv", na = c("", "na")) %>%
   arrange(., name)
 
 # Read in plants assayed by Sophie. 
-new_ext <- read_csv("data-raw/New_extractions.csv", na = c("", "na")) %>% 
-  select(row, column, continent, name, pop, site, individual, "Qubit_ng.ul", "new comments") %>% 
+new_ext <- read_csv("data/raw/New_extractions.csv", na = c("", "na")) %>% 
+  dplyr::select(row, column, continent, name, pop, site, individual, "Qubit_ng.ul", "new comments") %>% 
   rename("qubit_3" = "Qubit_ng.ul",
          "comments_2" = "new comments") %>% 
   mutate(pop = as.character(pop),
@@ -66,21 +63,21 @@ all_ext <- full_join(Qubit, new_ext, by = c("name", "pop", "individual", "contin
   mutate(city = str_replace(city, "ö", "o")) %>% 
   separate(city, into = c("city", "extra"), sep = "[,|;]") %>% 
   mutate(city = str_replace(city, pattern = " ", replacement = "_")) %>% 
-  select(-site.x, -site.y, -extra) %>% 
-  select(continent, city, pop, site, individual, row_firstPlating, column_firstPlating, 
+  dplyr::select(-site.x, -site.y, -extra) %>% 
+  dplyr::select(continent, city, pop, site, individual, row_firstPlating, column_firstPlating, 
          row_secondPlating, column_secondPlating, qubit_1, qubit_2, qubit_3, comments_1, comments_2) %>% 
   arrange(., city) %>% 
   mutate(plantID = paste(city, pop, individual, sep = "_")) %>% 
-  select(-contains("comment")) %>% 
-  select(continent, city, pop, individual, site, plantID, contains("qubit"), everything()) 
+  dplyr::select(-contains("comment")) %>% 
+  dplyr::select(continent, city, pop, individual, site, plantID, contains("qubit"), everything()) 
 
 #############################################################################
 #### ASSESS BREAKDOWN OF USEABLE PLANTS BY CITY, HABITAT, AND POPULATION ####
 #############################################################################
 
 # Load cline summary 
-clineSummary <- read_csv("data-raw/linearClinesSummary.csv") %>% 
-  select(pvalHCN, city) %>% 
+clineSummary <- read_csv("data/raw/linearClinesSummary.csv") %>% 
+  dplyr::select(pvalHCN, city) %>% 
   mutate(city = as.character(fct_recode(city, "Munster" = "Muenster")))
 
 # Useable plants with minimum concentration of 10 ng/uL
@@ -112,7 +109,7 @@ numGoodplants_10 <- Goodplants_10 %>%
               spread(key = sitePop, value = total_plants),
             by = "city") %>% 
   mutate(significant = ifelse(pvalHCN < 0.05, "Yes", "No")) %>% 
-  select(-pvalHCN) %>% 
+  dplyr::select(-pvalHCN) %>% 
   arrange(continent, city) %>% 
   left_join(Goodplants_10 %>% 
               select(city, site, pop) %>% 
@@ -126,8 +123,11 @@ numGoodplants_10 <- Goodplants_10 %>%
               group_by(city) %>% 
               summarise(sitePop_mapped = paste(sitePop_map, collapse = "; ")),
             by = "city") %>%
-  select(continent, city, significant, everything())
+  dplyr::select(continent, city, significant, everything())
 
-write_csv(numGoodplants_10, "data-clean/extractions/numGoodplants_10.csv")
-write_csv(all_ext, "data-clean/extractions/allExtractions.csv")
+outpath <- 'data/clean/extractions/'
+dir.create(outpath, showWarnings = FALSE)
+print(sprintf('Cleaned extraction data saved to %s', outpath))
+write_csv(numGoodplants_10, paste0(outpath, 'numGoodplants_10.csv'))
+write_csv(all_ext, paste0(outpath, 'allExtractions.csv'))
 
