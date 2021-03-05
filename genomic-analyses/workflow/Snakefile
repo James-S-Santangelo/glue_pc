@@ -8,7 +8,7 @@ min_version('5.26.1')
 configfile: '../config/hpcnode.yaml'
 
 # Samples and chromosomes as list
-SAMPLES = pd.read_table(config['samples'], sep=',')['plantID'].tolist()
+SAMPLES = pd.read_table(config['samples'], sep='\t')['sample'].tolist()
 CHROMOSOMES = pd.read_table(config['chromosomes'], header=None).iloc[:,0].tolist()
 
 # Toronto samples to include in analyses
@@ -16,8 +16,8 @@ TOR_SAMPLES = pd.read_table(config['toronto_data']['samples'])['sample'].tolist(
 TOR_BAMS = config['toronto_data']['bams']
 
 # Reference genome
-REFERENCE_GENOME = config['files']['reference_genome']
-GFF_FILE = config['files']['gff']
+REFERENCE_GENOME = ancient(config['files']['reference_genome'])
+GFF_FILE = ancient(config['files']['gff'])
 
 # Paths for output files
 TMPDIR = config['temp_dir']
