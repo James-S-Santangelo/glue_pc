@@ -31,3 +31,18 @@ rule pop_structure_done:
         """
         touch {output}
         """
+
+rule global_depth_pi_sfs_theta_notebook:
+    input:
+        rules.angsd_done.output,
+        rules.pop_structure_done.output
+    output:
+        plot1 = '{0}/supplemental/angsd/depth/depthGlobal_histogram.pdf'.format(FIGURES_DIR),
+        plot2 = '{0}/supplemental/angsd/sfs/allSamples_allChroms_sfs_bySite.pdf'.format(FIGURES_DIR),
+        plot3 = '{0}/supplemental/population_structure/allSamples_PCA_byHabitat.pdf'.format(FIGURES_DIR),
+        plot4 = '{0}/supplemental/population_structure/allSamples_PCA_byCity.pdf'.format(FIGURES_DIR),
+        plot5 = '{0}/supplemental/population_structure/allSamples_PCA_byContinent.pdf'.format(FIGURES_DIR),
+        plot6 = '{0}/supplemental/population_structure/allSamples_PCA_byRange.pdf'.format(FIGURES_DIR)
+    conda: '../envs/notebooks.yaml'
+    notebook:
+        "../notebooks/global_depth_pi_sfs_theta.r.ipynb"
