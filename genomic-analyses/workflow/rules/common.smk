@@ -83,29 +83,103 @@ def get_angsd_sfs_toConcat(wildcards):
             return expand(rules.angsd_estimate_sfs.output, chrom=CHROMOSOMES, site='allSites', sample_set='finalSamples_lowCovRemoved')
 
 def get_angsd_gl_toConcat(wildcards):
-    if wildcards.site == '0fold' and wildcards.maf == '0.05' and wildcards.sample_set == 'highErrorRemoved':
-        return expand(rules.subset_angsd_gl.output, site='0fold', maf='0.05', chrom=CHROMOSOMES, sample_set='highErrorRemoved')
-    elif wildcards.site == '0fold' and wildcards.maf == '0.05' and wildcards.sample_set == 'finalSamples_lowCovRemoved':
-        return expand(rules.subset_angsd_gl.output, site='0fold', maf='0.05', chrom=CHROMOSOMES, sample_set='finalSamples_lowCovRemoved')
-    elif wildcards.site == '4fold' and wildcards.maf == '0.05' and wildcards.sample_set == 'highErrorRemoved':
-        return expand(rules.subset_angsd_gl.output, site='4fold', maf='0.05', chrom=CHROMOSOMES, sample_set='highErrorRemoved')
-    elif wildcards.site == '4fold' and wildcards.maf == '0.05' and wildcards.sample_set == 'finalSamples_lowCovRemoved':
-        return expand(rules.subset_angsd_gl.output, site='4fold', maf='0.05', chrom=CHROMOSOMES, sample_set='finalSamples_lowCovRemoved')
-    elif wildcards.site == 'allSites' and wildcards.maf == '0.05' and wildcards.sample_set == 'highErrorRemoved':
-        return expand(rules.angsd_gl_allSites.output.gls, maf='0.05', chrom=CHROMOSOMES, sample_set='highErrorRemoved')
-    elif wildcards.site == 'allSites' and wildcards.maf == '0.05' and wildcards.sample_set == 'finalSamples_lowCovRemoved':
-        return expand(rules.angsd_gl_allSites.output.gls, maf='0.05', chrom=CHROMOSOMES, sample_set='finalSamples_lowCovRemoved')
+    if wildcards.maf == '0.005':
+        if wildcards.site == '0fold':
+            if wildcards.sample_set == 'highErrorRemoved':
+                out = expand(rules.subset_angsd_gl.output, site='0fold', maf='0.005', chrom=CHROMOSOMES, sample_set='highErrorRemoved')
+            elif wildcards.sample_set == 'finalSamples_lowCovRemoved':
+                out = expand(rules.subset_angsd_gl.output, site='0fold', maf='0.005', chrom=CHROMOSOMES, sample_set='finalSamples_lowCovRemoved')
+        elif wildcards.site == '4fold':
+            if wildcards.sample_set == 'highErrorRemoved':
+                out = expand(rules.subset_angsd_gl.output, site='4fold', maf='0.005', chrom=CHROMOSOMES, sample_set='highErrorRemoved')
+            elif wildcards.sample_set == 'finalSamples_lowCovRemoved':
+                out = expand(rules.subset_angsd_gl.output, site='4fold', maf='0.005', chrom=CHROMOSOMES, sample_set='finalSamples_lowCovRemoved')
+        elif wildcards.site == 'allSites':
+            if wildcards.sample_set == 'highErrorRemoved':
+                out = expand(rules.angsd_gl_allSites.output.gls, site='allSites', maf='0.005', chrom=CHROMOSOMES, sample_set='highErrorRemoved')
+            elif wildcards.sample_set == 'finalSamples_lowCovRemoved':
+                out = expand(rules.angsd_gl_allSites.output.gls, site='allSites', maf='0.005', chrom=CHROMOSOMES, sample_set='finalSamples_lowCovRemoved')
+    elif wildcards.maf == '0.01':
+        if wildcards.site == '0fold':
+            if wildcards.sample_set == 'highErrorRemoved':
+                out = expand(rules.subset_angsd_gl.output, site='0fold', maf='0.01', chrom=CHROMOSOMES, sample_set='highErrorRemoved')
+            elif wildcards.sample_set == 'finalSamples_lowCovRemoved':
+                out = expand(rules.subset_angsd_gl.output, site='0fold', maf='0.01', chrom=CHROMOSOMES, sample_set='finalSamples_lowCovRemoved')
+        elif wildcards.site == '4fold':
+            if wildcards.sample_set == 'highErrorRemoved':
+                out = expand(rules.subset_angsd_gl.output, site='4fold', maf='0.01', chrom=CHROMOSOMES, sample_set='highErrorRemoved')
+            elif wildcards.sample_set == 'finalSamples_lowCovRemoved':
+                out = expand(rules.subset_angsd_gl.output, site='4fold', maf='0.01', chrom=CHROMOSOMES, sample_set='finalSamples_lowCovRemoved')
+        elif wildcards.site == 'allSites':
+            if wildcards.sample_set == 'highErrorRemoved':
+                out = expand(rules.angsd_gl_allSites.output.gls, site='allSites', maf='0.005', chrom=CHROMOSOMES, sample_set='highErrorRemoved')
+            elif wildcards.sample_set == 'finalSamples_lowCovRemoved':
+                out = expand(rules.angsd_gl_allSites.output.gls, site='allSites', maf='0.005', chrom=CHROMOSOMES, sample_set='finalSamples_lowCovRemoved')
+    elif wildcards.maf == '0.05':
+        if wildcards.site == '0fold':
+            if wildcards.sample_set == 'highErrorRemoved':
+                out = expand(rules.subset_angsd_gl.output, site='0fold', maf='0.05', chrom=CHROMOSOMES, sample_set='highErrorRemoved')
+            elif wildcards.sample_set == 'finalSamples_lowCovRemoved':
+                out = expand(rules.subset_angsd_gl.output, site='0fold', maf='0.05', chrom=CHROMOSOMES, sample_set='finalSamples_lowCovRemoved')
+        elif wildcards.site == '4fold':
+            if wildcards.sample_set == 'highErrorRemoved':
+                out = expand(rules.subset_angsd_gl.output, site='4fold', maf='0.05', chrom=CHROMOSOMES, sample_set='highErrorRemoved')
+            elif wildcards.sample_set == 'finalSamples_lowCovRemoved':
+                out = expand(rules.subset_angsd_gl.output, site='4fold', maf='0.05', chrom=CHROMOSOMES, sample_set='finalSamples_lowCovRemoved')
+        elif wildcards.site == 'allSites':
+            if wildcards.sample_set == 'highErrorRemoved':
+                out = expand(rules.angsd_gl_allSites.output.gls, site='allSites', maf='0.005', chrom=CHROMOSOMES, sample_set='highErrorRemoved')
+            elif wildcards.sample_set == 'finalSamples_lowCovRemoved':
+                out = expand(rules.angsd_gl_allSites.output.gls, site='allSites', maf='0.005', chrom=CHROMOSOMES, sample_set='finalSamples_lowCovRemoved')
+    return out
 
 def get_angsd_maf_toConcat(wildcards):
-    if wildcards.site == '0fold' and wildcards.maf == '0.05' and wildcards.sample_set == 'highErrorRemoved':
-        return expand(rules.subset_angsd_maf.output, site='0fold', maf='0.05', chrom=CHROMOSOMES, sample_set='highErrorRemoved')
-    elif wildcards.site == '0fold' and wildcards.maf == '0.05' and wildcards.sample_set == 'finalSamples_lowCovRemoved':
-        return expand(rules.subset_angsd_maf.output, site='0fold', maf='0.05', chrom=CHROMOSOMES, sample_set='finalSamples_lowCovRemoved')
-    elif wildcards.site == '4fold' and wildcards.maf == '0.05' and wildcards.sample_set == 'highErrorRemoved':
-        return expand(rules.subset_angsd_maf.output, site='4fold', maf='0.05', chrom=CHROMOSOMES, sample_set='highErrorRemoved')
-    elif wildcards.site == '4fold' and wildcards.maf == '0.05' and wildcards.sample_set == 'finalSamples_lowCovRemoved':
-        return expand(rules.subset_angsd_maf.output, site='4fold', maf='0.05', chrom=CHROMOSOMES, sample_set='finalSamples_lowCovRemoved')
-    elif wildcards.site == 'allSites' and wildcards.maf == '0.05' and wildcards.sample_set == 'highErrorRemoved':
-        return expand(rules.angsd_gl_allSites.output.mafs, maf='0.05', chrom=CHROMOSOMES, sample_set='highErrorRemoved')
-    elif wildcards.site == 'allSites' and wildcards.maf == '0.05' and wildcards.sample_set == 'finalSamples_lowCovRemoved':
-        return expand(rules.angsd_gl_allSites.output.mafs, maf='0.05', chrom=CHROMOSOMES, sample_set='finalSamples_lowCovRemoved')
+    if wildcards.maf == '0.005':
+        if wildcards.site == '0fold':
+            if wildcards.sample_set == 'highErrorRemoved':
+                out = expand(rules.subset_angsd_maf.output, site='0fold', maf='0.005', chrom=CHROMOSOMES, sample_set='highErrorRemoved')
+            elif wildcards.sample_set == 'finalSamples_lowCovRemoved':
+                out = expand(rules.subset_angsd_maf.output, site='0fold', maf='0.005', chrom=CHROMOSOMES, sample_set='finalSamples_lowCovRemoved')
+        elif wildcards.site == '4fold':
+            if wildcards.sample_set == 'highErrorRemoved':
+                out = expand(rules.subset_angsd_maf.output, site='4fold', maf='0.005', chrom=CHROMOSOMES, sample_set='highErrorRemoved')
+            elif wildcards.sample_set == 'finalSamples_lowCovRemoved':
+                out = expand(rules.subset_angsd_maf.output, site='4fold', maf='0.005', chrom=CHROMOSOMES, sample_set='finalSamples_lowCovRemoved')
+        elif wildcards.site == 'allSites':
+            if wildcards.sample_set == 'highErrorRemoved':
+                out = expand(rules.angsd_gl_allSites.output.mafs, site='allSites', maf='0.005', chrom=CHROMOSOMES, sample_set='highErrorRemoved')
+            elif wildcards.sample_set == 'finalSamples_lowCovRemoved':
+                out = expand(rules.angsd_gl_allSites.output.mafs, site='allSites', maf='0.005', chrom=CHROMOSOMES, sample_set='finalSamples_lowCovRemoved')
+    elif wildcards.maf == '0.01':
+        if wildcards.site == '0fold':
+            if wildcards.sample_set == 'highErrorRemoved':
+                out = expand(rules.subset_angsd_maf.output, site='0fold', maf='0.01', chrom=CHROMOSOMES, sample_set='highErrorRemoved')
+            elif wildcards.sample_set == 'finalSamples_lowCovRemoved':
+                out = expand(rules.subset_angsd_maf.output, site='0fold', maf='0.01', chrom=CHROMOSOMES, sample_set='finalSamples_lowCovRemoved')
+        elif wildcards.site == '4fold':
+            if wildcards.sample_set == 'highErrorRemoved':
+                out = expand(rules.subset_angsd_maf.output, site='4fold', maf='0.01', chrom=CHROMOSOMES, sample_set='highErrorRemoved')
+            elif wildcards.sample_set == 'finalSamples_lowCovRemoved':
+                out = expand(rules.subset_angsd_maf.output, site='4fold', maf='0.01', chrom=CHROMOSOMES, sample_set='finalSamples_lowCovRemoved')
+        elif wildcards.site == 'allSites':
+            if wildcards.sample_set == 'highErrorRemoved':
+                out = expand(rules.angsd_gl_allSites.output.mafs, site='allSites', maf='0.005', chrom=CHROMOSOMES, sample_set='highErrorRemoved')
+            elif wildcards.sample_set == 'finalSamples_lowCovRemoved':
+                out = expand(rules.angsd_gl_allSites.output.mafs, site='allSites', maf='0.005', chrom=CHROMOSOMES, sample_set='finalSamples_lowCovRemoved')
+    elif wildcards.maf == '0.05':
+        if wildcards.site == '0fold':
+            if wildcards.sample_set == 'highErrorRemoved':
+                out = expand(rules.subset_angsd_maf.output, site='0fold', maf='0.05', chrom=CHROMOSOMES, sample_set='highErrorRemoved')
+            elif wildcards.sample_set == 'finalSamples_lowCovRemoved':
+                out = expand(rules.subset_angsd_maf.output, site='0fold', maf='0.05', chrom=CHROMOSOMES, sample_set='finalSamples_lowCovRemoved')
+        elif wildcards.site == '4fold':
+            if wildcards.sample_set == 'highErrorRemoved':
+                out = expand(rules.subset_angsd_maf.output, site='4fold', maf='0.05', chrom=CHROMOSOMES, sample_set='highErrorRemoved')
+            elif wildcards.sample_set == 'finalSamples_lowCovRemoved':
+                out = expand(rules.subset_angsd_maf.output, site='4fold', maf='0.05', chrom=CHROMOSOMES, sample_set='finalSamples_lowCovRemoved')
+        elif wildcards.site == 'allSites':
+            if wildcards.sample_set == 'highErrorRemoved':
+                out = expand(rules.angsd_gl_allSites.output.mafs, site='allSites', maf='0.005', chrom=CHROMOSOMES, sample_set='highErrorRemoved')
+            elif wildcards.sample_set == 'finalSamples_lowCovRemoved':
+                out = expand(rules.angsd_gl_allSites.output.mafs, site='allSites', maf='0.005', chrom=CHROMOSOMES, sample_set='finalSamples_lowCovRemoved')
+    return out
