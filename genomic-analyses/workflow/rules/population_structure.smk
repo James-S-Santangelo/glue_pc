@@ -38,11 +38,13 @@ rule global_depth_pi_sfs_theta_notebook:
         rules.pop_structure_done.output
     output:
         plot1 = '{0}/supplemental/angsd/depth/depthGlobal_histogram.pdf'.format(FIGURES_DIR),
-        plot2 = '{0}/supplemental/angsd/sfs/allSamples_allChroms_sfs_bySite.pdf'.format(FIGURES_DIR),
-        plot3 = '{0}/supplemental/population_structure/allSamples_PCA_byHabitat.pdf'.format(FIGURES_DIR),
-        plot4 = '{0}/supplemental/population_structure/allSamples_PCA_byCity.pdf'.format(FIGURES_DIR),
-        plot5 = '{0}/supplemental/population_structure/allSamples_PCA_byContinent.pdf'.format(FIGURES_DIR),
-        plot6 = '{0}/supplemental/population_structure/allSamples_PCA_byRange.pdf'.format(FIGURES_DIR)
+        plot2 = '{0}/supplemental/angsd/sfs/sfs_allChroms_bySite_bySampleSet.pdf'.format(FIGURES_DIR),
+        plot3 = '{0}/supplemental/angsd/sfs/sfs_allChroms_bySite_finalSamples_lowCovRemoved.pdf'.format(FIGURES_DIR),
+        table = '{0}/tables/allChroms_diversity_bySite_bySampleSet.txt'.format(FIGURES_DIR),
+        plot4 = '{0}/supplemental/population_structure/allSamples_PCA_byHabitat_bySampleSet_byMAF.pdf'.format(FIGURES_DIR),
+        plot5 = '{0}/supplemental/population_structure/allSamples_PCA_byCity_byMAF.pdf'.format(FIGURES_DIR),
+        plot6 = '{0}/supplemental/population_structure/allSamples_PCA_byContinent_byMAF.pdf'.format(FIGURES_DIR),
+        plot7 = '{0}/supplemental/population_structure/allSamples_PCA_byRange_byMAF.pdf'.format(FIGURES_DIR)
     conda: '../envs/notebooks.yaml'
     notebook:
         "../notebooks/global_depth_pi_sfs_theta.r.ipynb"
