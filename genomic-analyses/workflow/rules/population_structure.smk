@@ -18,6 +18,7 @@ rule pcangsd:
         python3 /opt/pcangsd/pcangsd.py \
             -beagle {input} \
             -o {params.out} \
+            -minMaf {wildcards.maf} \
             -threads {threads} \
             > {log}
         """
