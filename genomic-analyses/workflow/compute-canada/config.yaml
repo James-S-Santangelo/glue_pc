@@ -16,7 +16,7 @@ rerun-incomplete: True
 printshellcmds: True
 use-conda: True
 use-singularity: True
-singularity-args: "--bind /scratch-deleted-2021-mar-20 --bind /home --bind /project"
+singularity-args: "--bind /scratch --bind /scratch-deleted-2021-mar-20 --bind /home --bind /project"
 keep-going: True
 notemp: True
 conda-frontend: "mamba"

@@ -213,7 +213,7 @@ rule angsd_estimate_sfs:
     input:
         unpack(angsd_sfs_input) 
     output:
-        temp('{0}/{{sample_set}}/sfs/{{site}}/{{chrom}}/{{chrom}}_{{sample_set}}_{{site}}.sfs'.format(ANGSD_DIR))
+        temp('{0}/sfs/{{sample_set}}/{{site}}/{{chrom}}/{{chrom}}_{{sample_set}}_{{site}}.sfs'.format(ANGSD_DIR))
     log: 'logs/angsd_estimate_sfs/{chrom}_{sample_set}_{site}_sfs.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     threads: 10
@@ -267,7 +267,7 @@ rule concat_angsd_stats:
     input:
         get_angsd_stats_toConcat
     output:
-        '{0}/summary_stats/thetas/{{sample_set}}/{{site}}/{{sample_set}}_{{site}}_diversityNeutrality.thetas.idx.pestPG'.format(ANGSD_DIR)
+        '{0}/summary_stats/thetas/{{sample_set}}/{{site}}/allChroms_{{sample_set}}_{{site}}_diversityNeutrality.thetas.idx.pestPG'.format(ANGSD_DIR)
     log: 'logs/concat_angsd_stats_specificSites/{sample_set}_{site}_concat_angsd_stats.log'
     shell:
         """
@@ -419,8 +419,8 @@ rule angsd_done:
         expand(rules.angsd_depth.output, chrom=CHROMOSOMES, sample_set=['highErrorRemoved','finalSamples_lowCovRemoved']),
         expand(rules.concat_angsd_stats.output, site=['allSites','0fold','4fold'], sample_set=['highErrorRemoved','finalSamples_lowCovRemoved']),
         expand(rules.sum_sfs.output, site=['allSites','0fold','4fold'], sample_set=['highErrorRemoved','finalSamples_lowCovRemoved']),
-        expand(rules.concat_angsd_gl.output, sample_set=['highErrorRemoved','finalSamples_lowCovRemoved'], site=['allSites','0fold','4fold'], maf=['0.05']),
-        expand(rules.concat_angsd_mafs.output, sample_set=['highErrorRemoved','finalSamples_lowCovRemoved'], site=['allSites','0fold','4fold'], maf=['0.05']),
+        expand(rules.concat_angsd_gl.output, sample_set=['highErrorRemoved','finalSamples_lowCovRemoved'], site=['allSites','0fold','4fold'], maf=['0.005','0.01','0.05']),
+        expand(rules.concat_angsd_mafs.output, sample_set=['highErrorRemoved','finalSamples_lowCovRemoved'], site=['allSites','0fold','4fold'], maf=['0.005','0.01','0.05']),
         expand(rules.extract_sample_angsd.output, sample_set=['highErrorRemoved','finalSamples_lowCovRemoved'])
     output:
         '{0}/angsd.done'.format(ANGSD_DIR)
