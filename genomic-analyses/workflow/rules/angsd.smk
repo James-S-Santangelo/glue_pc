@@ -222,7 +222,7 @@ rule angsd_estimate_sfs:
         time = '03:00:00'
     shell:
         """
-        realSFS {input.saf_idx} -P {threads} -sites {input.sites} -fold 1 > {output} 2> {log}
+        realSFS {input.saf_idx} -P {threads} -sites {input.sites} -fold 1 -maxIter 2000 -seed 42 > {output} 2> {log}
         """
 
 rule angsd_estimate_thetas:
