@@ -42,10 +42,13 @@ rule global_depth_pi_sfs_theta_notebook:
         plot2 = '{0}/supplemental/angsd/sfs/sfs_allChroms_bySite_bySampleSet.pdf'.format(FIGURES_DIR),
         plot3 = '{0}/supplemental/angsd/sfs/sfs_allChroms_bySite_finalSamples_lowCovRemoved.pdf'.format(FIGURES_DIR),
         table = '{0}/tables/allChroms_diversity_bySite_bySampleSet.txt'.format(FIGURES_DIR),
-        plot4 = '{0}/supplemental/population_structure/allSamples_PCA_byHabitat_bySampleSet_byMAF.pdf'.format(FIGURES_DIR),
-        plot5 = '{0}/supplemental/population_structure/allSamples_PCA_byCity_byMAF.pdf'.format(FIGURES_DIR),
-        plot6 = '{0}/supplemental/population_structure/allSamples_PCA_byContinent_byMAF.pdf'.format(FIGURES_DIR),
-        plot7 = '{0}/supplemental/population_structure/allSamples_PCA_byRange_byMAF.pdf'.format(FIGURES_DIR)
+        plot4 = '{0}/supplemental/population_structure/highErrorRemoved_PCA_byHabitat_bySampleSet_byMAF.pdf'.format(FIGURES_DIR),
+        plot5 = '{0}/supplemental/population_structure/highErrorRemoved_PCA_byCity_byMAF.pdf'.format(FIGURES_DIR),
+        plot6 = '{0}/supplemental/population_structure/highErrorRemoved_PCA_byContinent_byMAF.pdf'.format(FIGURES_DIR),
+        plot7 = '{0}/supplemental/population_structure/highErrorRemoved_PCA_byRange_byMAF.pdf'.format(FIGURES_DIR),
+        plot8 = '{0}/supplemental/population_structure/highErrorRemoved_PCA_byCity_maf0.05.pdf'.format(FIGURES_DIR),
+        plot9 = '{0}/supplemental/population_structure/highErrorRemoved_PCA_byContinent_maf0.05.pdf'.format(FIGURES_DIR),
+        plot10 = '{0}/supplemental/population_structure/highErrorRemoved_PCA_byRange_maf0.05.pdf'.format(FIGURES_DIR)
     conda: '../envs/notebooks.yaml'
     notebook:
         "../notebooks/global_depth_pi_sfs_theta.r.ipynb"
