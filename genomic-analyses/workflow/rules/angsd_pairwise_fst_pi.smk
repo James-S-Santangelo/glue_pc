@@ -121,6 +121,28 @@ rule angsd_estimate_sfs_byCity_byHabitat:
         realSFS {input} -P {threads} -fold 1 -maxIter 2000 -seed 42 > {output} 2> {log}
         """
 
+rule angsd_estimate_thetas:
+    input:
+        saf_idx = rules.angsd_saf_likelihood_byCity_byHabitat.output.saf_idx,
+        sfs = rules.angsd_estimate_sfs_byCity_byHabitat.output
+    output:
+        idx = '{0}/summary_stats/thetas/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}.thetas.idx'.format(ANGSD_DIR),
+        thet = '{0}/summary_stats/thetas/by_city/{{city}}/{{city}}_{{habitat}}__{{site}}.thetas.gz'.format(ANGSD_DIR)
+    log: 'logs/angsd_estimate_thetas_byCity_byHabitat/{city}_{habitat}_{site}_thetas.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    threads: 4
+    params:
+        out = '{0}/summary_stats/thetas/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}'.format(ANGSD_DIR)
+    resources:
+        mem_mb = lambda wildcards, attempt: attempt * 4000,
+        time = '01:00:00'
+    shell:
+        """
+        realSFS saf2theta {input.saf_idx} \
+            -P {threads} \
+            -sfs {input.sfs} \
+            -outname {params.out} 2> {log}
+        """
 rule angsd_pairwise_done:
     input:
         expand(rules.angsd_fst_index.output, city=CITIES, site=['4fold'], fst=['0', '1']),
