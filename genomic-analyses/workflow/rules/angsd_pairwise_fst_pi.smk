@@ -121,7 +121,7 @@ rule angsd_estimate_sfs_byCity_byHabitat:
         realSFS {input} -P {threads} -fold 1 -maxIter 2000 -seed 42 > {output} 2> {log}
         """
 
-rule angsd_estimate_thetas:
+rule angsd_estimate_thetas_byCity_byHabitat:
     input:
         saf_idx = rules.angsd_saf_likelihood_byCity_byHabitat.output.saf_idx,
         sfs = rules.angsd_estimate_sfs_byCity_byHabitat.output
