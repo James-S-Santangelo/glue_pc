@@ -17,9 +17,23 @@ rule create_bam_list_byCity_byHabitat:
                 if sample in samples_city_habitat:
                     f.write('{0}'.format(bam))
 
+rule angsd_index_degenerate_allChroms:
+    input:
+        rules.convert_sites_for_angsd.output
+    output:
+        binary = '{0}/angsd_sites/Trepens_{{site}}.sites.bin'.format(PROGRAM_RESOURCE_DIR),
+        idx = '{0}/angsd_sites/Trepens_{{site}}.sites.idx'.format(PROGRAM_RESOURCE_DIR)
+    log: 'logs/angsd_index/allChroms_{site}_index.log'
+    conda: '../envs/angsd.yaml'
+    shell:
+        """
+        angsd sites index {input} 2> {log}
+        """
+
 rule angsd_saf_likelihood_byCity_byHabitat:
     input:
         bams = rules.create_bam_list_byCity_byHabitat.output,
+        sites = rules.angsd_index_degenerate_allChroms.output,
         ref = REFERENCE_GENOME
     output:
         saf = temp('{0}/sfs/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}.saf.gz'.format(ANGSD_DIR)),
@@ -47,6 +61,7 @@ rule angsd_saf_likelihood_byCity_byHabitat:
             -baq 2 \
             -ref {input.ref} \
             -minInd $MIN_IND \
+            -sites {input.sites} \
             -minQ 20 \
             -minMapQ 30 \
             -doSaf 1 \
