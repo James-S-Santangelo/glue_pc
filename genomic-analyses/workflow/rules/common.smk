@@ -187,7 +187,6 @@ def get_angsd_maf_toConcat(wildcards):
 def get_habitat_saf_files_byCity(wildcards):
     all_saf_files = expand(rules.angsd_saf_likelihood_byCity_byHabitat.output.saf_idx, city=CITIES, habitat=HABITATS, site=['4fold'])
     city_saf_files = [x for x in all_saf_files if wildcards.city in x and wildcards.site in x]
-    print(city_saf_files)
     return city_saf_files
 
 

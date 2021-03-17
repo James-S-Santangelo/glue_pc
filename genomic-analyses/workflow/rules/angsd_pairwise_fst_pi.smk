@@ -82,12 +82,32 @@ rule angsd_estimate_joint_sfs_byCity:
         time = '01:00:00'
     shell:
         """
-        realSFS {input} -maxIter 2000 -seed 42 -fold 1 > {output} 2> {log}
+        realSFS {input} -maxIter 2000 -seed 42 -fold 1 -P {threads} > {output} 2> {log}
+        """
+
+rule angsd_fst_index:
+    input: 
+        saf_idx = get_habitat_saf_files_byCity,
+        joint_sfs = rules.angsd_estimate_joint_sfs_byCity.output
+    output:
+        fst = '{0}/summary_stats/fst/{{city}}/{{city}}_{{site}}_r_u_fst{{fst}}.fst.gz'.format(ANGSD_DIR),
+        idx = '{0}/summary_stats/fst/{{city}}/{{city}}_{{site}}_r_u.fst{{fst}}.fst.idx'.format(ANGSD_DIR)
+    log: 'logs/angsd_fst_index/{city}_{site}_fst{fst}_index.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    threads: 4
+    resources:
+        mem_mb = 4000,
+        time = '01:00:00'
+    params:
+        fstout = '{0}/summary_stats/fst/{{city}}/{{city}}_{{site}}_r_u_fst{{fst}}'.format(ANGSD_DIR)
+    shell:
+        """
+        realSFS fst index {input.saf_idx} -sfs {input.joint_sfs} -fold 1 -P {threads} -fstout {params.fstout}
         """
 
 rule angsd_pairwise_done:
     input:
-        expand(rules.angsd_estimate_joint_sfs_byCity.output, city=CITIES, site=['4fold'])
+        expand(rules.angsd_fst_index.output, city=CITIES, site=['4fold'], fst=['0', '1'])
     output:
         '{0}/angsd_pairwise.done'.format(ANGSD_DIR)
     shell:
