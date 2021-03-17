@@ -143,10 +143,26 @@ rule angsd_estimate_thetas_byCity_byHabitat:
             -sfs {input.sfs} \
             -outname {params.out} 2> {log}
         """
+
+rule angsd_diversity_neutrality_stats_byCity_byHabitat:
+    input:
+        rules.angsd_estimate_thetas_byCity_byHabitat.output.idx
+    output:
+       '{0}/summary_stats/thetas/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}.thetas.idx.pestPG'.format(ANGSD_DIR)
+    log: 'logs/angsd_diversity_neutrality_stats_byCity_byHabitat/{city}_{habitat}_{site}_diversity_neutrality.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    resources:
+        mem_mb = lambda wildcards, attempt: attempt * 4000,
+        time = '01:00:00'
+    shell:
+        """
+        thetaStat do_stat {input} 2> {log}
+        """
+
 rule angsd_pairwise_done:
     input:
         expand(rules.angsd_fst_index.output, city=CITIES, site=['4fold'], fst=['0', '1']),
-        expand(rules.angsd_estimate_sfs_byCity_byHabitat.output, city=CITIES, habitat=HABITATS, site=['4fold'])
+        expand(rules.angsd_diversity_neutrality_stats_byCity_byHabitat.output, city=CITIES, habitat=HABITATS, site=['4fold'])
     output:
         '{0}/angsd_pairwise.done'.format(ANGSD_DIR)
     shell:
