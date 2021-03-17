@@ -24,7 +24,7 @@ rule angsd_index_degenerate_allChroms:
         binary = '{0}/angsd_sites/Trepens_{{site}}.sites.bin'.format(PROGRAM_RESOURCE_DIR),
         idx = '{0}/angsd_sites/Trepens_{{site}}.sites.idx'.format(PROGRAM_RESOURCE_DIR)
     log: 'logs/angsd_index/allChroms_{site}_index.log'
-    conda: '../envs/angsd.yaml'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     shell:
         """
         angsd sites index {input} 2> {log}
@@ -40,7 +40,7 @@ rule angsd_saf_likelihood_byCity_byHabitat:
         saf_idx = temp('{0}/sfs/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}.saf.idx'.format(ANGSD_DIR)),
         saf_pos = temp('{0}/sfs/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}.saf.pos.gz'.format(ANGSD_DIR))
     log: 'logs/angsd_saf_likelihood_byCity_byHabitat/{city}_{habitat}_{site}_saf.log'
-    conda: '../envs/angsd.yaml'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     params:
         out = '{0}/sfs/by_city/{{city}}/{{city}}/_{{habitat}}_{{site}}'.format(ANGSD_DIR)
     threads: 10
@@ -69,9 +69,25 @@ rule angsd_saf_likelihood_byCity_byHabitat:
             -bam {input.bams} 2> {log}
         """
 
+rule angsd_estimate_joint_sfs_byCity:
+    input:
+        get_habitat_saf_files_byCity
+    output:
+        '{0}/sfs/by_city/{{city}}/{{city}}_{{site}}_r_u.2dsfs'.format(ANGSD_DIR)
+    log: 'logs/angsd_estimate_2dsfs_byCity/{city}_{site}.2dsfs.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    threads: 4
+    resources:
+        mem_mb = lambda wildcards, attempt: attempt * 10000,
+        time = '01:00:00'
+    shell:
+        """
+        realSFS {input} -maxIter 2000 -seed 42 -fold 1 > {output} 2> {log}
+        """
+
 rule angsd_pairwise_done:
     input:
-        expand(rules.angsd_saf_likelihood_byCity_byHabitat.output, city=CITIES, habitat=HABITATS, site=['4fold'])
+        expand(rules.angsd_estimate_joint_sfs_byCity.output, city=CITIES, site=['4fold'])
     output:
         '{0}/angsd_pairwise.done'.format(ANGSD_DIR)
     shell:
