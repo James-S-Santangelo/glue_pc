@@ -76,8 +76,9 @@ include: 'rules/species_id.smk'
 include: 'rules/single_sample_sfs.smk'
 include: 'rules/qc.smk'
 include: 'rules/toronto_downsample.smk'
-include: 'rules/angsd.smk'
+include: 'rules/angsd_global.smk'
 include: 'rules/population_structure.smk'
+include: 'rules/angsd_pairwise_fst_pi.smk'
 include: 'rules/angsd_sfs_nSites_test.smk'
 
 rule clean:
