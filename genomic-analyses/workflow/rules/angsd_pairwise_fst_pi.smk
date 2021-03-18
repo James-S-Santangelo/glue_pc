@@ -33,8 +33,10 @@ rule angsd_index_degenerate_allChroms:
 rule angsd_saf_likelihood_byCity_byHabitat:
     input:
         bams = rules.create_bam_list_byCity_byHabitat.output,
-        sites = rules.angsd_index_degenerate_allChroms.output,
-        ref = REFERENCE_GENOME
+        sites_idx = rules.angsd_index_degenerate_allChroms.output,
+        sites = rules.convert_sites_for_angsd.output, 
+        ref = REFERENCE_GENOME,
+        chroms = config['chromosomes']
     output:
         saf = temp('{0}/sfs/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}.saf.gz'.format(ANGSD_DIR)),
         saf_idx = temp('{0}/sfs/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}.saf.idx'.format(ANGSD_DIR)),
@@ -42,7 +44,7 @@ rule angsd_saf_likelihood_byCity_byHabitat:
     log: 'logs/angsd_saf_likelihood_byCity_byHabitat/{city}_{habitat}_{site}_saf.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     params:
-        out = '{0}/sfs/by_city/{{city}}/{{city}}/_{{habitat}}_{{site}}'.format(ANGSD_DIR)
+        out = '{0}/sfs/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}'.format(ANGSD_DIR)
     threads: 10
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 8000,
@@ -66,6 +68,7 @@ rule angsd_saf_likelihood_byCity_byHabitat:
             -minMapQ 30 \
             -doSaf 1 \
             -anc {input.ref} \
+            -rf {input.chroms} \
             -bam {input.bams} 2> {log}
         """
 
@@ -91,7 +94,7 @@ rule angsd_fst_index:
         joint_sfs = rules.angsd_estimate_joint_sfs_byCity.output
     output:
         fst = '{0}/summary_stats/fst/fst{{fst}}/{{city}}/{{city}}_{{site}}_r_u_fst{{fst}}.fst.gz'.format(ANGSD_DIR),
-        idx = '{0}/summary_stats/fst/fst{{fst}}/{{city}}/{{city}}_{{site}}_r_u.fst{{fst}}.fst.idx'.format(ANGSD_DIR)
+        idx = '{0}/summary_stats/fst/fst{{fst}}/{{city}}/{{city}}_{{site}}_r_u_fst{{fst}}.fst.idx'.format(ANGSD_DIR)
     log: 'logs/angsd_fst_index/{city}_{site}_fst{fst}_index.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     threads: 4
@@ -127,7 +130,7 @@ rule angsd_estimate_thetas_byCity_byHabitat:
         sfs = rules.angsd_estimate_sfs_byCity_byHabitat.output
     output:
         idx = '{0}/summary_stats/thetas/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}.thetas.idx'.format(ANGSD_DIR),
-        thet = '{0}/summary_stats/thetas/by_city/{{city}}/{{city}}_{{habitat}}__{{site}}.thetas.gz'.format(ANGSD_DIR)
+        thet = '{0}/summary_stats/thetas/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}.thetas.gz'.format(ANGSD_DIR)
     log: 'logs/angsd_estimate_thetas_byCity_byHabitat/{city}_{habitat}_{site}_thetas.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     threads: 4

@@ -66,7 +66,7 @@ rule all:
         '{0}/angsd_pairwise.done'.format(ANGSD_DIR),
         # Population structure
         '{0}/population_structure.done'.format(POP_STRUC_DIR),
-        '{0}/nSites_test/angsd_nSites_test.done'.format(ANGSD_DIR)
+        #'{0}/nSites_test/angsd_nSites_test.done'.format(ANGSD_DIR)
 
 rule create_tmp_dir:
     output: directory(TMPDIR)
