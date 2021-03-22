@@ -105,7 +105,19 @@ rule angsd_fst_index:
         fstout = '{0}/summary_stats/fst/fst{{fst}}/{{city}}/{{city}}_{{site}}_r_u_fst{{fst}}'.format(ANGSD_DIR)
     shell:
         """
-        realSFS fst index {input.saf_idx} -sfs {input.joint_sfs} -fold 1 -P {threads} -fstout {params.fstout} 2> {log}
+        realSFS fst index {input.saf_idx} -sfs {input.joint_sfs} -fold 1 -P {threads} -whichFst {wildcards.fst} -fstout {params.fstout} 2> {log}
+        """
+
+rule angsd_fst_readable:
+    input:
+        rules.angsd_fst_index.output.idx
+    output:
+        '{0}/summary_stats/fst/fst{{fst}}/{{city}}/{{city}}_{{site}}_r_u_fst{{fst}}_readable.fst'.format(ANGSD_DIR)
+    log: 'logs/angsd_fst_readable/{city}_{site}_fst{fst}_readable.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    shell:
+        """
+        realSFS fst print {input} > {output} 2> {log}
         """
 
 rule angsd_estimate_sfs_byCity_byHabitat:
@@ -164,7 +176,7 @@ rule angsd_diversity_neutrality_stats_byCity_byHabitat:
 
 rule angsd_pairwise_done:
     input:
-        expand(rules.angsd_fst_index.output, city=CITIES, site=['4fold'], fst=['0', '1']),
+        expand(rules.angsd_fst_readable.output, city=CITIES, site=['4fold'], fst=['0', '1']),
         expand(rules.angsd_diversity_neutrality_stats_byCity_byHabitat.output, city=CITIES, habitat=HABITATS, site=['4fold'])
     output:
         '{0}/angsd_pairwise.done'.format(ANGSD_DIR)
@@ -172,3 +184,12 @@ rule angsd_pairwise_done:
         """
         touch {output}
         """
+
+rule pairwise_pi_fst_notebook:
+    input:
+        rules.angsd_pairwise_done.output
+    output:
+        '{0}/supplemental/fst/wc_hudson_fst_corr.pdf'.format(FIGURES_DIR)
+    conda: '../envs/notebooks.yaml'
+    notebook:
+        "../notebooks/pairwise_pi_fst.r.ipynb"
