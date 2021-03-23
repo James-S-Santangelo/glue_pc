@@ -189,7 +189,9 @@ rule pairwise_pi_fst_notebook:
     input:
         rules.angsd_pairwise_done.output
     output:
-        '{0}/supplemental/fst/wc_hudson_fst_corr.pdf'.format(FIGURES_DIR)
+        '{0}/supplemental/pop_diff/wc_hudson_fst_corr.pdf'.format(FIGURES_DIR),
+        '{0}/supplemental/pop_diff/Fst_by_minSampleSize_byFstType.pdf'.format(FIGURES_DIR),
+        '{0}/supplemental/pop_diff/hudsonFst_euclDist_corr.pdf'.format(FIGURES_DIR)
     conda: '../envs/notebooks.yaml'
     notebook:
         "../notebooks/pairwise_pi_fst.r.ipynb"

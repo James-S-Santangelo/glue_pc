@@ -9,3 +9,5 @@ dependencies:
   - r-irkernel=0.8.15
   - r-wesanderson=0.3.6
   - r-vegan=2.5_7
+  - r-car=3.0_2
+  - r-emmeans=1.5.5_1
