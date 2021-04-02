@@ -1083,8 +1083,9 @@ calculate.stats <- function(all.data,permute=FALSE,number.extreme.sites=2){
   # MANOVA:
   if (number.extreme.sites > 1){
     fit <- manova(as.matrix(y.mat) ~ zone*city,data.MANOVA.pred) # zone and city
-    print(summary(fit, test="Pillai"))
+    #print(summary(fit, test="Pillai"))
     F.stats.manova <- summary(fit, test="Pillai")$stats[1:3,3]
+    #print(F.stats.manova)
   } else{
     print("number of extreme sites equals 1; interaction can't be tested; MANOVA reduced to main effects")
     fit <- manova(as.matrix(y.mat) ~ zone+city,data.MANOVA.pred) # zone and city
@@ -1158,6 +1159,8 @@ permutation.tests <- function(all.data,n.perm=99,number.extreme.sites=2){
   result.stats.obs <- calculate.stats(all.data,permute=FALSE,number.extreme.sites=number.extreme.sites)
   # test averages
   stats.obs <- result.stats.obs$stats
+  print("Observed F-stats of multivariate mean environmental change")
+  print(stats.obs)
   if (number.extreme.sites > 1){
     stats.rnd <- matrix(0,n.perm,5)
   } else{stats.rnd <- matrix(0,n.perm,4)}
