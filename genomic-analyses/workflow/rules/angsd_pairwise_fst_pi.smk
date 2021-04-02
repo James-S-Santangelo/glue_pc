@@ -155,6 +155,7 @@ rule angsd_estimate_thetas_byCity_byHabitat:
         """
         realSFS saf2theta {input.saf_idx} \
             -P {threads} \
+            -fold 1 \
             -sfs {input.sfs} \
             -outname {params.out} 2> {log}
         """

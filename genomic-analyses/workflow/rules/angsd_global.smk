@@ -242,6 +242,7 @@ rule angsd_estimate_thetas:
     shell:
         """
         realSFS saf2theta {input.saf_idx} \
+            -fold 1 \
             -P {threads} \
             -sfs {input.sfs} \
             -sites {input.sites} \
