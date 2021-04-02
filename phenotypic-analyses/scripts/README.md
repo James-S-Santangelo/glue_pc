@@ -1,5 +1,11 @@
 Scripts used to (1) process and clean raw data, and (2) analyze data.
 
-Scripts are numbered based on the order in which they should be run.
+[Python scripts](./python) are used exclusively for cleaning and standardizing the raw, 
+individual plant datasets submitted by collaborators to ensure they are in identical formats for
+downstream analyses. 
 
-Detailed documentation for scripts are in the scripts themselves.
+[r scripts](./r) are used for summarizing the cleaned and standardized individual plant data to generate
+all manuscript results and figures that depend on the phenotypic data and the environmental data.
+
+[shell scripts](./shell) are accessory scripts called by other programs and do not need to be directly
+executed.

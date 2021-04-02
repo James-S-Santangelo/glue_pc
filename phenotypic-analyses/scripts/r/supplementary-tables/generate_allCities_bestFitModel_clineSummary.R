@@ -1,4 +1,5 @@
 # Script to create table with summary of HCN clines by city
+# Uses OLS regression and not Robust regression
 #
 # Author: James S. Santangelo
 

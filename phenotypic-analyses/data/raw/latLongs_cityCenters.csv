@@ -1,0 +1,189 @@
+City,Country,Latitude_web,Longitude_web,Is_center,Latitude_moved,Longitude_moved,Notes
+Acton,Canada,43.63123,-80.03644,No,43.629693,-80.041492,"Latlong.net placed marker in residential area, moved to what seems like downtown area at intersection of Main St and Mill St"
+Albuquerque,USA,35.084385,-106.650421,Yes,,,
+Almada ,Portugal,38.68029,-9.15849,Yes,,,
+Amsterdam,Netherlands,52.373169,4.89066,Yes,,,
+Anchorage; AK,USA,61.216313,-149.894852,Yes,,,
+Angus,Canada,44.31963,-79.88394,No,44.325539,-79.88837,"Latlong.net placed marker in residential area, moved to what seems like downtown area at intersection of highway 90 and Cecil St"
+Antwerp,Belgium,51.219448,4.402464,Yes,,,
+Armidale,Australia,-30.51296,151.66942,Yes,,,
+Athens; GA,USA,33.959768,-83.376398,Yes,,,
+Atlanta,USA,33.74855,-84.391502,No,33.757758,-84.388372,Moved to more urban area near Atlanta Central Library
+Atlantic City; NJ,USA,39.364285,-74.422935,No,39.356273,-74.436074,Might be better to move to near Caesar's casino
+Austin,USA,30.267153,-97.743057,Yes,,,
+Baltimore,USA,39.29044,-76.612328,Yes,,,
+Barrie,Canada,44.389339,-79.685516,Yes,,,
+"Baton Rouge, LA",USA,30.443319,-91.187492,No,30.447963,-91.18898,"Moved more downtown, near LSU Museum of Art"
+Beijing,China,39.904202,116.407394,Yes,,,
+Berlin,Germany,52.520008,13.404954,No,52.513592,13.392534,Moved to more urban area near Gendarmenmarkt
+Bern,Switzerland,46.947975,7.447447,Yes,,,
+Birmingham,UK,52.486244,-1.890401,No,52.480791,-1.898835,Moved to more urban area near Cathedral Square
+Bogota,Colombia,4.598077,-74.076103,No,4.627184,-74.106993,Moved to highway because more urban and more in line with transect
+Boston,USA,42.360081,-71.058884,No,42.356666,-71.05574,"Moved to more metropolitan area, centred in Post Office Square"
+Bradford,Canada,44.111832,-79.568123,No,44.114297,-79.564777,"Latlong.net placed marker in residential area, moved to more urban area at intersection of Holland and Simcoe St"
+Brantford,Canada,43.13941,-80.26365,Yes,,,
+Brighton,UK,50.822041,-0.137406,Yes,,,
+Brussels,Belgium,50.845539,4.35571,Yes,,,
+Bucaramanga,Colombia,7.13118,-73.125031,No,7.119184,-73.122692,"Latlong.net marker def not city center, but not 100% of if what I chose is ok. Wiki says center is downtown, so seems ok?"
+Buenos Aires,Argentina,-34.603683,-58.381557,Yes,,,
+Burlington; VT,USA,44.476299,-73.213547,Yes,,,
+"Calgary, AB",Canada,51.04731,-114.057968,No,51.047329,-114.072387,Moved to Courthouse Park because looks more urban
+Cambridge,UK,52.205338,0.121817,Yes,,,
+Canberra,Australia,-35.280781,149.131393,Yes,-35.308275,149.124322,Transect starts at Parliament House and goes southeast. Included that as moved latlong in case that might be better.
+Cape Town,South Africa,-33.92487,18.424055,Yes,,,
+Charleston; SC,USA,32.787601,-79.940273,No,,,Moved to more urban area near
+Charlotte,USA,35.223789,-80.841141,No,35.226888,-80.84369,Moved to more urban area near Battle of Charlotte Marker
+Charlottetown; PEI,Canada,46.23542,-63.12652,Yes,,,
+Chengdu,China,30.671949,104.068069,No,30.657797,104.065955,"Moved to more urban area near ""天府广场"" subway station "
+Chicago; IL,USA,41.878113,-87.629799,Yes,,,
+Christchurch,New Zealand,-43.532055,172.63623,Yes,,,
+Cincinnati,USA,39.103119,-84.512016,Yes,,,
+Cleveland,USA,41.499321,-81.694359,Yes,,,
+Cobourg,Canada,43.9599,-78.16545,Yes,,,
+Cologne,Germany,50.940529,6.95991,Yes,,,
+Curitiba,Brazil,-25.42836,-49.273251,Yes,-25.433386,-49.271747,"I wonder if the second location might be better, just a slight shift though."
+"Dauphin, MB",Canada,51.14967,-100.04991,Yes,,,
+Denver,USA,39.739143,-104.984695,No,39.745485,-104.990108,Moved to more urban area near intersection of 17th street and Welton St
+Detroit,USA,42.332939,-83.047836,Yes,,,
+"Edmonton, AB",Canada,53.544388,-113.490929,Yes,,,
+Ellisville,USA,38.594105,-90.58751,Yes,,,
+Elmira,Canada,43.59304,-80.56098,No,43.599976,-80.55778,"Latlong.net placed marker in center of city, but is not most urban. Moved to intersection of Arthur and Church St"
+Everett,Canada,44.19047,-79.93722,Yes,,,"City seems uniformly residential, and marker from latlong.net is more or less in middle so did not move it"
+Fergus,Canada,43.70367,-80.37953,Yes,,,
+"Fort Collins, CO",USA,40.550853,-105.066809,No,40.587751,-105.076,"Latlong.net did not place marker in center of city, moved to Downtown Fort Collins"
+Frankfurt am Main,Germany,50.110644,8.682092,Yes,,,
+"Fredericton, NB",Canada,45.966427,-66.645813,No,45.962041,-66.643934,Changed manually to intersection of King and York because latlong.net was not accurate
+Freehold; NJ,USA,40.26011,-74.273757,Yes,,,
+Georgetown,Canada,43.647171,-79.911003,No,43.651146,-79.898875,"Latlong.net placed marker in residential area, so moved to more urban area near Mold-Masters Sportsplex Park"
+Ghent,Belgium,51.053829,3.725012,Yes,,,
+Glasgow,UK,55.865681,-4.25714,Yes,,,
+Guadalajara (Jalisco) ,Mexico,20.675171,-103.347328,Yes,,,
+Guelph,Canada,43.54481,-80.24811,Yes,,,
+"Halifax, NS",Canada,44.648766,-63.575237,Yes,,,
+Halle (Saale),Germany,51.482504,11.970545,Yes,,,
+Helsinki,Finland,60.169857,24.938379,Yes,,,
+Hempstead; NY ,USA,40.706319,-73.618684,No,40.705561,-73.625962,"Moved closer to urban centre, intersection of Front St and N Franklin St"
+Hiroshima,Japan,34.385204,132.455292,Yes,,,
+Hobart,Tasmania,-42.882137,147.327194,Yes,,,
+Houston,USA,29.758938,-95.367697,Yes,,,
+Indianapolis,USA,39.768402,-86.158066,Yes,,,
+Jacksonville,USA,30.32597,-81.656761,Yes,,,
+Johannesburg,South Africa,-26.204103,28.047304,Yes,,,
+Kingston; ON,Canada,44.23048,-76.48125,Yes,,,
+Kunming,China,24.880095,102.832893,No,25.037281,102.716949,Moved to Dongfeng Square
+Kyoto,Japan,35.03194,135.748047,No,35.003655,135.759676,"Latlong.net marker not in city center, but hard to say where appropriate city center would be.."
+La Paz,Bolivia,-16.489689,-68.119293,No,-16.506421,-68.127769,Shifted to area more central and with many high rises near Minsitry of Education
+La Verne ,USA,34.100843,-117.767836,Yes,,,
+Lake Charles; TX,USA,30.226595,-93.217376,Yes,,,
+Landshut,Germany,48.536217,12.151655,Yes,,,
+Lansing,USA,42.733771,-84.555381,Yes,,,
+Lanzhou,China,36.057968,103.790047,No,36.057812,103.825896,Latlong.net's marker doesn't seem to be most urban area; moved to downtown area 
+Latacunga,Ecuador,-0.933613,-78.614884,Yes,,,
+Leiden,Netherlands,52.161091,4.49015,Yes,,,
+Leuven,Belgium,50.879829,4.70054,Yes,,,
+Linköping,Sweden,58.413738,15.62351,Yes,58.411801,15.621772,Could move slightly to more urban area near Filmstaden Linkoping
+Lisbon,Portugal,38.722252,-9.139337,No,38.711136,-9.127747,Moved to more urban area near Museo do Fado
+"Little Rock, AR",USA,34.746481,-92.289595,No,34.744641,-92.27467,"Latlong.net placed marker near government buildings, not in city center. Moved to intersection of S Spring and W Capitol to be more urban"
+Loja,Ecuador,-3.997781,-79.202452,Yes,,,
+London,Canada,42.98427,-81.24753,Yes,,,
+Los Angeles,USA,34.053683,-118.242767,No,34.050249,-118.254907,Latlong.net placed marker near city hall; moved to more metropolitan area
+"Louisville, KY",USA,38.256081,-85.751572,No,38.256606,-85.756595,Moved to more urban area 
+Müenster,Germany,51.95013,7.613302,No,51.962126,7.624724,Moved to more urban area near Westphalian State Museum of Art and Cultural History
+Madison; WI,USA,43.074761,-89.383761,Yes,,,
+Malmö,Sweden,55.60331,13.00131,Yes,,,
+Manchester,UK,53.480759,-2.242631,Yes,,,
+Medellin,Colombia,6.244203,-75.581215,No,6.249957,-75.566258,"Moved to metropolitan area, near Centro Coltejer"
+Melbourne,Australia,-37.814218,144.963161,Yes,,,
+"Memphis, TN",USA,35.149022,-90.051629,Yes,,,
+Mexico City,Mexico,19.432608,-99.133209,Yes,,,
+Milan,Italy,45.464203,9.189982,Yes,,,
+"Minneapolis, MN",USA,44.9773,-93.265469,Yes,,,
+Moncton,Canada,46.088879,-64.775818,Yes,,,
+Montpellier,France,43.608292,3.8796,Yes,,,
+Montreal,Canada,45.50169,-73.567253,Yes,,,
+Morelia,Mexico,19.70595,-101.194984,No,19.702692,-101.194984,"Moved point to Catedral de Morelia, which appears more urban from street view."
+Moscow,Russia,55.755825,37.617298,Yes,,,
+Munich,Germany,48.135124,11.581981,Yes,,,
+"New Haven, CT",USA,41.308214,-72.925052,Yes,,,
+New Tecumseth (Alliston),Canada,44.15399,-79.86921,Yes,,,
+New York,USA,40.730862,-73.987156,Yes,,,
+"Newcastle, NSW",Australia,-32.928278,151.781667,Yes,,,
+Norfolk,USA,36.888992,-76.248161,No,36.845714,-76.288634,Latlong.net placed marker in residential area away from city center. Moved to intersection of E Main St and Commericial Pl
+Norrtälje,Sweden,,,No,59.759724,18.701071,Could not find on latlong.net. Used Google maps and chose manually.
+North Bay,Canada,46.309116,-79.460823,Yes,,,
+Northampton,USA,42.319023,-72.630634,Yes,,,
+Orangeville,Canada,43.91924,-80.09741,Yes,,,
+Ottawa,Canada,45.421532,-75.697189,Yes,,,
+Palmerston North,New Zealand,-40.356317,175.611239,Yes,,,
+Paris,France,48.856613,2.352222,Yes,,,
+Perth,Australia,-31.95285,115.857307,Yes,,,
+Philadelphia,USA,39.951061,-75.165619,Yes,,,
+Pietermaritzburg,South Africa,-29.60351,30.37962,Yes,,,
+Pittsburgh,USA,40.442169,-79.994957,No,40.440588,-80.002597,Shifted slightly to more urban core area near Market Square
+Port Hope,Canada,43.960442,-78.291542,No,43.951562,-78.294127,Latlong.net placed marker in residential area away from city center. Manually moved marker to intersection of Walton and Ontario St
+Portlandme; ME,USA,43.661028,-70.25486,No,43.656679,-70.253452,Shifted to more urban area near The Holy Donut
+Portland; OR,USA,45.516022,-122.681427,Yes,,,
+Providence; RI,USA,41.823989,-71.412834,Yes,,,
+Puebla,Mexico,19.04368,-98.199043,Yes,,,
+Punta Arenas,Chile,-53.163834,-70.917068,No,-53.162989,-70.908124,Moved to more urban area near Plaza Armas Punta Arenas
+Quebec City,Canada,46.813049,-71.225739,No,46.813751,-71.206166,La Basilique-Cathedrale Notre-Dame de Quebec because looks more urban
+Quito,Ecuador,-0.180653,-78.467834,No,-0.186867,-78.479536,Latlong.net placed marker in park. Moved to intersection of Av. Eloy Alfaro and Av. 6 de Diciembre
+Raleigh; NC,USA,35.780399,-78.639099,No,35.774994,-78.640093,Latlong.net used city hall; moved to more urban area near Sheraton Raleigh Hotel
+Rancagua,Chile,-34.167702,-70.738297,Yes,,,
+Reading,UK,51.45504,-0.96909,Yes,,,
+Rennes,France,48.111778,-1.68026,Yes,,,
+Reutlingen,Germany,48.491951,9.211414,Yes,,,
+Rochester; NY,USA,43.185474,-77.610687,No,43.156139,-77.604917,Latlong.net placed marker in residential area. Moved to more urban area near Midtown Commons
+"Rockford, IL",USA,42.271395,-89.093966,Yes,,,
+Sacramento,USA,38.581572,-121.4944,Yes,,,
+Saint John; NB,Canada,45.27281,-66.06303,Yes,,,
+Saint John's; NF,Canada,,,No,47.560151,-52.711543,"Latlong.net doesn't place marker in St. John's, so manually chose St John's Mayor"
+Saint Thomas,Canada,42.78923,-81.1692,Yes,42.7787,-81.16585,Could be moved to more urban area near intersection of Talbot St and Burwell Rd
+"Salem, OR",USA,44.939156,-123.033119,No,44.941017,-123.038677,Shifted to more urban area near Reed Opera House
+Santa Cruz,USA,36.974201,-122.029716,No,36.974972,-122.025658,Moved marker to more urban area near Abbott Square
+Santa Maria,Brazil,-29.703421,-53.815201,No,-29.68639,-53.81134,"Shifted to more dense area of city, near Assembly of God church"
+Santa Marta ,Colombia,,,No,11.240335,-74.211064,Latlong.net places marker far outside city. Manually chose spot near intersection of Calle 22 and Carrera 5
+Santiago,Chile,-33.448891,-70.669266,No,-33.442137,-70.645768,Moved to more urban area near Chilean National Library
+Sapporo,Japan,43.061449,141.354538,Yes,,,
+Seattle,USA,47.606209,-122.332069,Yes,,,
+Shanghai,China,31.230391,121.473701,Yes,,,
+Sioux Falls East,USA,43.549976,-96.700325,No,43.546026,-96.72826,Moved to urban area at intersection of 10th St and S Phillips Ave
+Sioux Falls West,USA,43.549976,-96.700325,No,43.546026,-96.72826,Moved to urban area at intersection of 10th St and S Phillips Ave
+St Louis,USA,38.627273,-90.197889,Yes,,,
+St. Albert; AB,Canada,53.63702,-113.620071,No,53.642969,-113.62591,Moved to intersection of St Albert Trail and McKenney/Bellerose because looks more urban
+Starkville,USA,38.63028,-90.20031,No,33.462845,-88.810263,"Moved to slightly more urban center area at intersection of N Broadway and Locust St. James: This is St-Louis, not Starkville. Changed."
+Stockholm,Sweden,59.329323,18.068581,Yes,,,
+Stratford,Canada,43.37297,-80.97509,No,43.369952,-80.982084,"Latlong.net placed marker not in city center, moved to more urban area near Stratford City Hall"
+Stuttgart,Germany,48.777111,9.18077,Yes,,,
+Sudbury,Canada,46.522099,-80.953033,No,46.492095,-80.993641,"Latlong.net did not place marker correctly, manually chose a spot"
+Sydney,Australia,-33.86882,151.20929,Yes,,,"Transect starts in different area of city, near Parramatta. But marker is clearly in most urban area."
+Tacoma,USA,47.24958,-122.439875,Yes,,,
+Talca,Chile,-35.423244,-71.648483,No,-35.427525,-71.654907,Moved to more urban area near Shopping Mall (Mall Portal Centro)
+Tehran,Iran,35.689198,51.388973,No,35.689425,51.416889,Moved to denser area near Tehran University of Art
+Temuco,Chile,-38.739922,-72.590157,Yes,,,
+Thessaloniki,Greece,40.640064,22.94442,Yes,,,
+Tokyo,Japan,35.689487,139.691711,Yes,,,
+Toronto,Canada,43.653225,-79.383186,Yes,,,
+Trondheim,Norway,63.412235,10.411357,No,63.43045,10.395002,"Latlong.net did not place marker in city center, so moved to Olavsstatuen"
+Uppsala,Sweden,59.858131,17.644621,Yes,,,
+Vancouver,Canada,49.28273,-123.120735,Yes,,,
+Victoria,Canada,48.428421,-123.365646,Yes,,,
+Warsaw,Poland,52.229675,21.01223,Yes,,,
+Washington D.C. ,USA,38.907192,-77.036873,Yes,,,
+Waterloo,Canada,43.464256,-80.520409,Yes,,,
+Wewak,Papua New Guinea,,,No,,,"I don't think we will have this city, working on confirming that."
+Whitchurch-Stouffville,Canada,,,No,43.969332,-79.25685,"Latlong.net does not place marker in Whitchurch-Stoufville, manually chose spot at intersection of Main and Ninth Line"
+Winnipeg,Canada,49.895138,-97.138374,Yes,,,
+Wollongong,Australia,-34.424394,150.89385,Yes,,,
+Woodstock,Canada,43.131443,-80.747106,Yes,,,
+Wuhan,China,30.58198,114.268066,No,30.600917,114.295922,"Latlong.net doesn't seem to be in most metropolitan area, moved to intersection of Aomen Rd and Lvyuan Rd"
+Xalapa,Mexico,19.527269,-96.9235,Yes,,,Chose this area because is centro
+Zurich,Switzerland,47.376888,8.541694,Yes,,,
+Parramata,Australia,-33.814999,151.001114,Yes,,,
+Uruapan,Mexico,,,Yes,19.42085,-102.061638,Added manually by James
+Swansea,UK,51.621578,-3.94337,Yes,,,Added manually by James
+Tampa,USA,27.94742,-82.458778,Yes,,,Added manually by James
+Toluca,Mexico,19.29212,-99.655777,Yes,,,Added manually by James
+Fairbanks,USA,64.837776,-147.716385,Yes,,,Added manually by James
+Kalamazoo,USA,42.28978,-85.584679,Yes,,,Added manually by James
+Munster,Germany,51.960667,7.626135,Yes,,,Added manually by James
