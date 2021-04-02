@@ -33,8 +33,8 @@ Predicted_vals<- enviroRLM_results$Predicted.Values
 
 # Extreme values of urban and rural environmental variables from predicted dataset
 Extreme_vals <- pick.extreme.values(Predicted.Values = Predicted_vals, Original.Values = df_all_popMeans, number.extreme.sites = 1)
-UrbanPredExtremes <- as.matrix(Extreme_vals$UrbanPredExtremes)
-RuralPredExtremes <- as.matrix(Extreme_vals$RuralPredExtremes)
+UrbanPredExtremes <- Extreme_vals$UrbanPredExtremes %>% as.data.frame() %>% dplyr::select(-freqHCN) %>% as.matrix()
+RuralPredExtremes <- Extreme_vals$RuralPredExtremes %>% as.data.frame() %>% dplyr::select(-freqHCN) %>% as.matrix()
 
 # Vector of city names
 city_names <- unique(Extreme_vals$city.names)

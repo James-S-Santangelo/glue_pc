@@ -1,0 +1,725 @@
+city,population,plant,plate_no,population_latitude,population_longitude,habitat_type,hcn_result
+Amsterdam,Sarphatipark,1,10,52.355017,4.896751999999999,Urban,0
+Amsterdam,Sarphatipark,2,10,52.355017,4.896751999999999,Urban,0
+Amsterdam,Sarphatipark,3,10,52.355017,4.896751999999999,Urban,0
+Amsterdam,Sarphatipark,4,10,52.355017,4.896751999999999,Urban,1
+Amsterdam,Sarphatipark,5,10,52.355017,4.896751999999999,Urban,0
+Amsterdam,Sarphatipark,6,10,52.355017,4.896751999999999,Urban,0
+Amsterdam,Sarphatipark,7,10,52.355017,4.896751999999999,Urban,0
+Amsterdam,Sarphatipark,8,10,52.355017,4.896751999999999,Urban,0
+Amsterdam,Sarphatipark,9,10,52.355017,4.896751999999999,Urban,0
+Amsterdam,Sarphatipark,10,10,52.355017,4.896751999999999,Urban,0
+Amsterdam,Sarphatipark,11,10,52.355017,4.896751999999999,Urban,0
+Amsterdam,Sarphatipark,12,10,52.355017,4.896751999999999,Urban,0
+Amsterdam,Weteringschans,1,10,52.358754,4.891475,Urban,0
+Amsterdam,Weteringschans,2,10,52.358754,4.891475,Urban,0
+Amsterdam,Weteringschans,3,10,52.358754,4.891475,Urban,0
+Amsterdam,Weteringschans,4,10,52.358754,4.891475,Urban,1
+Amsterdam,Weteringschans,5,10,52.358754,4.891475,Urban,0
+Amsterdam,Weteringschans,6,10,52.358754,4.891475,Urban,0
+Amsterdam,Weteringschans,7,10,52.358754,4.891475,Urban,0
+Amsterdam,Weteringschans,8,10,52.358754,4.891475,Urban,1
+Amsterdam,Weteringschans,9,10,52.358754,4.891475,Urban,1
+Amsterdam,Weteringschans,10,10,52.358754,4.891475,Urban,0
+Amsterdam,Weteringschans,11,10,52.358754,4.891475,Urban,1
+Amsterdam,Weteringschans,12,10,52.358754,4.891475,Urban,0
+Amsterdam,Leidseplein,1,10,52.363128,4.880632,Urban,0
+Amsterdam,Leidseplein,2,10,52.363128,4.880632,Urban,0
+Amsterdam,Leidseplein,3,10,52.363128,4.880632,Urban,0
+Amsterdam,Leidseplein,4,10,52.363128,4.880632,Urban,1
+Amsterdam,Leidseplein,5,10,52.363128,4.880632,Urban,1
+Amsterdam,Leidseplein,6,10,52.363128,4.880632,Urban,0
+Amsterdam,Leidseplein,7,10,52.363128,4.880632,Urban,0
+Amsterdam,Leidseplein,8,10,52.363128,4.880632,Urban,1
+Amsterdam,Leidseplein,9,10,52.363128,4.880632,Urban,0
+Amsterdam,Leidseplein,10,10,52.363128,4.880632,Urban,0
+Amsterdam,Leidseplein,11,10,52.363128,4.880632,Urban,0
+Amsterdam,Leidseplein,12,10,52.363128,4.880632,Urban,0
+Amsterdam,Leidseplein,13,10,52.363128,4.880632,Urban,0
+Amsterdam,Leidseplein,14,10,52.363128,4.880632,Urban,0
+Amsterdam,Leidseplein,15,10,52.363128,4.880632,Urban,0
+Amsterdam,Leidseplein,16,10,52.363128,4.880632,Urban,1
+Amsterdam,Leidseplein,17,10,52.363128,4.880632,Urban,1
+Amsterdam,Leidseplein,18,10,52.363128,4.880632,Urban,0
+Amsterdam,Leidseplein,19,10,52.363128,4.880632,Urban,1
+Amsterdam,Leidseplein,20,10,52.363128,4.880632,Urban,0
+Amsterdam,Frederiksplein,1,9,52.360757,4.899087000000001,Urban,0
+Amsterdam,Frederiksplein,2,9,52.360757,4.899087000000001,Urban,0
+Amsterdam,Frederiksplein,3,9,52.360757,4.899087000000001,Urban,0
+Amsterdam,Frederiksplein,4,9,52.360757,4.899087000000001,Urban,0
+Amsterdam,Frederiksplein,5,9,52.360757,4.899087000000001,Urban,0
+Amsterdam,Frederiksplein,6,9,52.360757,4.899087000000001,Urban,0
+Amsterdam,Frederiksplein,7,9,52.360757,4.899087000000001,Urban,0
+Amsterdam,Frederiksplein,8,9,52.360757,4.899087000000001,Urban,0
+Amsterdam,Frederiksplein,9,9,52.360757,4.899087000000001,Urban,0
+Amsterdam,Frederiksplein,10,9,52.360757,4.899087000000001,Urban,0
+Amsterdam,Frederiksplein,11,9,52.360757,4.899087000000001,Urban,0
+Amsterdam,Frederiksplein,12,9,52.360757,4.899087000000001,Urban,0
+Amsterdam,Frederiksplein,13,9,52.360757,4.899087000000001,Urban,0
+Amsterdam,Frederiksplein,14,9,52.360757,4.899087000000001,Urban,0
+Amsterdam,Frederiksplein,15,9,52.360757,4.899087000000001,Urban,0
+Amsterdam,Frederiksplein,16,9,52.360757,4.899087000000001,Urban,1
+Amsterdam,Frederiksplein,17,9,52.360757,4.899087000000001,Urban,0
+Amsterdam,Frederiksplein,18,9,52.360757,4.899087000000001,Urban,0
+Amsterdam,Frederiksplein,19,9,52.360757,4.899087000000001,Urban,0
+Amsterdam,Frederiksplein,20,9,52.360757,4.899087000000001,Urban,0
+Amsterdam,Hermitage,1,11,52.365549,4.903933,Urban,0
+Amsterdam,Hermitage,2,11,52.365549,4.903933,Urban,1
+Amsterdam,Hermitage,3,11,52.365549,4.903933,Urban,1
+Amsterdam,Hermitage,4,11,52.365549,4.903933,Urban,0
+Amsterdam,Hermitage,5,11,52.365549,4.903933,Urban,0
+Amsterdam,Hermitage,6,11,52.365549,4.903933,Urban,0
+Amsterdam,Hermitage,7,11,52.365549,4.903933,Urban,0
+Amsterdam,Hermitage,8,11,52.365549,4.903933,Urban,0
+Amsterdam,Hermitage,9,11,52.365549,4.903933,Urban,0
+Amsterdam,Hermitage,10,11,52.365549,4.903933,Urban,0
+Amsterdam,Hermitage,11,11,52.365549,4.903933,Urban,0
+Amsterdam,Hermitage,12,11,52.365549,4.903933,Urban,0
+Amsterdam,Hermitage,13,11,52.365549,4.903933,Urban,0
+Amsterdam,Hermitage,14,11,52.365549,4.903933,Urban,1
+Amsterdam,Hermitage,15,11,52.365549,4.903933,Urban,0
+Amsterdam,Hermitage,16,11,52.365549,4.903933,Urban,0
+Amsterdam,Hermitage,17,11,52.365549,4.903933,Urban,0
+Amsterdam,Hermitage,18,11,52.365549,4.903933,Urban,1
+Amsterdam,Hermitage,19,11,52.365549,4.903933,Urban,0
+Amsterdam,Hermitage,20,11,52.365549,4.903933,Urban,1
+Amsterdam,Hortus,1,8,52.366454,4.90637,Urban,0
+Amsterdam,Hortus,2,8,52.366454,4.90637,Urban,1
+Amsterdam,Hortus,3,8,52.366454,4.90637,Urban,0
+Amsterdam,Hortus,4,8,52.366454,4.90637,Urban,0
+Amsterdam,Hortus,5,8,52.366454,4.90637,Urban,0
+Amsterdam,Hortus,6,8,52.366454,4.90637,Urban,0
+Amsterdam,Hortus,7,8,52.366454,4.90637,Urban,0
+Amsterdam,Hortus,8,8,52.366454,4.90637,Urban,0
+Amsterdam,Hortus,9,8,52.366454,4.90637,Urban,0
+Amsterdam,Hortus,10,8,52.366454,4.90637,Urban,0
+Amsterdam,Hortus,11,8,52.366454,4.90637,Urban,0
+Amsterdam,Hortus,12,8,52.366454,4.90637,Urban,0
+Amsterdam,Plantage Parklaan,1,8,52.368145,4.90878,Urban,1
+Amsterdam,Plantage Parklaan,2,8,52.368145,4.90878,Urban,0
+Amsterdam,Plantage Parklaan,3,8,52.368145,4.90878,Urban,0
+Amsterdam,Plantage Parklaan,4,8,52.368145,4.90878,Urban,1
+Amsterdam,Plantage Parklaan,5,8,52.368145,4.90878,Urban,0
+Amsterdam,Plantage Parklaan,6,8,52.368145,4.90878,Urban,0
+Amsterdam,Plantage Parklaan,7,8,52.368145,4.90878,Urban,1
+Amsterdam,Plantage Parklaan,8,8,52.368145,4.90878,Urban,1
+Amsterdam,Plantage Parklaan,9,8,52.368145,4.90878,Urban,1
+Amsterdam,Plantage Parklaan,10,8,52.368145,4.90878,Urban,0
+Amsterdam,Plantage Parklaan,11,8,52.368145,4.90878,Urban,0
+Amsterdam,Plantage Parklaan,12,8,52.368145,4.90878,Urban,0
+Amsterdam,Scheepvaartmuseum,1,7,52.372278,4.916428,Urban,0
+Amsterdam,Scheepvaartmuseum,2,7,52.372278,4.916428,Urban,0
+Amsterdam,Scheepvaartmuseum,3,7,52.372278,4.916428,Urban,0
+Amsterdam,Scheepvaartmuseum,4,7,52.372278,4.916428,Urban,0
+Amsterdam,Scheepvaartmuseum,5,7,52.372278,4.916428,Urban,0
+Amsterdam,Scheepvaartmuseum,6,7,52.372278,4.916428,Urban,0
+Amsterdam,Scheepvaartmuseum,7,7,52.372278,4.916428,Urban,0
+Amsterdam,Scheepvaartmuseum,8,7,52.372278,4.916428,Urban,0
+Amsterdam,Scheepvaartmuseum,9,7,52.372278,4.916428,Urban,0
+Amsterdam,Scheepvaartmuseum,10,7,52.372278,4.916428,Urban,0
+Amsterdam,Scheepvaartmuseum,11,7,52.372278,4.916428,Urban,0
+Amsterdam,Scheepvaartmuseum,12,7,52.372278,4.916428,Urban,0
+Amsterdam,Scheepvaartmuseum,13,7,52.372278,4.916428,Urban,0
+Amsterdam,Scheepvaartmuseum,14,7,52.372278,4.916428,Urban,0
+Amsterdam,Scheepvaartmuseum,15,7,52.372278,4.916428,Urban,0
+Amsterdam,Kattenburg,1,5,52.375240000000005,4.914497,Urban,0
+Amsterdam,Kattenburg,2,5,52.375240000000005,4.914497,Urban,0
+Amsterdam,Kattenburg,3,5,52.375240000000005,4.914497,Urban,0
+Amsterdam,Kattenburg,4,5,52.375240000000005,4.914497,Urban,0
+Amsterdam,Kattenburg,5,5,52.375240000000005,4.914497,Urban,0
+Amsterdam,Kattenburg,6,5,52.375240000000005,4.914497,Urban,0
+Amsterdam,Kattenburg,7,5,52.375240000000005,4.914497,Urban,0
+Amsterdam,Kattenburg,8,5,52.375240000000005,4.914497,Urban,0
+Amsterdam,Kattenburg,9,5,52.375240000000005,4.914497,Urban,0
+Amsterdam,Kattenburg,10,5,52.375240000000005,4.914497,Urban,0
+Amsterdam,Kattenburg,11,5,52.375240000000005,4.914497,Urban,0
+Amsterdam,Kattenburg,12,5,52.375240000000005,4.914497,Urban,0
+Amsterdam,Kattenburg,13,5,52.375240000000005,4.914497,Urban,0
+Amsterdam,Kattenburg,14,5,52.375240000000005,4.914497,Urban,0
+Amsterdam,Kattenburg,15,5,52.375240000000005,4.914497,Urban,0
+Amsterdam,Kattenburg,16,5,52.375240000000005,4.914497,Urban,0
+Amsterdam,Kattenburg,17,5,52.375240000000005,4.914497,Urban,0
+Amsterdam,Kattenburg,18,5,52.375240000000005,4.914497,Urban,0
+Amsterdam,Kattenburg,19,5,52.375240000000005,4.914497,Urban,0
+Amsterdam,Kattenburg,20,5,52.375240000000005,4.914497,Urban,0
+Amsterdam,Meeuwenplein,1,5,52.382197,4.9105300000000005,Suburban,0
+Amsterdam,Meeuwenplein,2,5,52.382197,4.9105300000000005,Suburban,0
+Amsterdam,Meeuwenplein,3,5,52.382197,4.9105300000000005,Suburban,0
+Amsterdam,Meeuwenplein,4,5,52.382197,4.9105300000000005,Suburban,0
+Amsterdam,Meeuwenplein,5,5,52.382197,4.9105300000000005,Suburban,0
+Amsterdam,Meeuwenplein,6,5,52.382197,4.9105300000000005,Suburban,0
+Amsterdam,Meeuwenplein,7,5,52.382197,4.9105300000000005,Suburban,0
+Amsterdam,Meeuwenplein,8,5,52.382197,4.9105300000000005,Suburban,0
+Amsterdam,Meeuwenplein,9,5,52.382197,4.9105300000000005,Suburban,0
+Amsterdam,Meeuwenplein,10,5,52.382197,4.9105300000000005,Suburban,0
+Amsterdam,Meeuwenplein,11,5,52.382197,4.9105300000000005,Suburban,0
+Amsterdam,Meeuwenplein,12,5,52.382197,4.9105300000000005,Suburban,0
+Amsterdam,Meeuwenplein,13,5,52.382197,4.9105300000000005,Suburban,0
+Amsterdam,Meeuwenplein,14,5,52.382197,4.9105300000000005,Suburban,0
+Amsterdam,Meeuwenplein,15,5,52.382197,4.9105300000000005,Suburban,1
+Amsterdam,Meeuwenplein,16,5,52.382197,4.9105300000000005,Suburban,0
+Amsterdam,Meeuwenplein,17,5,52.382197,4.9105300000000005,Suburban,1
+Amsterdam,Meeuwenplein,18,5,52.382197,4.9105300000000005,Suburban,0
+Amsterdam,Meeuwenplein,19,5,52.382197,4.9105300000000005,Suburban,0
+Amsterdam,Meeuwenplein,20,5,52.382197,4.9105300000000005,Suburban,0
+Amsterdam,Zwanenplein,1,3,52.386938,4.918367,Suburban,0
+Amsterdam,Zwanenplein,2,3,52.386938,4.918367,Suburban,1
+Amsterdam,Zwanenplein,3,3,52.386938,4.918367,Suburban,0
+Amsterdam,Zwanenplein,4,3,52.386938,4.918367,Suburban,0
+Amsterdam,Zwanenplein,5,3,52.386938,4.918367,Suburban,0
+Amsterdam,Zwanenplein,6,3,52.386938,4.918367,Suburban,0
+Amsterdam,Zwanenplein,7,3,52.386938,4.918367,Suburban,0
+Amsterdam,Zwanenplein,8,3,52.386938,4.918367,Suburban,0
+Amsterdam,Zwanenplein,9,3,52.386938,4.918367,Suburban,0
+Amsterdam,Zwanenplein,10,3,52.386938,4.918367,Suburban,1
+Amsterdam,Zwanenplein,11,3,52.386938,4.918367,Suburban,0
+Amsterdam,Zwanenplein,12,3,52.386938,4.918367,Suburban,0
+Amsterdam,Zwanenplein,13,3,52.386938,4.918367,Suburban,0
+Amsterdam,Zwanenplein,14,3,52.386938,4.918367,Suburban,0
+Amsterdam,Zwanenplein,15,3,52.386938,4.918367,Suburban,0
+Amsterdam,Zwanenplein,16,3,52.386938,4.918367,Suburban,0
+Amsterdam,Zwanenplein,17,3,52.386938,4.918367,Suburban,0
+Amsterdam,Zwanenplein,18,3,52.386938,4.918367,Suburban,0
+Amsterdam,Zwanenplein,19,3,52.386938,4.918367,Suburban,0
+Amsterdam,Zwanenplein,20,3,52.386938,4.918367,Suburban,0
+Amsterdam,Lamenhofstraat,1,1,52.387919000000004,4.924976999999999,Suburban,0
+Amsterdam,Lamenhofstraat,2,1,52.387919000000004,4.924976999999999,Suburban,0
+Amsterdam,Lamenhofstraat,3,1,52.387919000000004,4.924976999999999,Suburban,0
+Amsterdam,Lamenhofstraat,4,1,52.387919000000004,4.924976999999999,Suburban,1
+Amsterdam,Lamenhofstraat,5,1,52.387919000000004,4.924976999999999,Suburban,0
+Amsterdam,Lamenhofstraat,6,1,52.387919000000004,4.924976999999999,Suburban,0
+Amsterdam,Lamenhofstraat,7,1,52.387919000000004,4.924976999999999,Suburban,0
+Amsterdam,Lamenhofstraat,8,1,52.387919000000004,4.924976999999999,Suburban,0
+Amsterdam,Lamenhofstraat,9,1,52.387919000000004,4.924976999999999,Suburban,0
+Amsterdam,Lamenhofstraat,10,1,52.387919000000004,4.924976999999999,Suburban,1
+Amsterdam,Lamenhofstraat,11,1,52.387919000000004,4.924976999999999,Suburban,0
+Amsterdam,Lamenhofstraat,12,1,52.387919000000004,4.924976999999999,Suburban,1
+Amsterdam,Lamenhofstraat,13,1,52.387919000000004,4.924976999999999,Suburban,0
+Amsterdam,Lamenhofstraat,14,1,52.387919000000004,4.924976999999999,Suburban,0
+Amsterdam,Lamenhofstraat,15,1,52.387919000000004,4.924976999999999,Suburban,0
+Amsterdam,Lamenhofstraat,16,1,52.387919000000004,4.924976999999999,Suburban,1
+Amsterdam,Lamenhofstraat,17,1,52.387919000000004,4.924976999999999,Suburban,0
+Amsterdam,Lamenhofstraat,18,1,52.387919000000004,4.924976999999999,Suburban,0
+Amsterdam,Lamenhofstraat,19,1,52.387919000000004,4.924976999999999,Suburban,0
+Amsterdam,Lamenhofstraat,20,1,52.387919000000004,4.924976999999999,Suburban,0
+Amsterdam,Park Meeuwenlaan (kop),1,2,52.38993,4.92569,Suburban,1
+Amsterdam,Park Meeuwenlaan (kop),2,2,52.38993,4.92569,Suburban,0
+Amsterdam,Park Meeuwenlaan (kop),3,2,52.38993,4.92569,Suburban,0
+Amsterdam,Park Meeuwenlaan (kop),4,2,52.38993,4.92569,Suburban,0
+Amsterdam,Park Meeuwenlaan (kop),5,2,52.38993,4.92569,Suburban,0
+Amsterdam,Park Meeuwenlaan (kop),6,2,52.38993,4.92569,Suburban,0
+Amsterdam,Park Meeuwenlaan (kop),7,2,52.38993,4.92569,Suburban,1
+Amsterdam,Park Meeuwenlaan (kop),8,2,52.38993,4.92569,Suburban,0
+Amsterdam,Park Meeuwenlaan (kop),9,2,52.38993,4.92569,Suburban,0
+Amsterdam,Park Meeuwenlaan (kop),10,2,52.38993,4.92569,Suburban,0
+Amsterdam,Park Meeuwenlaan (kop),11,2,52.38993,4.92569,Suburban,0
+Amsterdam,Park Meeuwenlaan (kop),12,2,52.38993,4.92569,Suburban,0
+Amsterdam,Park Meeuwenlaan (kop),13,2,52.38993,4.92569,Suburban,0
+Amsterdam,Park Meeuwenlaan (kop),14,2,52.38993,4.92569,Suburban,0
+Amsterdam,Park Meeuwenlaan (kop),15,2,52.38993,4.92569,Suburban,0
+Amsterdam,Park Meeuwenlaan (kop),16,2,52.38993,4.92569,Suburban,0
+Amsterdam,Park Meeuwenlaan (kop),17,2,52.38993,4.92569,Suburban,0
+Amsterdam,Park Meeuwenlaan (kop),18,2,52.38993,4.92569,Suburban,0
+Amsterdam,Park Meeuwenlaan (kop),19,2,52.38993,4.92569,Suburban,0
+Amsterdam,Park Camping (midden),1,4,52.390121,4.928551000000001,Suburban,0
+Amsterdam,Park Camping (midden),2,4,52.390121,4.928551000000001,Suburban,0
+Amsterdam,Park Camping (midden),3,4,52.390121,4.928551000000001,Suburban,0
+Amsterdam,Park Camping (midden),4,4,52.390121,4.928551000000001,Suburban,0
+Amsterdam,Park Camping (midden),5,4,52.390121,4.928551000000001,Suburban,0
+Amsterdam,Park Camping (midden),6,4,52.390121,4.928551000000001,Suburban,0
+Amsterdam,Park Camping (midden),7,4,52.390121,4.928551000000001,Suburban,0
+Amsterdam,Park Camping (midden),8,4,52.390121,4.928551000000001,Suburban,0
+Amsterdam,Park Camping (midden),9,4,52.390121,4.928551000000001,Suburban,0
+Amsterdam,Park Camping (midden),10,4,52.390121,4.928551000000001,Suburban,0
+Amsterdam,Park Camping (midden),11,4,52.390121,4.928551000000001,Suburban,0
+Amsterdam,Park Camping (midden),12,4,52.390121,4.928551000000001,Suburban,0
+Amsterdam,Park Camping (midden),13,4,52.390121,4.928551000000001,Suburban,0
+Amsterdam,Park Camping (midden),14,4,52.390121,4.928551000000001,Suburban,0
+Amsterdam,Park Camping (midden),15,4,52.390121,4.928551000000001,Suburban,0
+Amsterdam,Park Camping (midden),16,4,52.390121,4.928551000000001,Suburban,0
+Amsterdam,Park Camping (midden),17,4,52.390121,4.928551000000001,Suburban,0
+Amsterdam,Park Camping (midden),18,4,52.390121,4.928551000000001,Suburban,0
+Amsterdam,Park Camping (midden),19,4,52.390121,4.928551000000001,Suburban,0
+Amsterdam,Park Camping (midden),20,4,52.390121,4.928551000000001,Suburban,0
+Amsterdam,Op camping Vliegenbos,1,2,52.390912,4.932819,Suburban,0
+Amsterdam,Op camping Vliegenbos,2,2,52.390912,4.932819,Suburban,0
+Amsterdam,Op camping Vliegenbos,3,2,52.390912,4.932819,Suburban,0
+Amsterdam,Op camping Vliegenbos,4,2,52.390912,4.932819,Suburban,0
+Amsterdam,Op camping Vliegenbos,5,2,52.390912,4.932819,Suburban,0
+Amsterdam,Op camping Vliegenbos,6,2,52.390912,4.932819,Suburban,1
+Amsterdam,Op camping Vliegenbos,7,2,52.390912,4.932819,Suburban,0
+Amsterdam,Op camping Vliegenbos,8,2,52.390912,4.932819,Suburban,0
+Amsterdam,Op camping Vliegenbos,9,2,52.390912,4.932819,Suburban,0
+Amsterdam,Op camping Vliegenbos,10,2,52.390912,4.932819,Suburban,0
+Amsterdam,Op camping Vliegenbos,11,2,52.390912,4.932819,Suburban,0
+Amsterdam,Op camping Vliegenbos,12,2,52.390912,4.932819,Suburban,1
+Amsterdam,Op camping Vliegenbos,13,2,52.390912,4.932819,Suburban,0
+Amsterdam,Op camping Vliegenbos,14,2,52.390912,4.932819,Suburban,0
+Amsterdam,Op camping Vliegenbos,15,2,52.390912,4.932819,Suburban,0
+Amsterdam,Op camping Vliegenbos,16,2,52.390912,4.932819,Suburban,0
+Amsterdam,Op camping Vliegenbos,17,2,52.390912,4.932819,Suburban,0
+Amsterdam,Op camping Vliegenbos,18,2,52.390912,4.932819,Suburban,0
+Amsterdam,Het Laagt (Plan van Gool),1,7,52.394775,4.937672,Suburban,1
+Amsterdam,Het Laagt (Plan van Gool),2,7,52.394775,4.937672,Suburban,0
+Amsterdam,Het Laagt (Plan van Gool),3,7,52.394775,4.937672,Suburban,0
+Amsterdam,Het Laagt (Plan van Gool),4,7,52.394775,4.937672,Suburban,0
+Amsterdam,Het Laagt (Plan van Gool),5,7,52.394775,4.937672,Suburban,0
+Amsterdam,Het Laagt (Plan van Gool),6,7,52.394775,4.937672,Suburban,0
+Amsterdam,Het Laagt (Plan van Gool),7,7,52.394775,4.937672,Suburban,0
+Amsterdam,Het Laagt (Plan van Gool),8,7,52.394775,4.937672,Suburban,0
+Amsterdam,Het Laagt (Plan van Gool),9,7,52.394775,4.937672,Suburban,0
+Amsterdam,Het Laagt (Plan van Gool),10,7,52.394775,4.937672,Suburban,0
+Amsterdam,Het Laagt (Plan van Gool),11,7,52.394775,4.937672,Suburban,0
+Amsterdam,Het Laagt (Plan van Gool),12,7,52.394775,4.937672,Suburban,0
+Amsterdam,Het Laagt (Plan van Gool),13,7,52.394775,4.937672,Suburban,0
+Amsterdam,Het Laagt (Plan van Gool),14,7,52.394775,4.937672,Suburban,0
+Amsterdam,Het Laagt (Plan van Gool),15,7,52.394775,4.937672,Suburban,0
+Amsterdam,Het Laagt (Plan van Gool),16,7,52.394775,4.937672,Suburban,0
+Amsterdam,Het Laagt (Plan van Gool),17,7,52.394775,4.937672,Suburban,0
+Amsterdam,Het Laagt (Plan van Gool),18,7,52.394775,4.937672,Suburban,0
+Amsterdam,Het Laagt (Plan van Gool),19,7,52.394775,4.937672,Suburban,0
+Amsterdam,Het Laagt (Plan van Gool),20,7,52.394775,4.937672,Suburban,0
+Amsterdam,Werengauw,1,4,52.395740999999994,4.942175,Suburban,1
+Amsterdam,Werengauw,2,4,52.395740999999994,4.942175,Suburban,0
+Amsterdam,Werengauw,3,4,52.395740999999994,4.942175,Suburban,0
+Amsterdam,Werengauw,4,4,52.395740999999994,4.942175,Suburban,0
+Amsterdam,Werengauw,5,4,52.395740999999994,4.942175,Suburban,0
+Amsterdam,Werengauw,6,4,52.395740999999994,4.942175,Suburban,0
+Amsterdam,Werengauw,7,4,52.395740999999994,4.942175,Suburban,0
+Amsterdam,Werengauw,8,4,52.395740999999994,4.942175,Suburban,0
+Amsterdam,Werengauw,9,4,52.395740999999994,4.942175,Suburban,0
+Amsterdam,Werengauw,10,4,52.395740999999994,4.942175,Suburban,0
+Amsterdam,Werengauw,11,4,52.395740999999994,4.942175,Suburban,0
+Amsterdam,Werengauw,12,4,52.395740999999994,4.942175,Suburban,0
+Amsterdam,Werengauw,13,4,52.395740999999994,4.942175,Suburban,0
+Amsterdam,Werengauw,14,4,52.395740999999994,4.942175,Suburban,0
+Amsterdam,Werengauw,15,4,52.395740999999994,4.942175,Suburban,0
+Amsterdam,Baanakkerpark,1,9,52.397239,4.947181,Suburban,0
+Amsterdam,Baanakkerpark,2,9,52.397239,4.947181,Suburban,0
+Amsterdam,Baanakkerpark,3,9,52.397239,4.947181,Suburban,0
+Amsterdam,Baanakkerpark,4,9,52.397239,4.947181,Suburban,0
+Amsterdam,Baanakkerpark,5,9,52.397239,4.947181,Suburban,0
+Amsterdam,Baanakkerpark,6,9,52.397239,4.947181,Suburban,0
+Amsterdam,Baanakkerpark,7,9,52.397239,4.947181,Suburban,0
+Amsterdam,Baanakkerpark,8,9,52.397239,4.947181,Suburban,0
+Amsterdam,Baanakkerpark,9,9,52.397239,4.947181,Suburban,0
+Amsterdam,Baanakkerpark,10,9,52.397239,4.947181,Suburban,0
+Amsterdam,Baanakkerpark,11,9,52.397239,4.947181,Suburban,0
+Amsterdam,Baanakkerpark,12,9,52.397239,4.947181,Suburban,0
+Amsterdam,Baanakkerpark,13,9,52.397239,4.947181,Suburban,0
+Amsterdam,Baanakkerpark,14,9,52.397239,4.947181,Suburban,0
+Amsterdam,Baanakkerpark,15,9,52.397239,4.947181,Suburban,0
+Amsterdam,Baanakkerpark,16,9,52.397239,4.947181,Suburban,0
+Amsterdam,Baanakkerpark,17,9,52.397239,4.947181,Suburban,0
+Amsterdam,Baanakkerpark,18,9,52.397239,4.947181,Suburban,0
+Amsterdam,Baanakkerpark,19,9,52.397239,4.947181,Suburban,0
+Amsterdam,Baanakkerpark,20,9,52.397239,4.947181,Suburban,0
+Amsterdam,Jisperveldstraat,1,13A,52.400113,4.952466,Suburban,0
+Amsterdam,Jisperveldstraat,2,13A,52.400113,4.952466,Suburban,0
+Amsterdam,Jisperveldstraat,3,13A,52.400113,4.952466,Suburban,0
+Amsterdam,Jisperveldstraat,4,13A,52.400113,4.952466,Suburban,0
+Amsterdam,Jisperveldstraat,5,13A,52.400113,4.952466,Suburban,0
+Amsterdam,Jisperveldstraat,6,13A,52.400113,4.952466,Suburban,0
+Amsterdam,Jisperveldstraat,7,13A,52.400113,4.952466,Suburban,0
+Amsterdam,Jisperveldstraat,8,13A,52.400113,4.952466,Suburban,0
+Amsterdam,Jisperveldstraat,9,13A,52.400113,4.952466,Suburban,0
+Amsterdam,Jisperveldstraat,10,13A,52.400113,4.952466,Suburban,0
+Amsterdam,Jisperveldstraat,11,13A,52.400113,4.952466,Suburban,1
+Amsterdam,Sportpark de Weeren,1,6,52.400541,4.9575569999999995,Periurban,0
+Amsterdam,Sportpark de Weeren,2,6,52.400541,4.9575569999999995,Periurban,0
+Amsterdam,Sportpark de Weeren,3,6,52.400541,4.9575569999999995,Periurban,0
+Amsterdam,Sportpark de Weeren,4,6,52.400541,4.9575569999999995,Periurban,0
+Amsterdam,Sportpark de Weeren,5,6,52.400541,4.9575569999999995,Periurban,1
+Amsterdam,Sportpark de Weeren,6,6,52.400541,4.9575569999999995,Periurban,0
+Amsterdam,Sportpark de Weeren,7,6,52.400541,4.9575569999999995,Periurban,0
+Amsterdam,Sportpark de Weeren,8,6,52.400541,4.9575569999999995,Periurban,0
+Amsterdam,Sportpark de Weeren,9,6,52.400541,4.9575569999999995,Periurban,1
+Amsterdam,Sportpark de Weeren,10,6,52.400541,4.9575569999999995,Periurban,0
+Amsterdam,Sportpark de Weeren,11,6,52.400541,4.9575569999999995,Periurban,0
+Amsterdam,Sportpark de Weeren,12,6,52.400541,4.9575569999999995,Periurban,1
+Amsterdam,Sportpark de Weeren,13,6,52.400541,4.9575569999999995,Periurban,0
+Amsterdam,Sportpark de Weeren,14,6,52.400541,4.9575569999999995,Periurban,1
+Amsterdam,Sportpark de Weeren,15,6,52.400541,4.9575569999999995,Periurban,1
+Amsterdam,Sportpark de Weeren,16,6,52.400541,4.9575569999999995,Periurban,0
+Amsterdam,Sportpark de Weeren,17,6,52.400541,4.9575569999999995,Periurban,0
+Amsterdam,Sportpark de Weeren,18,6,52.400541,4.9575569999999995,Periurban,1
+Amsterdam,Zunderdorpergouw,1,3,52.403844,4.960637,Rural,1
+Amsterdam,Zunderdorpergouw,2,3,52.403844,4.960637,Rural,1
+Amsterdam,Zunderdorpergouw,3,3,52.403844,4.960637,Rural,1
+Amsterdam,Zunderdorpergouw,4,3,52.403844,4.960637,Rural,1
+Amsterdam,Zunderdorpergouw,5,3,52.403844,4.960637,Rural,1
+Amsterdam,Zunderdorpergouw,6,3,52.403844,4.960637,Rural,0
+Amsterdam,Zunderdorpergouw,7,3,52.403844,4.960637,Rural,1
+Amsterdam,Zunderdorpergouw,8,3,52.403844,4.960637,Rural,0
+Amsterdam,Zunderdorpergouw,9,3,52.403844,4.960637,Rural,0
+Amsterdam,Zunderdorpergouw,10,3,52.403844,4.960637,Rural,0
+Amsterdam,Zunderdorpergouw,11,3,52.403844,4.960637,Rural,0
+Amsterdam,Zunderdorpergouw,12,3,52.403844,4.960637,Rural,0
+Amsterdam,Zunderdorpergouw,13,3,52.403844,4.960637,Rural,0
+Amsterdam,Zunderdorpergouw,14,3,52.403844,4.960637,Rural,1
+Amsterdam,Zunderdorpergouw,15,3,52.403844,4.960637,Rural,0
+Amsterdam,Zunderdorpergouw,16,3,52.403844,4.960637,Rural,0
+Amsterdam,Zunderdorpergouw,17,3,52.403844,4.960637,Rural,0
+Amsterdam,Zunderdorpergouw,18,3,52.403844,4.960637,Rural,0
+Amsterdam,Nieuwe Gouw,1,8,52.405945,4.963312999999999,Rural,0
+Amsterdam,Nieuwe Gouw,2,8,52.405945,4.963312999999999,Rural,0
+Amsterdam,Nieuwe Gouw,3,8,52.405945,4.963312999999999,Rural,0
+Amsterdam,Nieuwe Gouw,4,8,52.405945,4.963312999999999,Rural,1
+Amsterdam,Nieuwe Gouw,5,8,52.405945,4.963312999999999,Rural,0
+Amsterdam,Nieuwe Gouw,6,8,52.405945,4.963312999999999,Rural,0
+Amsterdam,Nieuwe Gouw,7,8,52.405945,4.963312999999999,Rural,0
+Amsterdam,Nieuwe Gouw,8,8,52.405945,4.963312999999999,Rural,1
+Amsterdam,Nieuwe Gouw,9,8,52.405945,4.963312999999999,Rural,0
+Amsterdam,Nieuwe Gouw,10,8,52.405945,4.963312999999999,Rural,0
+Amsterdam,Nieuwe Gouw,11,8,52.405945,4.963312999999999,Rural,0
+Amsterdam,Nieuwe Gouw,12,8,52.405945,4.963312999999999,Rural,0
+Amsterdam,Nieuwe Gouw,13,8,52.405945,4.963312999999999,Rural,0
+Amsterdam,Nieuwe Gouw,14,8,52.405945,4.963312999999999,Rural,0
+Amsterdam,Nieuwe Gouw,15,8,52.405945,4.963312999999999,Rural,0
+Amsterdam,Nieuwe Gouw,16,8,52.405945,4.963312999999999,Rural,1
+Amsterdam,Nieuwe Gouw,17,8,52.405945,4.963312999999999,Rural,1
+Amsterdam,Nieuwe Gouw,18,8,52.405945,4.963312999999999,Rural,1
+Amsterdam,Nieuwe Gouw,19,8,52.405945,4.963312999999999,Rural,0
+Amsterdam,Nieuwe Gouw,20,8,52.405945,4.963312999999999,Rural,0
+Amsterdam,Zunderdorp,1,1,52.409244,4.965058,Rural,0
+Amsterdam,Zunderdorp,2,1,52.409244,4.965058,Rural,0
+Amsterdam,Zunderdorp,3,1,52.409244,4.965058,Rural,0
+Amsterdam,Zunderdorp,4,1,52.409244,4.965058,Rural,0
+Amsterdam,Zunderdorp,5,1,52.409244,4.965058,Rural,1
+Amsterdam,Zunderdorp,6,1,52.409244,4.965058,Rural,0
+Amsterdam,Zunderdorp,7,1,52.409244,4.965058,Rural,0
+Amsterdam,Zunderdorp,8,1,52.409244,4.965058,Rural,1
+Amsterdam,Zunderdorp,9,1,52.409244,4.965058,Rural,0
+Amsterdam,Zunderdorp,10,1,52.409244,4.965058,Rural,0
+Amsterdam,Zunderdorp,11,1,52.409244,4.965058,Rural,0
+Amsterdam,Zunderdorp,12,1,52.409244,4.965058,Rural,0
+Amsterdam,Zunderdorp,13,1,52.409244,4.965058,Rural,0
+Amsterdam,Zunderdorp,14,1,52.409244,4.965058,Rural,1
+Amsterdam,Zunderdorp,15,1,52.409244,4.965058,Rural,0
+Amsterdam,Zunderdorp,16,1,52.409244,4.965058,Rural,0
+Amsterdam,Zunderdorp,17,1,52.409244,4.965058,Rural,0
+Amsterdam,Zunderdorp,18,1,52.409244,4.965058,Rural,0
+Amsterdam,Zunderdorp,19,1,52.409244,4.965058,Rural,1
+Amsterdam,Zunderdorp,20,1,52.409244,4.965058,Rural,0
+Amsterdam,Broekergouw1,1,6,52.410537,4.968426,Rural,1
+Amsterdam,Broekergouw1,2,6,52.410537,4.968426,Rural,1
+Amsterdam,Broekergouw1,3,6,52.410537,4.968426,Rural,1
+Amsterdam,Broekergouw1,4,6,52.410537,4.968426,Rural,1
+Amsterdam,Broekergouw1,5,6,52.410537,4.968426,Rural,1
+Amsterdam,Broekergouw1,6,6,52.410537,4.968426,Rural,1
+Amsterdam,Broekergouw1,7,6,52.410537,4.968426,Rural,1
+Amsterdam,Broekergouw1,8,6,52.410537,4.968426,Rural,1
+Amsterdam,Broekergouw1,9,6,52.410537,4.968426,Rural,0
+Amsterdam,Broekergouw1,10,6,52.410537,4.968426,Rural,1
+Amsterdam,Broekergouw1,11,6,52.410537,4.968426,Rural,1
+Amsterdam,Broekergouw1,12,6,52.410537,4.968426,Rural,1
+Amsterdam,Broekergouw1,13,6,52.410537,4.968426,Rural,0
+Amsterdam,Broekergouw1,14,6,52.410537,4.968426,Rural,1
+Amsterdam,Broekergouw1,15,6,52.410537,4.968426,Rural,0
+Amsterdam,Broekergouw2,1,14,52.412986,4.972029,Rural,1
+Amsterdam,Broekergouw2,2,14,52.412986,4.972029,Rural,0
+Amsterdam,Broekergouw2,3,14,52.412986,4.972029,Rural,0
+Amsterdam,Broekergouw2,4,14,52.412986,4.972029,Rural,0
+Amsterdam,Broekergouw2,5,14,52.412986,4.972029,Rural,0
+Amsterdam,Broekergouw2,6,14,52.412986,4.972029,Rural,0
+Amsterdam,Broekergouw2,7,14,52.412986,4.972029,Rural,0
+Amsterdam,Broekergouw2,8,14,52.412986,4.972029,Rural,0
+Amsterdam,Broekergouw2,9,14,52.412986,4.972029,Rural,0
+Amsterdam,Broekergouw2,10,14,52.412986,4.972029,Rural,1
+Amsterdam,Broekergouw2,11,14,52.412986,4.972029,Rural,0
+Amsterdam,Broekergouw2,12,14,52.412986,4.972029,Rural,0
+Amsterdam,Broekergouw2,13,14,52.412986,4.972029,Rural,0
+Amsterdam,Broekergouw2,14,14,52.412986,4.972029,Rural,0
+Amsterdam,Broekergouw2,15,14,52.412986,4.972029,Rural,0
+Amsterdam,Broekergouw2,16,14,52.412986,4.972029,Rural,0
+Amsterdam,Broekergouw2,17,14,52.412986,4.972029,Rural,0
+Amsterdam,Broekergouw2,18,14,52.412986,4.972029,Rural,0
+Amsterdam,Broekergouw2,19,14,52.412986,4.972029,Rural,0
+Amsterdam,Broekergouw2,20,14,52.412986,4.972029,Rural,0
+Amsterdam,Broekergouw3,1,13B,52.415323,4.976897,Rural,1
+Amsterdam,Broekergouw3,2,13B,52.415323,4.976897,Rural,1
+Amsterdam,Broekergouw3,3,13B,52.415323,4.976897,Rural,1
+Amsterdam,Broekergouw3,4,13B,52.415323,4.976897,Rural,0
+Amsterdam,Broekergouw3,5,13B,52.415323,4.976897,Rural,0
+Amsterdam,Broekergouw3,6,13B,52.415323,4.976897,Rural,0
+Amsterdam,Broekergouw3,7,13B,52.415323,4.976897,Rural,0
+Amsterdam,Broekergouw3,8,13B,52.415323,4.976897,Rural,0
+Amsterdam,Broekergouw3,9,13B,52.415323,4.976897,Rural,1
+Amsterdam,Broekergouw3,10,13B,52.415323,4.976897,Rural,0
+Amsterdam,Broekergouw3,11,13B,52.415323,4.976897,Rural,1
+Amsterdam,Broekergouw3,12,13B,52.415323,4.976897,Rural,0
+Amsterdam,Broekergouw3,13,13B,52.415323,4.976897,Rural,0
+Amsterdam,Broekergouw3,14,13B,52.415323,4.976897,Rural,1
+Amsterdam,Broekergouw3,15,13B,52.415323,4.976897,Rural,0
+Amsterdam,Broekergouw3,16,13B,52.415323,4.976897,Rural,0
+Amsterdam,Broekergouw3,17,13B,52.415323,4.976897,Rural,1
+Amsterdam,Broekergouw3,18,13B,52.415323,4.976897,Rural,0
+Amsterdam,Broekergouw3,19,13B,52.415323,4.976897,Rural,0
+Amsterdam,Broekergouw3,20,13B,52.415323,4.976897,Rural,0
+Amsterdam,Broekergouw4,1,16,52.416622,4.979426999999999,Rural,0
+Amsterdam,Broekergouw4,2,16,52.416622,4.979426999999999,Rural,1
+Amsterdam,Broekergouw4,3,16,52.416622,4.979426999999999,Rural,1
+Amsterdam,Broekergouw4,4,16,52.416622,4.979426999999999,Rural,0
+Amsterdam,Broekergouw4,5,16,52.416622,4.979426999999999,Rural,0
+Amsterdam,Broekergouw4,6,16,52.416622,4.979426999999999,Rural,0
+Amsterdam,Broekergouw4,7,16,52.416622,4.979426999999999,Rural,0
+Amsterdam,Broekergouw4,8,16,52.416622,4.979426999999999,Rural,0
+Amsterdam,Broekergouw4,9,16,52.416622,4.979426999999999,Rural,0
+Amsterdam,Broekergouw4,10,16,52.416622,4.979426999999999,Rural,1
+Amsterdam,Broekergouw4,11,16,52.416622,4.979426999999999,Rural,0
+Amsterdam,Broekergouw4,12,16,52.416622,4.979426999999999,Rural,0
+Amsterdam,Broekergouw4,13,16,52.416622,4.979426999999999,Rural,0
+Amsterdam,Broekergouw4,14,16,52.416622,4.979426999999999,Rural,0
+Amsterdam,Broekergouw4,15,16,52.416622,4.979426999999999,Rural,0
+Amsterdam,Broekergouw4,16,16,52.416622,4.979426999999999,Rural,1
+Amsterdam,Broekergouw4,17,16,52.416622,4.979426999999999,Rural,0
+Amsterdam,Broekergouw4,18,16,52.416622,4.979426999999999,Rural,1
+Amsterdam,Broekergouw4,19,16,52.416622,4.979426999999999,Rural,0
+Amsterdam,Broekergouw4,20,16,52.416622,4.979426999999999,Rural,0
+Amsterdam,Broekergouw5,1,11,52.417613,4.983176,Rural,0
+Amsterdam,Broekergouw5,2,11,52.417613,4.983176,Rural,1
+Amsterdam,Broekergouw5,3,11,52.417613,4.983176,Rural,0
+Amsterdam,Broekergouw5,4,11,52.417613,4.983176,Rural,1
+Amsterdam,Broekergouw5,5,11,52.417613,4.983176,Rural,1
+Amsterdam,Broekergouw5,6,11,52.417613,4.983176,Rural,1
+Amsterdam,Broekergouw5,7,11,52.417613,4.983176,Rural,1
+Amsterdam,Broekergouw5,8,11,52.417613,4.983176,Rural,0
+Amsterdam,Broekergouw5,9,11,52.417613,4.983176,Rural,0
+Amsterdam,Broekergouw5,10,11,52.417613,4.983176,Rural,0
+Amsterdam,Broekergouw5,11,11,52.417613,4.983176,Rural,1
+Amsterdam,Broekergouw5,12,11,52.417613,4.983176,Rural,0
+Amsterdam,Broekergouw5,13,11,52.417613,4.983176,Rural,0
+Amsterdam,Broekergouw5,14,11,52.417613,4.983176,Rural,0
+Amsterdam,Broekergouw5,15,11,52.417613,4.983176,Rural,0
+Amsterdam,Broekergouw5,16,11,52.417613,4.983176,Rural,0
+Amsterdam,Broekergouw5,17,11,52.417613,4.983176,Rural,0
+Amsterdam,Broekergouw5,18,11,52.417613,4.983176,Rural,0
+Amsterdam,Broekergouw5,19,11,52.417613,4.983176,Rural,0
+Amsterdam,Broekergouw5,20,11,52.417613,4.983176,Rural,0
+Amsterdam,Broekergouw6,1,12,52.419243,4.98698,Rural,0
+Amsterdam,Broekergouw6,2,12,52.419243,4.98698,Rural,0
+Amsterdam,Broekergouw6,3,12,52.419243,4.98698,Rural,0
+Amsterdam,Broekergouw6,4,12,52.419243,4.98698,Rural,0
+Amsterdam,Broekergouw6,5,12,52.419243,4.98698,Rural,0
+Amsterdam,Broekergouw6,6,12,52.419243,4.98698,Rural,0
+Amsterdam,Broekergouw6,7,12,52.419243,4.98698,Rural,0
+Amsterdam,Broekergouw6,8,12,52.419243,4.98698,Rural,0
+Amsterdam,Broekergouw6,9,12,52.419243,4.98698,Rural,0
+Amsterdam,Broekergouw6,10,12,52.419243,4.98698,Rural,0
+Amsterdam,Broekergouw6,11,12,52.419243,4.98698,Rural,0
+Amsterdam,Broekergouw6,12,12,52.419243,4.98698,Rural,0
+Amsterdam,Broekergouw6,13,12,52.419243,4.98698,Rural,0
+Amsterdam,Broekergouw6,14,12,52.419243,4.98698,Rural,0
+Amsterdam,Broekergouw6,15,12,52.419243,4.98698,Rural,0
+Amsterdam,Broekergouw6,16,12,52.419243,4.98698,Rural,0
+Amsterdam,Broekergouw6,17,12,52.419243,4.98698,Rural,0
+Amsterdam,Broekergouw6,18,12,52.419243,4.98698,Rural,0
+Amsterdam,Broekergouw6,19,12,52.419243,4.98698,Rural,0
+Amsterdam,Broekergouw6,20,12,52.419243,4.98698,Rural,0
+Amsterdam,Broekergouw7,1,18,52.420388,4.990113,Rural,0
+Amsterdam,Broekergouw7,2,18,52.420388,4.990113,Rural,1
+Amsterdam,Broekergouw7,3,18,52.420388,4.990113,Rural,1
+Amsterdam,Broekergouw7,4,18,52.420388,4.990113,Rural,0
+Amsterdam,Broekergouw7,5,18,52.420388,4.990113,Rural,0
+Amsterdam,Broekergouw7,6,18,52.420388,4.990113,Rural,0
+Amsterdam,Broekergouw7,7,18,52.420388,4.990113,Rural,0
+Amsterdam,Broekergouw7,8,18,52.420388,4.990113,Rural,0
+Amsterdam,Broekergouw7,9,18,52.420388,4.990113,Rural,1
+Amsterdam,Broekergouw7,10,18,52.420388,4.990113,Rural,1
+Amsterdam,Broekergouw7,11,18,52.420388,4.990113,Rural,0
+Amsterdam,Broekergouw7,12,18,52.420388,4.990113,Rural,1
+Amsterdam,Broekergouw7,13,18,52.420388,4.990113,Rural,0
+Amsterdam,Broekergouw7,14,18,52.420388,4.990113,Rural,1
+Amsterdam,Broekergouw7,15,18,52.420388,4.990113,Rural,0
+Amsterdam,Broekergouw7,16,18,52.420388,4.990113,Rural,1
+Amsterdam,Broekergouw7,17,18,52.420388,4.990113,Rural,0
+Amsterdam,Broekergouw7,18,18,52.420388,4.990113,Rural,1
+Amsterdam,Broekergouw7,19,18,52.420388,4.990113,Rural,0
+Amsterdam,Broekergouw7,20,18,52.420388,4.990113,Rural,0
+Amsterdam,Broekergouw8,1,14,52.422443,4.990880000000001,Rural,0
+Amsterdam,Broekergouw8,2,14,52.422443,4.990880000000001,Rural,0
+Amsterdam,Broekergouw8,3,14,52.422443,4.990880000000001,Rural,0
+Amsterdam,Broekergouw8,4,14,52.422443,4.990880000000001,Rural,0
+Amsterdam,Broekergouw8,5,14,52.422443,4.990880000000001,Rural,0
+Amsterdam,Broekergouw8,6,14,52.422443,4.990880000000001,Rural,0
+Amsterdam,Broekergouw8,7,14,52.422443,4.990880000000001,Rural,0
+Amsterdam,Broekergouw8,8,14,52.422443,4.990880000000001,Rural,0
+Amsterdam,Broekergouw8,9,14,52.422443,4.990880000000001,Rural,0
+Amsterdam,Broekergouw8,10,14,52.422443,4.990880000000001,Rural,0
+Amsterdam,Broekergouw8,11,14,52.422443,4.990880000000001,Rural,0
+Amsterdam,Broekergouw8,12,14,52.422443,4.990880000000001,Rural,0
+Amsterdam,Broekergouw8,13,14,52.422443,4.990880000000001,Rural,1
+Amsterdam,Broekergouw8,14,14,52.422443,4.990880000000001,Rural,0
+Amsterdam,Broekergouw8,15,14,52.422443,4.990880000000001,Rural,0
+Amsterdam,Broekergouw8,16,14,52.422443,4.990880000000001,Rural,0
+Amsterdam,Broekergouw8,17,14,52.422443,4.990880000000001,Rural,0
+Amsterdam,Broekergouw8,18,14,52.422443,4.990880000000001,Rural,0
+Amsterdam,Broekergouw8,19,14,52.422443,4.990880000000001,Rural,1
+Amsterdam,Broekergouw8,20,14,52.422443,4.990880000000001,Rural,0
+Amsterdam,Broekergouw9,1,13B,52.424403999999996,4.991186,Rural,1
+Amsterdam,Broekergouw9,2,13B,52.424403999999996,4.991186,Rural,0
+Amsterdam,Broekergouw9,3,13B,52.424403999999996,4.991186,Rural,0
+Amsterdam,Broekergouw9,4,13B,52.424403999999996,4.991186,Rural,1
+Amsterdam,Broekergouw9,5,13B,52.424403999999996,4.991186,Rural,0
+Amsterdam,Broekergouw9,6,13B,52.424403999999996,4.991186,Rural,0
+Amsterdam,Broekergouw9,7,13B,52.424403999999996,4.991186,Rural,1
+Amsterdam,Broekergouw9,8,13B,52.424403999999996,4.991186,Rural,0
+Amsterdam,Broekergouw9,9,13B,52.424403999999996,4.991186,Rural,0
+Amsterdam,Broekergouw9,10,13B,52.424403999999996,4.991186,Rural,0
+Amsterdam,Broekergouw9,11,13B,52.424403999999996,4.991186,Rural,0
+Amsterdam,Broekergouw9,12,13B,52.424403999999996,4.991186,Rural,1
+Amsterdam,Broekergouw9,13,13B,52.424403999999996,4.991186,Rural,0
+Amsterdam,Broekergouw9,14,13B,52.424403999999996,4.991186,Rural,1
+Amsterdam,Broekergouw9,15,13B,52.424403999999996,4.991186,Rural,0
+Amsterdam,Broekergouw9,16,13B,52.424403999999996,4.991186,Rural,0
+Amsterdam,Broekergouw9,17,13B,52.424403999999996,4.991186,Rural,1
+Amsterdam,Broekergouw9,18,13B,52.424403999999996,4.991186,Rural,0
+Amsterdam,Broekergouw9,19,13B,52.424403999999996,4.991186,Rural,0
+Amsterdam,Broekergouw9,20,13B,52.424403999999996,4.991186,Rural,1
+Amsterdam,Broekergouw10,1,12,52.425544,4.989985,Rural,0
+Amsterdam,Broekergouw10,2,12,52.425544,4.989985,Rural,0
+Amsterdam,Broekergouw10,3,12,52.425544,4.989985,Rural,0
+Amsterdam,Broekergouw10,4,12,52.425544,4.989985,Rural,0
+Amsterdam,Broekergouw10,5,12,52.425544,4.989985,Rural,0
+Amsterdam,Broekergouw10,6,12,52.425544,4.989985,Rural,0
+Amsterdam,Broekergouw10,7,12,52.425544,4.989985,Rural,1
+Amsterdam,Broekergouw10,8,12,52.425544,4.989985,Rural,0
+Amsterdam,Broekergouw10,9,12,52.425544,4.989985,Rural,0
+Amsterdam,Broekergouw10,10,12,52.425544,4.989985,Rural,1
+Amsterdam,Broekergouw10,11,12,52.425544,4.989985,Rural,0
+Amsterdam,Broekergouw10,12,12,52.425544,4.989985,Rural,0
+Amsterdam,Broekergouw10,13,12,52.425544,4.989985,Rural,0
+Amsterdam,Broekergouw10,14,12,52.425544,4.989985,Rural,1
+Amsterdam,Broekergouw10,15,12,52.425544,4.989985,Rural,0
+Amsterdam,Broekergouw10,16,12,52.425544,4.989985,Rural,0
+Amsterdam,Broekergouw10,17,12,52.425544,4.989985,Rural,0
+Amsterdam,Broekergouw/Middenweg,1,13A,52.428825,4.9874410000000005,Rural,1
+Amsterdam,Broekergouw/Middenweg,2,13A,52.428825,4.9874410000000005,Rural,1
+Amsterdam,Broekergouw/Middenweg,3,13A,52.428825,4.9874410000000005,Rural,0
+Amsterdam,Broekergouw/Middenweg,4,13A,52.428825,4.9874410000000005,Rural,1
+Amsterdam,Broekergouw/Middenweg,5,13A,52.428825,4.9874410000000005,Rural,1
+Amsterdam,Broekergouw/Middenweg,6,13A,52.428825,4.9874410000000005,Rural,1
+Amsterdam,Broekergouw/Middenweg,7,13A,52.428825,4.9874410000000005,Rural,1
+Amsterdam,Broekergouw/Middenweg,8,13A,52.428825,4.9874410000000005,Rural,0
+Amsterdam,Broekergouw/Middenweg,9,13A,52.428825,4.9874410000000005,Rural,1
+Amsterdam,Broekergouw/Middenweg,10,13A,52.428825,4.9874410000000005,Rural,1
+Amsterdam,Broek in Waterland,1,13A,52.433863,4.999307,Periurban,0
+Amsterdam,Broek in Waterland,2,13A,52.433863,4.999307,Periurban,0
+Amsterdam,Broek in Waterland,3,13A,52.433863,4.999307,Periurban,0
+Amsterdam,Broek in Waterland,4,13A,52.433863,4.999307,Periurban,0
+Amsterdam,Broek in Waterland,5,13A,52.433863,4.999307,Periurban,0
+Amsterdam,Broek in Waterland,6,13A,52.433863,4.999307,Periurban,0
+Amsterdam,Broek in Waterland,7,13A,52.433863,4.999307,Periurban,0
+Amsterdam,Broek in Waterland,8,13A,52.433863,4.999307,Periurban,0
+Amsterdam,Broek in Waterland,9,13A,52.433863,4.999307,Periurban,0
+Amsterdam,Broek in Waterland,10,13A,52.433863,4.999307,Periurban,0
+Amsterdam,Broek in Waterland,11,13A,52.433863,4.999307,Periurban,0
+Amsterdam,Broek in Waterland,12,13A,52.433863,4.999307,Periurban,0
+Amsterdam,Broek in Waterland,13,13A,52.433863,4.999307,Periurban,1
+Amsterdam,Broek in Waterland,14,13A,52.433863,4.999307,Periurban,0
+Amsterdam,Broek in Waterland,15,13A,52.433863,4.999307,Periurban,0
+Amsterdam,Broek in Waterland,16,13A,52.433863,4.999307,Periurban,1
+Amsterdam,Broek in Waterland,17,13A,52.433863,4.999307,Periurban,1
+Amsterdam,Broek in Waterland,18,13A,52.433863,4.999307,Periurban,0
+Amsterdam,Broek in Waterland,19,13A,52.433863,4.999307,Periurban,0
+Amsterdam,Broek in Waterland,20,13A,52.433863,4.999307,Periurban,0
+Amsterdam,Trambaan Broek in Waterland,1,18,52.43464300000001,5.001365,Periurban,1
+Amsterdam,Trambaan Broek in Waterland,2,18,52.43464300000001,5.001365,Periurban,0
+Amsterdam,Trambaan Broek in Waterland,3,18,52.43464300000001,5.001365,Periurban,1
+Amsterdam,Trambaan Broek in Waterland,4,18,52.43464300000001,5.001365,Periurban,0
+Amsterdam,Trambaan Broek in Waterland,5,18,52.43464300000001,5.001365,Periurban,0
+Amsterdam,Trambaan Broek in Waterland,6,18,52.43464300000001,5.001365,Periurban,0
+Amsterdam,Trambaan Broek in Waterland,7,18,52.43464300000001,5.001365,Periurban,0
+Amsterdam,Trambaan Broek in Waterland,8,18,52.43464300000001,5.001365,Periurban,0
+Amsterdam,Trambaan Broek in Waterland,9,18,52.43464300000001,5.001365,Periurban,0
+Amsterdam,Trambaan Broek in Waterland,10,18,52.43464300000001,5.001365,Periurban,0
+Amsterdam,Trambaan Broek in Waterland,11,18,52.43464300000001,5.001365,Periurban,0
+Amsterdam,Trambaan Broek in Waterland,12,18,52.43464300000001,5.001365,Periurban,0
+Amsterdam,Trambaan Broek in Waterland,13,18,52.43464300000001,5.001365,Periurban,1
+Amsterdam,Trambaan Broek in Waterland,14,18,52.43464300000001,5.001365,Periurban,0
+Amsterdam,Trambaan Broek in Waterland,15,18,52.43464300000001,5.001365,Periurban,1
+Amsterdam,Trambaan Broek in Waterland,16,18,52.43464300000001,5.001365,Periurban,0
+Amsterdam,Trambaan Broek in Waterland,17,18,52.43464300000001,5.001365,Periurban,0
+Amsterdam,Trambaan Broek in Waterland,18,18,52.43464300000001,5.001365,Periurban,0
+Amsterdam,Trambaan Broek in Waterland,19,18,52.43464300000001,5.001365,Periurban,0
+Amsterdam,Trambaan Broek in Waterland,20,18,52.43464300000001,5.001365,Periurban,0
+Amsterdam,Molengouw,1,17,52.432218999999996,5.006563,Periurban,0
+Amsterdam,Molengouw,2,17,52.432218999999996,5.006563,Periurban,0
+Amsterdam,Molengouw,3,17,52.432218999999996,5.006563,Periurban,0
+Amsterdam,Molengouw,4,17,52.432218999999996,5.006563,Periurban,1
+Amsterdam,Molengouw,5,17,52.432218999999996,5.006563,Periurban,0
+Amsterdam,Molengouw,6,17,52.432218999999996,5.006563,Periurban,0
+Amsterdam,Molengouw,7,17,52.432218999999996,5.006563,Periurban,0
+Amsterdam,Molengouw,8,17,52.432218999999996,5.006563,Periurban,1
+Amsterdam,Molengouw,9,17,52.432218999999996,5.006563,Periurban,1
+Amsterdam,Molengouw,10,17,52.432218999999996,5.006563,Periurban,0
+Amsterdam,Molengouw,11,17,52.432218999999996,5.006563,Periurban,0
+Amsterdam,Molengouw,12,17,52.432218999999996,5.006563,Periurban,0
+Amsterdam,Molengouw,13,17,52.432218999999996,5.006563,Periurban,0
+Amsterdam,Molengouw,14,17,52.432218999999996,5.006563,Periurban,0
+Amsterdam,Molengouw,15,17,52.432218999999996,5.006563,Periurban,0
+Amsterdam,Molengouw,16,17,52.432218999999996,5.006563,Periurban,0
+Amsterdam,Molengouw,17,17,52.432218999999996,5.006563,Periurban,1
+Amsterdam,Molengouw,18,17,52.432218999999996,5.006563,Periurban,1
+Amsterdam,Molengouw,19,17,52.432218999999996,5.006563,Periurban,0
+Amsterdam,Molengouw,20,17,52.432218999999996,5.006563,Periurban,0
+Amsterdam,Atjehgouw1,1,15,52.435001,5.015338,Periurban,0
+Amsterdam,Atjehgouw1,2,15,52.435001,5.015338,Periurban,0
+Amsterdam,Atjehgouw1,3,15,52.435001,5.015338,Periurban,1
+Amsterdam,Atjehgouw1,4,15,52.435001,5.015338,Periurban,0
+Amsterdam,Atjehgouw1,5,15,52.435001,5.015338,Periurban,0
+Amsterdam,Atjehgouw1,6,15,52.435001,5.015338,Periurban,0
+Amsterdam,Atjehgouw1,7,15,52.435001,5.015338,Periurban,0
+Amsterdam,Atjehgouw1,8,15,52.435001,5.015338,Periurban,0
+Amsterdam,Atjehgouw1,9,15,52.435001,5.015338,Periurban,0
+Amsterdam,Atjehgouw1,10,15,52.435001,5.015338,Periurban,0
+Amsterdam,Atjehgouw1,11,15,52.435001,5.015338,Periurban,0
+Amsterdam,Atjehgouw1,12,15,52.435001,5.015338,Periurban,1
+Amsterdam,Atjehgouw1,13,15,52.435001,5.015338,Periurban,0
+Amsterdam,Atjehgouw1,14,15,52.435001,5.015338,Periurban,0
+Amsterdam,Atjehgouw1,15,15,52.435001,5.015338,Periurban,0
+Amsterdam,Atjehgouw1,16,15,52.435001,5.015338,Periurban,0
+Amsterdam,Atjehgouw1,17,15,52.435001,5.015338,Periurban,1
+Amsterdam,Atjehgouw1,18,15,52.435001,5.015338,Periurban,0
+Amsterdam,Atjehgouw1,19,15,52.435001,5.015338,Periurban,0
+Amsterdam,Atjehgouw1,20,15,52.435001,5.015338,Periurban,1
+Amsterdam,Atjehgouw2,1,15,52.437132999999996,5.013423,Periurban,0
+Amsterdam,Atjehgouw2,2,15,52.437132999999996,5.013423,Periurban,0
+Amsterdam,Atjehgouw2,3,15,52.437132999999996,5.013423,Periurban,0
+Amsterdam,Atjehgouw2,4,15,52.437132999999996,5.013423,Periurban,0
+Amsterdam,Atjehgouw2,5,15,52.437132999999996,5.013423,Periurban,0
+Amsterdam,Atjehgouw2,6,15,52.437132999999996,5.013423,Periurban,0
+Amsterdam,Atjehgouw2,7,15,52.437132999999996,5.013423,Periurban,0
+Amsterdam,Atjehgouw2,8,15,52.437132999999996,5.013423,Periurban,0
+Amsterdam,Atjehgouw2,9,15,52.437132999999996,5.013423,Periurban,0
+Amsterdam,Atjehgouw2,10,15,52.437132999999996,5.013423,Periurban,0
+Amsterdam,Atjehgouw2,11,15,52.437132999999996,5.013423,Periurban,0
+Amsterdam,Atjehgouw2,12,15,52.437132999999996,5.013423,Periurban,0
+Amsterdam,Atjehgouw2,13,15,52.437132999999996,5.013423,Periurban,0
+Amsterdam,Atjehgouw2,14,15,52.437132999999996,5.013423,Periurban,0
+Amsterdam,Atjehgouw2,15,15,52.437132999999996,5.013423,Periurban,0
+Amsterdam,Atjehgouw2,16,15,52.437132999999996,5.013423,Periurban,0
+Amsterdam,Atjehgouw2,17,15,52.437132999999996,5.013423,Periurban,0
+Amsterdam,Atjehgouw2,18,15,52.437132999999996,5.013423,Periurban,0
+Amsterdam,Atjehgouw2,19,15,52.437132999999996,5.013423,Periurban,1
+Amsterdam,Atjehgouw2,20,15,52.437132999999996,5.013423,Periurban,0
+Amsterdam,Atjehgouw3,1,17,52.438437,5.011965,Rural,0
+Amsterdam,Atjehgouw3,2,17,52.438437,5.011965,Rural,0
+Amsterdam,Atjehgouw3,3,17,52.438437,5.011965,Rural,0
+Amsterdam,Atjehgouw3,4,17,52.438437,5.011965,Rural,0
+Amsterdam,Atjehgouw3,5,17,52.438437,5.011965,Rural,0
+Amsterdam,Atjehgouw3,6,17,52.438437,5.011965,Rural,1
+Amsterdam,Atjehgouw3,7,17,52.438437,5.011965,Rural,0
+Amsterdam,Atjehgouw3,8,17,52.438437,5.011965,Rural,0
+Amsterdam,Atjehgouw3,9,17,52.438437,5.011965,Rural,0
+Amsterdam,Atjehgouw3,10,17,52.438437,5.011965,Rural,0
+Amsterdam,Atjehgouw3,11,17,52.438437,5.011965,Rural,0
+Amsterdam,Atjehgouw3,12,17,52.438437,5.011965,Rural,1
+Amsterdam,Atjehgouw3,13,17,52.438437,5.011965,Rural,0
+Amsterdam,Atjehgouw3,14,17,52.438437,5.011965,Rural,0
+Amsterdam,Atjehgouw3,15,17,52.438437,5.011965,Rural,0
+Amsterdam,Atjehgouw3,16,17,52.438437,5.011965,Rural,1
+Amsterdam,Atjehgouw3,17,17,52.438437,5.011965,Rural,0
+Amsterdam,Atjehgouw3,18,17,52.438437,5.011965,Rural,0
+Amsterdam,Atjehgouw3,19,17,52.438437,5.011965,Rural,0
+Amsterdam,Atjehgouw3,20,17,52.438437,5.011965,Rural,0

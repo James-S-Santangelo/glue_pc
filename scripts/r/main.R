@@ -101,7 +101,7 @@ source("scripts/r/data-processing/popMeans_addEnviroData.R")
 # Does urbanization lead to convergent environmental change in cities throughout the world? (Question 1)
 
 # Note: Permutations in this script will take a while to run
-n_perm = 5  # Number of permutations testing for urban/rural difference in mean multivariate environments
+n_perm = 100  # Number of permutations testing for urban/rural difference in mean multivariate environments
 source("scripts/r/analyses/enviroAnalyses.R")
 
 # Summary of urban/rural multivariate environment PCA
@@ -128,6 +128,7 @@ source("scripts/r/analyses/clineAnalyses.R")
 
 # Residuals vs. fitted for global GLUE cline model
 plot(glueClineModel_stdDist)
+hist(residuals(glueClineModel_stdDist))
 
 # Summary of mixed model testing for effect of distance on global scale
 print(glueClineModel_stdDist_summary)
@@ -147,6 +148,7 @@ print(glueClineModel_randEffect_anova)
 ## Step 4.3: Predicting clines from environment
 # What environmental variables drive convergent evolution to cities on a global scale?
 
+set.seed(42)
 source("scripts/r/analyses/predictingClines.R")
 
 # Look at residual plots
