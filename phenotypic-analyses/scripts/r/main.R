@@ -3,8 +3,8 @@
 # Author: James S. Santangelo
 
 # This script assumes that all individual-level plant phenotype datasets (i.e., HCN calls) that were
-# submitted by GLUE collaborators have been cleaned of errors and standardaised for downstream processing.
-# The cleaning and standardising is accomplished using a series of python scripts (../python)
+# submitted by GLUE collaborators have been cleaned of errors and standardized for downstream processing.
+# The cleaning and standardizing is accomplished using a series of python scripts (../python)
 
 ###############
 #### SETUP ####
