@@ -189,6 +189,11 @@ def get_habitat_saf_files_byCity(wildcards):
     city_saf_files = [x for x in all_saf_files if wildcards.city in x and wildcards.site in x]
     return city_saf_files
 
+def get_toronto_bam_pi_fst_test(wildcards):
+    bam = glob.glob('{0}/{1}_*.bam'.format(TOR_BAMS, wildcards.tor_test_sample))
+    return bam
+
+
 
 
 
