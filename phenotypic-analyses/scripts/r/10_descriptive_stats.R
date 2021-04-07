@@ -35,20 +35,20 @@ num_plants <- globalTable %>%
 # Each row in global table is a population
 num_populations <- globalTable %>% nrow()
 
-# Total number of cities
-num_cities <- globalTable %>% distinct(city) %>% nrow()
-
 # Import dataset with slopes and environmental data for each city
 allCities_slopes <- read_csv("analysis/supplementary-tables/allCities_HCNslopes_enviroMeansSlopes.csv")
 
+# Total number of cities
+num_cities <- allCities_slopes %>% nrow()
+
 # Percent significant clines
 allCities_slopes %>% 
-  group_by(sigLinOnly) %>% 
+  group_by(sigRLM) %>% 
   summarise(count = n(),
             percent = (count / num_cities) * 100)
 
 # Percent clines by direction
 allCities_slopes %>% 
-  group_by(direction, sigLinOnly) %>% 
+  group_by(direction, sigRLM) %>% 
   summarise(count = n(),
             percent = (count / num_cities) * 100)
