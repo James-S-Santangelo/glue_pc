@@ -193,7 +193,3 @@ def get_toronto_bam_pi_fst_test(wildcards):
     bam = glob.glob('{0}/{1}_*.bam'.format(TOR_BAMS, wildcards.tor_test_sample))
     return bam
 
-
-
-
-
