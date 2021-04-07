@@ -3,21 +3,24 @@ rule urban_rural_toronto_bam_lists:
         TOR_BAMS
     output:
         '{0}/bam_lists/toronto_pi_fst_test/{{habitat}}_bams.list'.format(PROGRAM_RESOURCE_DIR)
+    wildcard_constraints:
+        habitat = 'urban|rural'
     run:
-        import os
+        import os 
         import glob
+        import random
+        random.seed(42)
         if wildcards.habitat == 'urban':
             pop = '41'
         elif wildcards.habitat == 'rural':
             pop = '83'
-        bams = glob.glob(input[0] + '/*.bam')
+        bams = glob.glob(input[0] + '/s_{0}_*.bam'.format(pop))
+        bams_relate_remove = [x for x in bams if 's_83_11' not in x]
+        subset_bams = random.sample(bams_relate_remove, max(SS_PI_FST_TEST))
         with open(output[0], 'w') as fout:
-            for bam in bams:
-                base = os.path.basename(bam)
-                population = base.split('_')[1]
-                if population == pop:
-                    fout.write('{0}\n'.format(bam))
-            
+            for bam in subset_bams:
+                fout.write('{0}\n'.format(bam))
+
 rule downsample_urban_rural_toronto_pi_fst_test_bams:
     input:
         get_toronto_bam_pi_fst_test
@@ -51,10 +54,34 @@ rule index_urban_rural_toronto_pi_fst_test_bam:
         samtools index {input} 2> {log}
         """
 
+rule urban_rural_toronto_downsampled_bam_lists:
+    input:
+        expand(rules.downsample_urban_rural_toronto_pi_fst_test_bams.output, tor_test_sample=TOR_SAMPLES_PI_FST_TEST)
+    output:
+        '{0}/bam_lists/toronto_pi_fst_test/{{habitat}}_{{ss}}ind_bams.list'.format(PROGRAM_RESOURCE_DIR)
+    wildcard_constraints:
+        habitat = 'urban|rural'
+    run:
+        import os
+        import glob
+        import random
+        random.seed(42)
+        if wildcards.habitat == 'urban':
+            pop = '41'
+        elif wildcards.habitat == 'rural':
+            pop = '83'
+        possible_bams = [x for x in input if os.path.basename(x).split('_')[1] == pop]
+        subset_bams = random.sample(possible_bams, int(wildcards.ss))
+        with open(output[0], 'w') as fout:
+            for bam in subset_bams:
+                fout.write('{0}\n'.format(bam))
+
+
 rule pi_fst_sample_size_test_done:
     input:
         expand(rules.urban_rural_toronto_bam_lists.output, habitat=['urban', 'rural']),
-        expand(rules.index_urban_rural_toronto_pi_fst_test_bam.output, tor_test_sample=TOR_SAMPLES_PI_FST_TEST)
+        expand(rules.index_urban_rural_toronto_pi_fst_test_bam.output, tor_test_sample=TOR_SAMPLES_PI_FST_TEST),
+        expand(rules.urban_rural_toronto_downsampled_bam_lists.output, habitat=['urban', 'rural'], ss=SS_PI_FST_TEST)
     output:
         '{0}/pi_fst_sample_size_test/pi_fst_sample_size_test.done'.format(ANGSD_DIR)
     shell:
