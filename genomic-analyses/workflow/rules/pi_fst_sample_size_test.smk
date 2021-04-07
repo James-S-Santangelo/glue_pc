@@ -134,15 +134,45 @@ rule angsd_estimate_joint_sfs_toronto_fst_test:
         realSFS {input} -maxIter 2000 -seed 42 -fold 1 -P {threads} > {output} 2> {log}
         """
 
+rule angsd_fst_index_toronto_fst_test:
+    input: 
+        saf_idx = get_saf_joint_sfs_pi_fst_test,
+        joint_sfs = rules.angsd_estimate_joint_sfs_toronto_fst_test.output
+    output:
+        fst = '{0}/pi_fst_sample_size_test/stats/fst/{{group}}/{{group}}_{{joint_sfs_ss}}.fst.gz'.format(ANGSD_DIR),
+        idx = '{0}/pi_fst_sample_size_test/stats/fst/{{group}}/{{group}}_{{joint_sfs_ss}}.fst.idx'.format(ANGSD_DIR)
+    log: 'logs/angsd_fst_index_toronto_fst_test/{group}_{joint_sfs_ss}_index.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    threads: 4
+    resources:
+        mem_mb = 4000,
+        time = '01:00:00'
+    params:
+        fstout = '{0}/pi_fst_sample_size_test/stats/fst/{{group}}/{{group}}_{{joint_sfs_ss}}'.format(ANGSD_DIR)
+    shell:
+        """
+        realSFS fst index {input.saf_idx} -sfs {input.joint_sfs} -fold 1 -P {threads} -whichFst 1 -fstout {params.fstout} 2> {log}
+        """
+
+rule angsd_fst_readable_toronto_fst_test:
+    input:
+        rules.angsd_fst_index_toronto_fst_test.output.idx
+    output:
+        '{0}/pi_fst_sample_size_test/stats/fst/{{group}}/{{group}}_{{joint_sfs_ss}}_readable.fst'.format(ANGSD_DIR)
+    log: 'logs/angsd_fst_readable_toronto_fst_test/{group}_{joint_sfs_ss}_readable.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    shell:
+        """
+        realSFS fst print {input} > {output} 2> {log}
+        """
+
 rule pi_fst_sample_size_test_done:
     input:
         expand(rules.urban_rural_toronto_bam_lists.output, habitat=['urban', 'rural'], group = 'highCov', ss='7'),
         expand(rules.index_urban_rural_toronto_pi_fst_test_bam.output, tor_test_sample=TOR_SAMPLES_PI_FST_TEST),
         expand(rules.urban_rural_toronto_downsampled_bam_lists.output, habitat=['urban', 'rural'], ss=SS_PI_FST_TEST, group = 'lowCov'),
-        expand(rules.angsd_saf_likelihood_toronto_pi_fst_test.output, group='highCov', habitat=['urban', 'rural'], ss='7'),
-        expand(rules.angsd_saf_likelihood_toronto_pi_fst_test.output, group='lowCov', habitat=['urban', 'rural'], ss=SS_PI_FST_TEST),
-        expand(rules.angsd_estimate_joint_sfs_toronto_fst_test.output, group = 'highCov', joint_sfs_ss = 'u7_r7'),
-        expand(rules.angsd_estimate_joint_sfs_toronto_fst_test.output, group = 'lowCov', joint_sfs_ss = JOINT_SFS_WILDCARDS_TOR_TEST)
+        expand(rules.angsd_fst_readable_toronto_fst_test.output, group = 'highCov', joint_sfs_ss = 'u7_r7'),
+        expand(rules.angsd_fst_readable_toronto_fst_test.output, group = 'lowCov', joint_sfs_ss = JOINT_SFS_WILDCARDS_TOR_TEST)
     output:
         '{0}/pi_fst_sample_size_test/pi_fst_sample_size_test.done'.format(ANGSD_DIR)
     shell:
