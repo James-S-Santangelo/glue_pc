@@ -565,11 +565,12 @@ clineResults <- function(dataframe_list){
   # Initialize dataset that will hold model outputs
   modelOutputData <- data.frame(
     city = character(),
-    betaBestFit = numeric(),
-    pvalBestFit = numeric(),
-    rSquareBestFit = numeric(),
-    yIntBestFit = numeric(),
-    predictedBestFit = numeric(),
+    betaLin = numeric(),
+    pvalLin = numeric(),
+    betaQuad = numeric(),
+    pvalQuad = numeric(),
+    yInt = numeric(),
+    predicted = numeric(),
     modelOrderBestFit = character(),
     stringsAsFactors = FALSE
   )
@@ -593,7 +594,7 @@ clineResults <- function(dataframe_list){
         mutate(std_distance_squared = std_distance^2) %>% 
         pull(std_distance_squared)
       
-      quadratic_model = lm(response_var ~ std_distance + std_distance_squared) # Specify quadratic model
+      quadratic_model = rlm(response_var ~ std_distance + std_distance_squared, maxit = 200) # Specify quadratic model
       linear_model = update(quadratic_model, ~ . - std_distance_squared) # Specify linear model
       
       AIC_quad = AIC(quadratic_model) # Get AIC of quadratic model
@@ -602,42 +603,44 @@ clineResults <- function(dataframe_list){
       if (abs(AIC_quad) - abs(AIC_lin) > 2) {
         # If quadratic model AIC is > 2 from linear model AIC
         # Get y-intercept
-        yIntBestFit <- round(summary(quadratic_model)$coefficients["(Intercept)", "Estimate"], 3)
+        yInt <- round(summary(quadratic_model)$coefficients["(Intercept)", "Value"], 3)
         
         # Get prediction when standardized distance equals 1
-        predictedBestFit <- round(predict(quadratic_model, data.frame(std_distance = c(1), std_distance_squared = c(1))), 3)
+        predicted <- round(predict(quadratic_model, data.frame(std_distance = c(1), std_distance_squared = c(1))), 3)
         
-        betaBestFit <-
-          round(summary(quadratic_model)$coefficients["std_distance", "Estimate"], 3)
-        pvalBestFit <-
-          round(summary(quadratic_model)$coefficients["std_distance", "Pr(>|t|)"], 3)
-        rSquareBestFit <- round(summary(quadratic_model)$r.squared, 3)
+        betaLin <- round(summary(quadratic_model)$coefficients["std_distance", "Value"], 3)
+        betaQuad <- round(summary(quadratic_model)$coefficients["std_distance_squared", "Value"], 3)
+      
+        # Robust F-tests from sfsmisc package (Wald test)
+        ftestLin <- f.robftest(quadratic_model, var = "std_distance")
+        pvalLin <- round(ftestLin$p.value, 3)
+        ftestQuad <- f.robftest(quadratic_model, var = "std_distance_squared")
+        pvalQuad <- round(ftestQuad$p.value, 3)
         modelOrderBestFit <- "quadratic"
         
-        # print(predictedBestFit, yIntBestFit, diff)
         # Append beta and p-value to results vector
         cline_results <- append(cline_results,
-                                c(betaBestFit, pvalBestFit, rSquareBestFit, yIntBestFit, predictedBestFit, modelOrderBestFit),
+                                c(betaLin, pvalLin, betaQuad, pvalQuad, yInt, predicted, modelOrderBestFit),
                                 after = length(cline_results))
     
       } else {
         # Otherwise (i.e. quadratic model is not better fit)
         # Get y-intercept
-        yIntBestFit <- round(summary(linear_model)$coefficients["(Intercept)", "Estimate"], 3)
+        yInt <- round(summary(linear_model)$coefficients["(Intercept)", "Value"], 3)
         
         # Get prediction when standardized distance equals 1
-        predictedBestFit <- round(predict(linear_model, data.frame(std_distance = c(1))), 3)
+        predicted <- round(predict(linear_model, data.frame(std_distance = c(1))), 3)
         
-        betaBestFit <-
-          round(summary(linear_model)$coefficients["std_distance", "Estimate"], 3)
-        pvalBestFit <-
-          round(summary(linear_model)$coefficients["std_distance", "Pr(>|t|)"], 3)
-        rSquareBestFit <- round(summary(linear_model)$r.squared, 3)
+        betaLin <- round(summary(linear_model)$coefficients["std_distance", "Value"], 3)
+        betaQuad <- NA
+        
+        ftestLin <- f.robftest(linear_model, var = "std_distance")
+        pvalLin <- round(ftestLin$p.value, 3)
+        pvalQuad <- NA
         modelOrderBestFit <- "linear"
         
-        # print(predictedBestFit, yIntBestFit, diff)
         cline_results <- append(cline_results,
-                                c(betaBestFit, pvalBestFit, rSquareBestFit, yIntBestFit, predictedBestFit, modelOrderBestFit),
+                                c(betaLin, pvalLin, betaQuad, pvalQuad, yInt, predicted, modelOrderBestFit),
                                 after = length(cline_results))
         # order = "linear"
       }
@@ -769,7 +772,7 @@ rlmStats <- function(df, response){
   if(!all(is.na(response_var))){
   
     # Run robust regression
-    rlm_mod <- rlm(response_var ~ std_distance, data = df)
+    rlm_mod <- rlm(response_var ~ std_distance, data = df, maxit = 200)
     slope <- round(rlm_mod$coefficients["std_distance"], 3)
 
     # Robust F-tests from sfsmisc package (Wald test)
@@ -1030,14 +1033,15 @@ pick.extreme.values <- function(Predicted.Values,Original.Values,number.extreme.
     RuralExtreme.OriginalData.dataFrame <- rbind(RuralExtreme.OriginalData.dataFrame,(RuralExtreme.original))
   } # cities
   # keep cities that have values for all variables, i.e., no NA for a particular variable within a city
-  keep.cities <- which(rowSums(is.na(UrbanExtreme.predicted.dataFrame)) == 0)
-  UrbanExtreme.predicted.dataFrame <- as.matrix(UrbanExtreme.predicted.dataFrame[keep.cities,])
-  RuralExtreme.predicted.dataFrame <- as.matrix(RuralExtreme.predicted.dataFrame[keep.cities,])
-  UrbanExtreme.OriginalData.dataFrame <- as.matrix(UrbanExtreme.OriginalData.dataFrame[keep.cities,])
-  RuralExtreme.OriginalData.dataFrame <- as.matrix(RuralExtreme.OriginalData.dataFrame[keep.cities,])
-  
-  city.names <- rep(city.names,each=number.extreme.sites)
-  city.names <- city.names[keep.cities]
+  # keep.cities <- which(rowSums(is.na(UrbanExtreme.predicted.dataFrame)) == 0)
+  # print(keep.cities)
+  # UrbanExtreme.predicted.dataFrame <- as.matrix(UrbanExtreme.predicted.dataFrame[keep.cities,])
+  # RuralExtreme.predicted.dataFrame <- as.matrix(RuralExtreme.predicted.dataFrame[keep.cities,])
+  # UrbanExtreme.OriginalData.dataFrame <- as.matrix(UrbanExtreme.OriginalData.dataFrame[keep.cities,])
+  # RuralExtreme.OriginalData.dataFrame <- as.matrix(RuralExtreme.OriginalData.dataFrame[keep.cities,])
+  # 
+  # city.names <- rep(city.names,each=number.extreme.sites)
+  # city.names <- city.names[keep.cities]
   
   result <- list(city.names=city.names,UrbanPredExtremes = UrbanExtreme.predicted.dataFrame,RuralPredExtremes = RuralExtreme.predicted.dataFrame,UrbanExtremes = UrbanExtreme.OriginalData.dataFrame,RuralExtremes = RuralExtreme.OriginalData.dataFrame)
   return(result)
