@@ -236,3 +236,14 @@ rule pi_fst_sample_size_test_done:
         """
         touch {output}
         """
+
+rule toronto_pi_fst_test_notebook:
+    input:
+        rules.pi_fst_sample_size_test_done.output
+    output:
+        '{0}/pi_fst_sample_size_test/notebook.done'.format(ANGSD_DIR)
+    conda: '../envs/notebooks.yaml'
+    notebook:
+        "../notebooks/pi_fst_sample_size_test.r.ipynb"
+
+
