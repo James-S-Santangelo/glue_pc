@@ -347,7 +347,7 @@ add_enviro_data <- function(df, outpath, err_file){
   enviro_datasets <- dir(inpath, recursive = TRUE, full.names = TRUE, 
                          pattern = paste0(city_name, "_"))
   df_list <- lapply(enviro_datasets, read_csv, col_types = cols())
-  # print(enviro_datasets)
+  
   
   cols <- c("annualAI_Mean", "annualPET_Mean", "DEM_Mean", "GMIS_Mean", "summerLST_Mean", 
             "summerNDVI_Mean", "winterLST_Mean", "winterNDVI_Mean", "NDSI_Mean")
@@ -358,11 +358,11 @@ add_enviro_data <- function(df, outpath, err_file){
     merged_enviro_data <- Reduce(function(...) left_join(...,
                                                          by = c("city", "population"),
                                                          all.x = TRUE), df_list) %>%
-      dplyr::select(city, population, ends_with("Mean")) %>% 
+      # dplyr::select(city, population, ends_with("Mean")) %>% 
       mutate(population = as.character(population))
     
     missing_cols <- setdiff(cols, names(merged_enviro_data)) 
-    # print(missing_cols)
+
     merged_enviro_data[missing_cols] <- NA
     
     if(length(missing_cols) > 0){
