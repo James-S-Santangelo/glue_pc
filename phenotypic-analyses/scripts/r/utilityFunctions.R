@@ -177,7 +177,11 @@ filter_environmental_data <- function(df, variable, outpath){
   
   # Get name of city being processed
   city_name <- df$city[1]
-  # print(city_name)
+
+  # Edge case for Newhaven.
+  if(city_name == "New_Haven"){
+    city_name <- "Newhaven"
+  }
   
   # Retrieve last 2 columns (environmental data)
   enviro_data_filtered <- df %>%
@@ -192,6 +196,10 @@ filter_environmental_data <- function(df, variable, outpath){
   # Full path to which data frame will be written
   path <- paste0(outpath, city_name, "_", variable, ".csv")
   # print(path)
+  
+  if(file.exists(outpath)){
+    print(sprintf('%s data already exists for %s', variable, city_name))
+  }
   
   # Write dataframe
   write_csv(enviro_data_filtered, path = path, col_names = TRUE)

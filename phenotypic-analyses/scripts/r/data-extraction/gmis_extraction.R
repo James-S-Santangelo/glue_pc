@@ -92,8 +92,12 @@ extract_gmis <- function(df, inpath, outpath, buffer = 100){
 
   # Get city name
   city <- df %>% pull(city) %>% unique()
-  print(city)
   
+  # Edge case for Newhaven.
+  if(city == "New_Haven"){
+    city <- "Newhaven"
+  }
+
   # Do not execute if file exists
   outpath <- paste0(outpath, city, '_GMIS.csv')
   if(file.exists(outpath)){
