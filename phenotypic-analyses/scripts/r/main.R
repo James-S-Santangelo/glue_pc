@@ -12,6 +12,7 @@
 
 # Load required packages
 library(tidyverse)
+library(raster)
 library(sp)
 library(rworldmap)
 library(rworldxtra)
@@ -77,9 +78,14 @@ source("scripts/r/data-processing/generatePopMeans.R")
 ############################################
 
 # This step used a series of custom Python scripts to interface with ArcMap (v. 10.6.1)
-# and extract environmental data from Landsat 7/8 images and publically curated databases
-# (e.g., CGIAR, SEDAC) for each population sampled by collaborators. Scripts are not shown here.
-# These scripts were written by Alex Tong.
+# and extract environmental data from Landsat 7/8 images and publicly curated databases
+# (e.g., CGIAR) for each population sampled by collaborators. Scripts are not shown here.
+# These scripts were written by Alex Tong. The exception is Impervious surface (GMIS), which 
+# we extract using the script below. This requires GMIS raster datasets in a local directory (see script). 
+# Datasets can be downloaded from https://sedac.ciesin.columbia.edu/data/set/ulandsat-gmis-v1/data-download.
+# Accessed April 9, 2021
+
+source('scripts/data-extraction/gmis-extraction.R')
 
 ######################################
 #### STEP 3: MORE DATA PROCESSING ####

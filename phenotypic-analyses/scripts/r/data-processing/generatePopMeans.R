@@ -2,7 +2,7 @@
 #
 # Author: James S. Santangelo
 
-# reate list with paths to dataframes
+# Create list with paths to dataframes
 inpath <- "data/clean/individualPlant_allCities/"
 df_list <- create_df_list(inpath)
 

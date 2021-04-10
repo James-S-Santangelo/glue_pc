@@ -32,6 +32,7 @@ purrr::walk(df_list, filter_environmental_data, variable = "DEM",
 inpath = "data/raw/environmental_data/Extracted_GMIS_filtered/"
 df_list <- create_df_list(inpath)
 outpath = "data/clean/environmental_data/GMIS/"
+dir.create(outpath)
 purrr::walk(df_list, filter_environmental_data, variable = "GMIS", 
             outpath = outpath)
 

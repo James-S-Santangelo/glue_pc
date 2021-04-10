@@ -179,16 +179,15 @@ filter_environmental_data <- function(df, variable, outpath){
   city_name <- df$city[1]
   # print(city_name)
   
-  # Retrieve last 2 columns (einvironmental data)
+  # Retrieve last 2 columns (environmental data)
   enviro_data_filtered <- df %>%
-    dplyr::select(city, population, tail(names(.), 2)) %>%
+    dplyr::select(city, population, tail(names(.), 1)) %>%
     
     # Rename variables
-    rename_at(vars(contains('AREA')), function(x) paste0(variable, "_", "Area")) %>%
     rename_at(vars(contains('MEAN')), function(x) paste0(variable, "_", "Mean")) %>%
     
     # Forward fill empty cells
-    fill(tail(names(.), 2), .direction = "down")
+    fill(tail(names(.), 1), .direction = "down")
   
   # Full path to which data frame will be written
   path <- paste0(outpath, city_name, "_", variable, ".csv")

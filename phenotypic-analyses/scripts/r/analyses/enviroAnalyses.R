@@ -16,6 +16,8 @@ for (i in 1:length(csv.files)){
   data <- read.csv(paste0(inpath, csv.files[i])) %>% dplyr::select(city, 
                                                                    std_distance, 
                                                                    freqHCN, 
+                                                                   population_latitude,
+                                                                   population_longitude,
                                                                    matches("*Mean$"))
   df_all_popMeans <- rbind(df_all_popMeans, data)
 }
