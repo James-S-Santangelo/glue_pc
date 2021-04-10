@@ -85,7 +85,8 @@ source("scripts/r/data-processing/generatePopMeans.R")
 # Datasets can be downloaded from https://sedac.ciesin.columbia.edu/data/set/ulandsat-gmis-v1/data-download.
 # Accessed April 9, 2021
 
-source('scripts/data-extraction/gmis-extraction.R')
+# Uncomment to execute. Takes about an hour.
+# source('scripts/data-extraction/gmis_extraction.R')
 
 ######################################
 #### STEP 3: MORE DATA PROCESSING ####

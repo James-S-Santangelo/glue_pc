@@ -101,6 +101,7 @@ extract_gmis <- function(df, inpath, outpath, buffer = 100){
   # Otherwise extract data
   }else{
     
+    # Add fake coordinates for missing data
     df <- df %>% 
       mutate(population_longitude = ifelse(is.na(population_longitude), -999, population_longitude),
              population_latitude = ifelse(is.na(population_latitude), -999, population_latitude))
@@ -119,7 +120,7 @@ extract_gmis <- function(df, inpath, outpath, buffer = 100){
     
     # Extract GMIS data for population
     gmis_data <- raster::extract(x = raster, y = spdf, method = 'simple', buffer = buffer)
-    gmis_data <- ifelse(is.na(gmis_data), 255, gmis_data)
+    gmis_data <- ifelse(is.na(gmis_data), 255, gmis_data)  # Missing data needs to be 255
     
     # Take mean GMIS across all cells included within buffer
     gmis_data_mod <- gmis_data %>% 
