@@ -80,7 +80,6 @@ numGood_byCitySite <- deep3_allPlants %>%
   mutate(count_withLow1 = count_deep3Only + 10)
 
 outpath <- 'data/clean/deep3/'
-dir.create(outpath, showWarnings = FALSE)
 print(sprintf('Plants for DEEP3 sequencing save to %s', outpath))
 write_csv(deep3_allPlants, paste0(outpath, 'plantsToPrep_deep3.csv'))
 write_csv(numGood_byCitySite, paste0(outpath, 'numPlants_byCitySite_deep3.csv'))

@@ -126,7 +126,6 @@ numGoodplants_10 <- Goodplants_10 %>%
   dplyr::select(continent, city, significant, everything())
 
 outpath <- 'data/clean/extractions/'
-dir.create(outpath, showWarnings = FALSE)
 print(sprintf('Cleaned extraction data saved to %s', outpath))
 write_csv(numGoodplants_10, paste0(outpath, 'numGoodplants_10.csv'))
 write_csv(all_ext, paste0(outpath, 'allExtractions.csv'))

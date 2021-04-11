@@ -209,7 +209,6 @@ low2_extraPlants <- low2_potentialPlants %>%
   filter(!(plantID %in% low2_toPrep$plantID))
 
 outpath <- 'data/clean/low2/'
-dir.create(outpath)
 print(sprintf('Plants for LOW2 sequencing saved to %s', outpath))
 
 write_csv(low2_toPrep, paste0(outpath, 'plantsToPrep_low2.csv'))

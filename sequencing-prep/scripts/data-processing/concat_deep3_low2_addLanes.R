@@ -26,6 +26,5 @@ deep3_low2 %>%
   tally()
 
 outpath <- 'data/clean/'
-dir.create(outpath, showWarnings = FALSE)
 print(sprintf('DEEP3 and LOW2 concatenated file with lanes save to %s', outpath))
 write_csv(deep3_low2, paste0(outpath, 'plantsToPrep_deep3_low2_withLanes.csv'))
