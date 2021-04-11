@@ -9,6 +9,12 @@
 # Load required packages
 library(tidyverse)
 
+paths <- c('data/clean/extractions/',
+           'data/clean/low2/',
+           'data/clean/deep3/')
+
+purrr::walk(paths, dir.create, recursive = TRUE, showWarnings = TRUE)
+
 #######################################
 #### STEP 1: Clean extraction data ####
 #######################################
@@ -50,3 +56,11 @@ source('scripts/data-processing/create_plantsToPrep_deep3.R')
 
 # Run script to concatenate and add sequencing lanes to DEEP3 and LOW2
 source('scripts/data-processing/concat_deep3_low2_addLanes.R')
+
+####################################################
+#### STEP 5: DEEP3 LANE1 library concentrations ####
+####################################################
+
+# Add Illumina indices and clean post-PCR library concentrations
+# for the first lane of DEEP3 sequencing
+source('scripts/data-processing/create_deep3_lane1_libraryConcentrations.R')
