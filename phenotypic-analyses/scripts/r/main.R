@@ -155,7 +155,6 @@ print(glueClineModel_randEffect_anova)
 ## Step 4.3: Predicting clines from environment
 # What environmental variables drive convergent evolution to cities on a global scale?
 
-set.seed(42)
 source("scripts/r/analyses/predictingClines.R")
 
 # Look at residual plots
@@ -183,11 +182,11 @@ print(sim_slopes)
 # Main effect of winterNDVI_Mean goes away when NDSI_Mean is added to model
 # likely due to their high correlation (r = 0.93). Let's remove terms with NDSI_Mean
 # to see if winterNDVI_Mean comes back. It does.
-print(elasticNet_withMainEffects_noNDSI)
+print(elasticNet_withMainEffects_withNDSI)
 
 # High correlation between winterNDVI_Mean and NDSI_Mean suggests these effects can't be teased apart
-# Re-run model selection to see if NDSI_Mean replaces main effect of winterNDVI_Mean. It does.
-print(elasticNet_noWinterNDVIMean_summary)
+# NDSI_Mean replaces winterNDVI_Mean as significant main effect when winterNDVI_Mean is excluded
+print(predClines_elasticNet_withNDSI_summary)
 
 ####################################################
 #### STEP 5: SUPPLEMENTARY TABLES SNAD DATASETS ####

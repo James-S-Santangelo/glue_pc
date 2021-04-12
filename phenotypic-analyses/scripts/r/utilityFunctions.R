@@ -1041,8 +1041,7 @@ pick.extreme.values <- function(Predicted.Values,Original.Values,number.extreme.
     RuralExtreme.OriginalData.dataFrame <- rbind(RuralExtreme.OriginalData.dataFrame,(RuralExtreme.original))
   } # cities
   # keep cities that have values for all variables, i.e., no NA for a particular variable within a city
-  keep.cities <- which(rowSums(is.na(UrbanExtreme.predicted.dataFrame)) > 0)
-  print(keep.cities)
+  keep.cities <- which(rowSums(is.na(UrbanExtreme.predicted.dataFrame)) == 0)
   UrbanExtreme.predicted.dataFrame <- as.matrix(UrbanExtreme.predicted.dataFrame[keep.cities,])
   RuralExtreme.predicted.dataFrame <- as.matrix(RuralExtreme.predicted.dataFrame[keep.cities,])
   UrbanExtreme.OriginalData.dataFrame <- as.matrix(UrbanExtreme.OriginalData.dataFrame[keep.cities,])
