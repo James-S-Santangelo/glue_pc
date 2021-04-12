@@ -181,6 +181,7 @@ filter_environmental_data <- function(df, variable, outpath){
   # Edge case for Newhaven.
   if(city_name == "New_Haven"){
     city_name <- "Newhaven"
+    df <- df %>% mutate(city = fct_recode(city, 'Newhaven' = 'New_Haven'))
   }
   
   # Retrieve last 2 columns (environmental data)
@@ -1040,16 +1041,16 @@ pick.extreme.values <- function(Predicted.Values,Original.Values,number.extreme.
     RuralExtreme.OriginalData.dataFrame <- rbind(RuralExtreme.OriginalData.dataFrame,(RuralExtreme.original))
   } # cities
   # keep cities that have values for all variables, i.e., no NA for a particular variable within a city
-  # keep.cities <- which(rowSums(is.na(UrbanExtreme.predicted.dataFrame)) == 0)
-  # print(keep.cities)
-  # UrbanExtreme.predicted.dataFrame <- as.matrix(UrbanExtreme.predicted.dataFrame[keep.cities,])
-  # RuralExtreme.predicted.dataFrame <- as.matrix(RuralExtreme.predicted.dataFrame[keep.cities,])
-  # UrbanExtreme.OriginalData.dataFrame <- as.matrix(UrbanExtreme.OriginalData.dataFrame[keep.cities,])
-  # RuralExtreme.OriginalData.dataFrame <- as.matrix(RuralExtreme.OriginalData.dataFrame[keep.cities,])
-  # 
-  # city.names <- rep(city.names,each=number.extreme.sites)
-  # city.names <- city.names[keep.cities]
-  
+  keep.cities <- which(rowSums(is.na(UrbanExtreme.predicted.dataFrame)) > 0)
+  print(keep.cities)
+  UrbanExtreme.predicted.dataFrame <- as.matrix(UrbanExtreme.predicted.dataFrame[keep.cities,])
+  RuralExtreme.predicted.dataFrame <- as.matrix(RuralExtreme.predicted.dataFrame[keep.cities,])
+  UrbanExtreme.OriginalData.dataFrame <- as.matrix(UrbanExtreme.OriginalData.dataFrame[keep.cities,])
+  RuralExtreme.OriginalData.dataFrame <- as.matrix(RuralExtreme.OriginalData.dataFrame[keep.cities,])
+
+  city.names <- rep(city.names,each=number.extreme.sites)
+  city.names <- city.names[keep.cities]
+
   result <- list(city.names=city.names,UrbanPredExtremes = UrbanExtreme.predicted.dataFrame,RuralPredExtremes = RuralExtreme.predicted.dataFrame,UrbanExtremes = UrbanExtreme.OriginalData.dataFrame,RuralExtremes = RuralExtreme.OriginalData.dataFrame)
   return(result)
 }
