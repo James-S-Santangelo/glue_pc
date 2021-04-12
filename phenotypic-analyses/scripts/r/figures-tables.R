@@ -304,58 +304,61 @@ ggsave(filename = "analysis/figures/manuscript-panels/figure-3/figure3B_clineByC
 ### Figure 3C
 
 # Define low, mean, and high AI categories
-AIhigh <- round(mean(model_df_withMainEffects$annualAI_Mean) + sd(model_df_withMainEffects$annualAI_Mean), 1)
-AImean <- round(mean(model_df_withMainEffects$annualAI_Mean), 1)
-AIlow <- round(mean(model_df_withMainEffects$annualAI_Mean) - sd(model_df_withMainEffects$annualAI_Mean), 1)
+LSThigh <- round(mean(model_df_withMainEffects$summerLST_Mean) + sd(model_df_withMainEffects$summerLST_Mean), 1)
+LSTmean <- round(mean(model_df_withMainEffects$summerLST_Mean), 1)
+LSTlow <- round(mean(model_df_withMainEffects$summerLST_Mean) - sd(model_df_withMainEffects$summerLST_Mean), 1)
 
 # Get dataframe with predicted lines from Elastic Net model for effects of winterNDVI_Slope on HCN slopes for each of 
-# 3 levels AI_Mean
+# 3 levels summerLST_Mean
 range(model_df_withMainEffects$winterNDVI_Slope) # Used to parameterize x-axis range in list below. 
-AI_wNDVI_list <- list(winterNDVI_Slope = seq(from = -2, to = 3, by = 0.1), annualAI_Mean = c(AIlow, AImean, AIhigh))
-AI_wNDVI_df <- emmip(predClines_elasticNet_withMainEffects, annualAI_Mean~winterNDVI_Slope, at = AI_wNDVI_list, CIs=TRUE, plotit=FALSE)
+LST_wNDVI_list <- list(winterNDVI_Slope = seq(from = -2, to = 3, by = 0.1), summerLST_Mean = c(LSTlow, LSTmean, LSThigh))
+LST_wNDVI_df <- emmip(predClines_elasticNet_withMainEffects, summerLST_Mean~winterNDVI_Slope, at = LST_wNDVI_list, CIs=TRUE, plotit=FALSE)
 
 # Color palette
-AIlow_col = wes_palette("Zissou1", 5, type = "discrete")[5]
-AImean_col = wes_palette("Zissou1", 5, type = "discrete")[3]
-AIhigh_col = wes_palette("Zissou1", 5, type = "discrete")[1]
-cols = c(AIlow_col, AImean_col, AIhigh_col)
+LSTlow_col = wes_palette("Zissou1", 5, type = "discrete")[5]
+LSTmean_col = wes_palette("Zissou1", 5, type = "discrete")[3]
+LSThigh_col = wes_palette("Zissou1", 5, type = "discrete")[1]
+cols = c(LSTlow_col, LSThigh_col)
 
 
 # Dataframe with clines slopes, significance, winterNDVI_Slope, and annualAI_Mean
 # Remove cities that were not included in model due to missing environmental data
 cities_analysed <- results_statsMatrices$city
-df_wNDVIslope_AImean <- read_csv("analysis/supplementary-tables/allCities_HCNslopes_enviroMeansSlopes.csv") %>% 
+df_wNDVIslope_LSTmean <- read_csv("analysis/supplementary-tables/allCities_HCNslopes_enviroMeansSlopes.csv") %>% 
   filter(city %in% cities_analysed) %>% 
-  dplyr::select(city, betaRLM_freqHCN, sigRLM, Mean_annualAI, betaRLM_winterNDVI) %>% 
-  mutate_at(vars(Mean_annualAI, betaRLM_winterNDVI), .funs = funs(scale)) %>% 
-  mutate(fannualAI_Mean = case_when(Mean_annualAI <= AIlow ~ '-1',
-                            Mean_annualAI >= AIhigh ~ '1',
-                            TRUE ~ '0')) %>% 
-  mutate(AI_cat = case_when(fannualAI_Mean == '-1' ~ 'low',
-                            fannualAI_Mean == '1' ~ 'high',
-                            TRUE ~ 'mean'))
+  dplyr::select(city, betaRLM_freqHCN, sigRLM, Mean_summerLST, betaRLM_winterNDVI) %>% 
+  mutate_at(vars(Mean_summerLST, betaRLM_winterNDVI), .funs = funs(scale)) %>% 
+  mutate(fsummerLST_Mean = case_when(Mean_summerLST <= LSTlow ~ '-1',
+                                     Mean_summerLST >= LSThigh ~ '1',
+                                     TRUE ~ '0')) %>% 
+  mutate(LST_cat = case_when(fsummerLST_Mean == '-1' ~ 'low',
+                             fsummerLST_Mean == '1' ~ 'high',
+                             TRUE ~ 'mean'))
 
-AI_wNDVI_df$fannualAI_Mean <- factor(AI_wNDVI_df$annualAI_Mean)
+LST_wNDVI_df$fsummerLST_Mean <- factor(LST_wNDVI_df$summerLST_Mean)
 # levels(AI_wNDVI_df) <- c("low (-1 sd)","mean (0)","high (+1 sd)")
-AI_wNDVI_plot <- ggplot(data = AI_wNDVI_df, aes(x = winterNDVI_Slope, y = yvar)) + 
+LST_wNDVI_plot <- LST_wNDVI_df %>% 
+  filter(fsummerLST_Mean != '0') %>% 
+  ggplot(., aes(x = winterNDVI_Slope, y = yvar)) + 
   # geom_point(data = df_wNDVIslope_AImean %>% filter(sigRLM == 'Yes'), 
   #            aes(x = betaRLM_winterNDVI, y = betaRLM_freqHCN, color = fannualAI_Mean), 
   #            size = 3, shape = 17) +
   # geom_point(data = df_wNDVIslope_AImean %>% filter(sigRLM == 'No'), 
   #            aes(x = betaRLM_winterNDVI, y = betaRLM_freqHCN), 
   #            size = 1.5, shape = 19, alpha = 0.2) + 
-  geom_ribbon(aes(ymin = LCL, ymax = UCL, fill = fannualAI_Mean), alpha = 0.25) +
-  geom_line(aes(color = fannualAI_Mean), size = 2) +
+  geom_ribbon(aes(ymin = LCL, ymax = UCL, fill = fsummerLST_Mean), alpha = 0.25) +
+  geom_line(aes(color = fsummerLST_Mean), size = 2) +
   ylab("Predicted HCN slope") + xlab("Slope of winter NDVI") +
   # scale_alpha_discrete(range = c(0.5, 1.0), name = "Significant", labels = c('NS', 'Yes')) + 
   # scale_shape_discrete(name = "Significant", labels = c('NS', 'Yes')) + 
-  scale_color_manual(values = cols, name = "Annual AI", labels = c("low (-1 sd)","mean (0)","high (+1 sd)")) +
+  scale_color_manual(values = rev(cols), name = "Mean summer LST", labels = c("low (-1 sd)","high (+1 sd)")) +
+  scale_fill_manual(values = rev(cols), name = "Mean summer LST", labels = c("low (-1 sd)","high (+1 sd)")) +
   scale_y_continuous(breaks = seq(from = -0.4, to = 1.0, by = 0.2)) +
   # geom_point() +
   ng1 + theme(legend.position = 'right')
-AI_wNDVI_plot
+LST_wNDVI_plot
 
-write_csv(df_wNDVIslope_AImean, 'analysis/supplementary-tables/HCNslope_by_wNDVIslope_by_AImean.csv')
+write_csv(df_wNDVIslope_LSTmean, 'analysis/supplementary-tables/HCNslope_by_wNDVIslope_by_summerLSTmean.csv')
 ggsave(filename = "analysis/figures/manuscript-panels/figure-3/figure3C_HCNslope_by_wNDVIslope_by_AImean_CIs.pdf", plot = AI_wNDVI_plot,
        device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
 
