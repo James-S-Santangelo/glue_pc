@@ -189,6 +189,31 @@ def get_habitat_saf_files_byCity(wildcards):
     city_saf_files = [x for x in all_saf_files if wildcards.city in x and wildcards.site in x]
     return city_saf_files
 
+def get_toronto_bam_pi_fst_test(wildcards):
+    bam = glob.glob('{0}/{1}_*.bam'.format(TOR_BAMS, wildcards.tor_test_sample))
+    return bam
 
+def toronto_pi_fst_test_saf_input(wildcards):
+    if wildcards.group == 'highCov':
+        bams = rules.urban_rural_toronto_bam_lists.output
+    elif wildcards.group == 'lowCov':
+        bams = rules.urban_rural_toronto_downsampled_bam_lists.output
+    sites = expand(rules.split_angsd_sites_byChrom.output, chrom=CHROMOSOMES, site=['0fold', '4fold'])
+    sites = [x for x in sites if 'CM019101.1' in x and '4fold' in x]
+    sites_idx = expand(rules.angsd_index_degenerate.output.idx, chrom=CHROMOSOMES, site=['0fold', '4fold'])
+    sites_idx = [x for x in sites if 'CM019101.1' in x and '4fold' in x]
+    return {'bams' : bams, 'sites' : sites, 'sites_idx' : sites_idx}
 
+def get_saf_joint_sfs_pi_fst_test(wildcards):
+    if wildcards.group == 'highCov':
+        out = expand(rules.angsd_saf_likelihood_toronto_pi_fst_test.output.saf_idx, group = 'highCov', habitat = ['urban', 'rural'], ss = '7')
+    elif wildcards.group == 'lowCov':
+        all_safs = expand(rules.angsd_saf_likelihood_toronto_pi_fst_test.output.saf_idx, group = 'lowCov', habitat = ['urban', 'rural'], ss = SS_PI_FST_TEST)
+        sample_sizes = wildcards.joint_sfs_ss
+        urban_ss = int(sample_sizes.split('_')[0][1])
+        rural_ss = int(sample_sizes.split('_')[1][1])
+        urban_saf = expand(rules.angsd_saf_likelihood_toronto_pi_fst_test.output.saf_idx, group = 'lowCov', habitat = 'urban', ss = urban_ss)
+        rural_saf = expand(rules.angsd_saf_likelihood_toronto_pi_fst_test.output.saf_idx, group = 'lowCov', habitat = 'rural', ss = rural_ss)
+        out = urban_saf + rural_saf
+    return out
 
