@@ -7,11 +7,9 @@
 exclude <- c("Swansea", "Bucaramanga", "Santa_Marta")
 
 # Get city centres
+inpath <- 'data/clean/popMeans_allCities_withEnviro/'
 allPopMeans <- do.call(rbind, create_df_list(inpath))
-city_centres <- allPopMeans %>% 
-  dplyr::select(continent, country, city, latitude_city, longitude_city, population) %>% 
-  filter(!(city %in% exclude)) %>% 
-  distinct()
+city_centres <- read_csv("data/clean/latLong_cityCenters_clean.csv")
 
 # Get city stats
 city_stats <- read_csv("data/raw/city_data/City_Metrics.csv") %>% 
@@ -25,34 +23,24 @@ city_stats <- read_csv("data/raw/city_data/City_Metrics.csv") %>%
   filter(!(city %in% exclude))
 
 # Cline summary
-cline_summary <- read_csv("analysis/supplementary-tables/allCities_HCNslopes_enviroMeansSlopes.csv") %>% 
-  dplyr::select(city, betaRLM_freqHCN, pvalRLM_freqHCN, sigRLM) %>% 
-  rename("slope_rlm" = "betaRLM_freqHCN",
-         "pval_rlm" = "pvalRLM_freqHCN",
-         "significant_rlm" = "sigRLM") %>% 
-  mutate(slope_rlm = round(slope_rlm, 3)) %>% 
-  filter(!(city %in% exclude)) %>% 
-  distinct()
+cline_summary <- allPopMeans %>% group_split(city) %>% 
+  purrr::map_dfr(., rlmStats, "freqHCN") %>% 
+  pivot_wider(names_from = var, values_from = c(betaRLM, pvalRLM)) %>% 
+  mutate(city = replace(city, city == "New_Haven", "Newhaven")) %>% 
+  mutate(sigRLM = ifelse(pvalRLM_freqHCN < 0.05, "Yes", "No"))
 
 # Number of pops and plants. Enviro variables and HCN
-enviro_data <- allPopMeans %>% 
-  dplyr::select(city, population, total_plants, distance, freqHCN, matches("*Mean$")) %>% 
+more_city_vars <- allPopMeans %>% 
+  dplyr::select(city, population, total_plants, distance, freqHCN) %>% 
   dplyr::group_by(city) %>% 
-  mutate(num_populations = n(),
-         total_num_plants = sum(total_plants),
-         transect_length = round(max(distance) - min(distance), 2),
-         ID = paste(city, population, sep = "_")) %>% 
-  filter(!(city %in% exclude)) %>% 
-  ungroup() %>% 
-  
-  # Below required to remove duplicated rows originating from dataset typos to be fixed
-  group_by(city, population) %>% 
-  filter(!(n() > 1 & total_plants <= 6)) %>% 
-  ungroup() %>% 
-  distinct(ID, .keep_all = TRUE)
+  mutate(total_plants = ifelse(is.na(total_plants), 20, total_plants)) %>% 
+  summarise(num_populations = n(),
+            total_num_plants = sum(total_plants),
+            transect_length = round(max(distance) - min(distance), 2),
+            meanHCN = mean(freqHCN, na.rm = TRUE))
 
 # Collectors
-collectors <- read_csv("data/raw/GLUE_ Team names and affiliations (Responses) - Form Responses 1.csv") %>% 
+collectors <- read_csv("data/raw/GLUE_collaborators.csv") %>% 
   dplyr::select("City sampled", contains("name"), contains("initial")) %>% 
   rename("city" = "City sampled",
          "Member 1: Middle initial" = "Member 1: Middle initials",
@@ -83,15 +71,15 @@ collectors <- read_csv("data/raw/GLUE_ Team names and affiliations (Responses) -
 
 ## FINAL TABLE
 
-final_table <- city_centres %>% 
-  left_join(., city_stats, by = "city") %>% 
-  left_join(., cline_summary, by = "city") %>% 
-  left_join(., enviro_data, by = c("city", "population")) %>% 
+final_table <- cline_summary %>% 
+  left_join(., city_stats, by = "city") %>%
+  left_join(., city_centres, by = "city") %>%
+  left_join(., more_city_vars, by = "city") %>% 
   left_join(., collectors, by = "city") %>% 
-  dplyr::select(continent:longitude_city, sampled_by, 
-                human_population_size:significant_rlm, freqHCN,
-                num_populations:transect_length,
-                population, total_plants, contains("Mean")) %>% 
-  mutate_at(vars(freqHCN, density, annualAI_Mean, GMIS_Mean:winterNDVI_Mean), round, 3)
+  dplyr::select(continent, Country, city, latitude_city, longitude_city,
+                area, human_population_size, density, age, num_populations, 
+                total_num_plants, transect_length, betaRLM_freqHCN, 
+                sigRLM, meanHCN, sampled_by) %>% 
+  mutate_if(is.numeric, round, 3)
 
-write_csv(final_table, path = "analysis/supplementary-tables/globalTable_allInfo_allCities_allPops.csv")
+write_csv(final_table, path = "analysis/supplementary-tables/allCities_stats.csv")
