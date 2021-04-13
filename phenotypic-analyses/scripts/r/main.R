@@ -112,7 +112,7 @@ source("scripts/r/data-processing/popMeans_addEnviroData.R")
 # Does urbanization lead to convergent environmental change in cities throughout the world? (Question 1)
 
 # Note: Permutations in this script will take a while to run
-n_perm = 100  # Number of permutations testing for urban/rural difference in mean multivariate environments
+n_perm = 1  # Number of permutations testing for urban/rural difference in mean multivariate environments
 source("scripts/r/analyses/enviroAnalyses.R")
 
 # Summary of urban/rural multivariate environment PCA

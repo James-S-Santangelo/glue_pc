@@ -24,22 +24,6 @@ ng1 <- theme(aspect.ratio=0.7,panel.background = element_blank(),
           legend.text=element_text(size=17), legend.key = element_rect(fill = "white"),
           legend.title = element_text(size=17),legend.key.size = unit(1.0, "cm"))
 
-# Create dataframe with population-mean HCN and environmental variables for every city
-inpath <- "data/clean/popMeans_allCities_withEnviro/"
-csv.files <- list.files(path = inpath, pattern="*.csv")
-df_all_popMeans <- c()
-for (i in 1:length(csv.files)){
-  data <- read.csv(paste0(inpath, csv.files[i])) %>% dplyr::select(city, 
-                                                                   std_distance, 
-                                                                   freqHCN, 
-                                                                   matches("*Mean$"))
-  df_all_popMeans <- rbind(df_all_popMeans, data)
-}
-
-# St Albert removed from Elastic Net due to being outlier
-df_all_popMeans_excluded <- df_all_popMeans %>% 
-  dplyr::filter(!(city %in% c("St_Albert")))
-
 ##################
 #### FIGURE 1 ####
 ##################
@@ -52,31 +36,6 @@ df_all_popMeans_excluded <- df_all_popMeans %>%
 
 ### Figure 2A
 
-## Ordination of how urban and rural habitats within cities cluster in space
-
-# Urban and rural predicted and original values
-result.pred <- generate.pred.values(all.data = df_all_popMeans, permute=FALSE)
-
-# Predicted values
-Predicted.Values <- result.pred$Predicted.Values
-Original.Values <- result.pred$Original.Values
-
-# Extreme values of urban and rural environmental variables from predicted dataset
-# Need to remove HCN from extreme values dataframes since we only care about environmental variables here.
-ExtreValues <- pick.extreme.values(Predicted.Values, Original.Values, number.extreme.sites = 1)
-UrbanPredExtremes <- ExtreValues$UrbanPredExtremes %>% as.data.frame() %>% dplyr::select(-freqHCN) %>% as.matrix()
-RuralPredExtremes <- ExtreValues$RuralPredExtremes %>% as.data.frame() %>% dplyr::select(-freqHCN) %>% as.matrix()
-
-# Vector of city names
-city.names <- c(rep(as.character(ExtreValues$city.names), 2))
-n.cities <- length(city.names) / 2
-habitat <- c(rep("Urban", n.cities), rep("Rural", n.cities))
-
-# PCA of urban and rural extreme environmental variables
-enviroPCA <- PCA(rbind(UrbanPredExtremes,RuralPredExtremes), scale.unit = TRUE, graph = FALSE)
-
-enviroPCA <- rda(rbind(UrbanPredExtremes, RuralPredExtremes), 
-                 scale = TRUE, na.action = "na.omit")
 eig <- enviroPCA$CA$eig
 percent_var <- eig * 100 / sum(eig)
 PC1_varEx <- round(percent_var[1], 1)  # Percent variance explained by PC1
@@ -87,7 +46,7 @@ enviroPCA_sites  <- scores(enviroPCA, display = 'sites', choices = c(1, 2), scal
   as.data.frame() %>% 
   dplyr::select(PC1, PC2) %>% 
   mutate(habitat = habitat,
-         city = city.names)
+         city = rep(city_names, 2))
 
 # Colors for PCA biplot
 pal <- wes_palette('Darjeeling1', 5, type = 'discrete')
@@ -164,17 +123,11 @@ ggsave(filename = "analysis/figures/manuscript-panels/figure-2/figure2B_enviroPC
 
 ### Figure 2C
 
-# PCA of urban vs rural multivariate dispersion
-
-res.dist <- mult.dispersion(all.data = df_all_popMeans_excluded,number.extreme.sites=5)
-multi_disp <- multi.disp.analysis(res.dist,plot.disp=TRUE)
-
 # Extract PCA object from multi-dispersion analysis
 # PCA is performed on the mean multivariate environmental dispersion among urban and rural pops across all cities
-enviroVariancePCA <- multi_disp$pca_stand
+enviroVariancePCA <- enviroVariance$pca_stand
 PC1_enviroVariance_varEx <- round(enviroVariancePCA$eig[1, 2], 1)  # Percent variance explained by PC1
 PC2_enviroVariance_varEx <- round(enviroVariancePCA$eig[2, 2], 1)  # Percent variance explained by PC2
-
 
 enviroVariancePCA_sites  <- data.frame(enviroVariancePCA$ind$coord) %>%
   dplyr::select(Dim.1, Dim.2) %>% 
