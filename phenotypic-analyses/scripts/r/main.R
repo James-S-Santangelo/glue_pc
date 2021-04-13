@@ -207,6 +207,24 @@ source("scripts/r/supplementary-tables/generate_enviroMeansSlopes.R")
 ## Step 5.3: Table with city stats, collaborators, HCN slopes
 source("scripts/r/supplementary-tables/generate_allCities_stats.R")
 
-## Step 5.4 Main text figures and tables
+## Step 5.4: Main text figures and tables
 ## Note: This script uses objects generated in previous scripts
 source("scripts/r/figures-tables/main_text_figures_tables.R")
+
+## Step 5.5: Descriptive statistics (e.g., total number of plant, populations, etc.)
+source('scripts/r/descriptive_stats.R')
+
+# Mean number of populations per city
+print(mean_populations)
+
+# Mean number of plants per population
+print(mean_plants_per_pop)
+
+# Percent significant clines. First-order only
+print(percent_sig_clines_linOnly)
+
+# Percent significant clines. Including quadratic fits
+print(percent_sig_clines_withQuad)
+
+# Percent significant clines by direction. First-order only
+print(percent_sig_clines_byDirection)

@@ -2,16 +2,9 @@
 #
 # Author: James S. Santangelo
 
-# Load required packages
-library(tidyverse)
-
-# Import global table with descriptive stats per city
-# Will be provided as supplementary table
-globalTable <- read_csv("analysis/supplementary-tables/globalTable_allInfo_allCities_allPops.csv") %>% 
-  mutate(total_plants = if_else(is.na(total_plants), 20, total_plants)) # Assume 20 plants for Marc's cities
-
 # Mean number of plants per population with standard errors
-globalTable %>% 
+mean_plants_per_pop <- allPopMeans %>% 
+  mutate(total_plants = if_else(is.na(total_plants), 20, total_plants)) %>% 
   summarise(mean = mean(total_plants),
             total_pops = n(),
             se = mean / sqrt(total_pops),
@@ -19,7 +12,7 @@ globalTable %>%
             max = max(total_plants))
 
 # Mean number of populations per city
-globalTable %>% 
+mean_populations <- allPopMeans %>% 
   group_by(city) %>% 
   summarise(num_pops = n()) %>% 
   ungroup() %>% 
@@ -28,27 +21,35 @@ globalTable %>%
             se = mean_pops / sqrt(num_cities))
 
 # Total number of plants
-num_plants <- globalTable %>% 
+num_plants <- allPopMeans %>% 
+  mutate(total_plants = if_else(is.na(total_plants), 20, total_plants)) %>% 
   summarise(num_plants = sum(total_plants)) %>% pull()
 
 # Total number of populations
 # Each row in global table is a population
-num_populations <- globalTable %>% nrow()
-
-# Import dataset with slopes and environmental data for each city
-allCities_slopes <- read_csv("analysis/supplementary-tables/allCities_HCNslopes_enviroMeansSlopes.csv")
+num_populations <- allPopMeans %>% nrow()
 
 # Total number of cities
-num_cities <- allCities_slopes %>% nrow()
+num_cities <- final_table %>% nrow()
 
 # Percent significant clines
-allCities_slopes %>% 
+percent_sig_clines_linOnly <- final_table %>% 
   group_by(sigRLM) %>% 
   summarise(count = n(),
             percent = (count / num_cities) * 100)
 
-# Percent clines by direction
-allCities_slopes %>% 
+# How does this change with quadratic clines?
+percent_sig_clines_withQuad <- linearClineTable_mod %>% 
+  mutate(sig = case_when(modelOrderBestFit == 'linear' & pvalLin < 0.05 ~ 'Yes',
+                         modelOrderBestFit == 'quadratic' & pvalLin < 0.05 & pvalQuad < 0.05 ~ 'Yes',
+                         TRUE ~ 'No')) %>% 
+  group_by(sig) %>% 
+  summarise(count = n(),
+            percent = (count / num_cities) * 100)
+
+# Percent clines by direction. Linear RLM only
+percent_sig_clines_byDirection <- final_table %>% 
+  mutate(direction = ifelse(betaRLM_freqHCN < 0, 'Negative', 'Positive')) %>% 
   group_by(direction, sigRLM) %>% 
   summarise(count = n(),
             percent = (count / num_cities) * 100)
