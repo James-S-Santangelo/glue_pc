@@ -1,13 +1,8 @@
-# Script to create figure panels and tables
+# Script to create main text figures and tables
 
+###############
 #### SETUP ####
-
-# Load required packages
-library(tidyverse)
-library(FactoMineR)
-library(wesanderson)
-library(broom)
-source("scripts/r/utilityFunctions.R")
+###############
 
 # Theme used for plotting
 ng1 <- theme(aspect.ratio=0.7,panel.background = element_blank(),
@@ -41,21 +36,26 @@ for (i in 1:length(csv.files)){
   df_all_popMeans <- rbind(df_all_popMeans, data)
 }
 
+# St Albert removed from Elastic Net due to being outlier
 df_all_popMeans_excluded <- df_all_popMeans %>% 
   dplyr::filter(!(city %in% c("St_Albert")))
 
+##################
 #### FIGURE 1 ####
+##################
 
 # Figure 1 is a map with insets that will be created in QGIS
 
+##################
 #### FIGURE 2 ####
+##################
 
 ### Figure 2A
 
 ## Ordination of how urban and rural habitats within cities cluster in space
 
 # Urban and rural predicted and original values
-result.pred <- generate.pred.values(all.data = df_all_popMeans_excluded, permute=FALSE)
+result.pred <- generate.pred.values(all.data = df_all_popMeans, permute=FALSE)
 
 # Predicted values
 Predicted.Values <- result.pred$Predicted.Values
@@ -75,25 +75,38 @@ habitat <- c(rep("Urban", n.cities), rep("Rural", n.cities))
 # PCA of urban and rural extreme environmental variables
 enviroPCA <- PCA(rbind(UrbanPredExtremes,RuralPredExtremes), scale.unit = TRUE, graph = FALSE)
 
-PC1_varEx <- round(enviroPCA$eig[1, 2], 1)  # Percent variance explained by PC1
-PC2_varEx <- round(enviroPCA$eig[2, 2], 1)  # Percent variance explained by PC2
+enviroPCA <- rda(rbind(UrbanPredExtremes, RuralPredExtremes), 
+                 scale = TRUE, na.action = "na.omit")
+eig <- enviroPCA$CA$eig
+percent_var <- eig * 100 / sum(eig)
+PC1_varEx <- round(percent_var[1], 1)  # Percent variance explained by PC1
+PC2_varEx <- round(percent_var[2], 1)  # Percent variance explained by PC2
 
-# Get coordinates of urban/rural populations by city. Add habitat and city column for groupping
-enviroPCA_sites  <- data.frame(enviroPCA$ind$coord) %>%
-  dplyr::select(Dim.1, Dim.2) %>% 
+# Get coordinates of urban/rural populations by city. Add habitat and city column for grouping
+enviroPCA_sites  <- scores(enviroPCA, display = 'sites', choices = c(1, 2), scaling = 1) %>%
+  as.data.frame() %>% 
+  dplyr::select(PC1, PC2) %>% 
   mutate(habitat = habitat,
          city = city.names)
 
+# Colors for PCA biplot
+pal <- wes_palette('Darjeeling1', 5, type = 'discrete')
+urban_col <- pal[4]
+rural_col <- pal[2]
+cols <- c(urban_col, rural_col)
+
 # Create PCA biplot. grouped by habitat
-enviroPCA_plot <- ggplot(enviroPCA_sites, aes(x = Dim.1, y = Dim.2)) + 
+enviroPCA_plot <- ggplot(enviroPCA_sites, aes(x = PC1, y = PC2)) + 
   geom_hline(yintercept = 0, linetype = "dotted") +
   geom_vline(xintercept = 0, linetype = "dotted") +
   geom_line(aes(group = city), alpha = 0.7) +
   geom_point(size = 2.75, shape = 21, colour = "black", aes(fill =  habitat)) +
   stat_ellipse(aes(colour = habitat), size = 1.5, level = 0.95) +
-  xlab(sprintf("PC1 (%.1f%%)", PC1_varEx)) + ylab(sprintf("PC1 (%.1f%%)", PC2_varEx)) +
-  scale_colour_manual(values = c("#00A08A", "#F98400")) +
-  scale_fill_manual(values = c("#00A08A", "#F98400")) +
+  xlab(sprintf("PC1 (%.1f%%)", PC1_varEx)) + ylab(sprintf("PC2 (%.1f%%)", PC2_varEx)) +
+  scale_colour_manual(values = rev(cols)) +
+  scale_fill_manual(values = rev(cols)) +
+  scale_x_continuous(breaks = seq(from = -0.6, to = 0.6, by = 0.2), labels = scales::comma) +
+  scale_y_continuous(breaks = seq(from = -0.45, to = 0.45, by = 0.15), labels = scales::comma) +
   ng1 + theme(legend.position = "top", 
               legend.direction="horizontal",
               legend.text = element_text(size=15), 
@@ -103,38 +116,39 @@ enviroPCA_plot <- ggplot(enviroPCA_sites, aes(x = Dim.1, y = Dim.2)) +
               legend.spacing.x = unit(0.1, "cm"))
 enviroPCA_plot
 
-ggsave(filename = "analysis/figures/manuscript-panels/figure-2/figure2A_enviroPCA_withHulls.pdf", plot = enviroPCA_plot,
-       device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
-ggsave(filename = "analysis/figures/manuscript-panels/figure-2/figure2A_enviroPCA_withLinesAndHulls.pdf", plot = enviroPCA_plot,
-       device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
+ggsave(filename = "analysis/figures/manuscript-panels/figure-2/figure2A_enviroPCA_withLinesAndHulls.pdf",
+       plot = enviroPCA_plot, device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
 
 
 ### Figure 2B
 
 ## Eigenvectors of how environmental factors are associated with urban/rural habitats
 
-# Extract RDA1 and PC1 species scores
-enviroPCA_vars  <- data.frame(enviroPCA$var$coord) %>% 
-  dplyr::select(Dim.1, Dim.2) %>% 
-  cbind(., enviroPCA$var$contrib %>% 
-          as.data.frame() %>% 
-          dplyr::select(Dim.1) %>% 
-          rename("contrib" = "Dim.1"))
+# Calculate contribution of each environmental variable to PC2
+# https://stackoverflow.com/questions/50177409/how-to-calculate-species-contribution-percentages-for-vegan-rda-cca-objects
+contrib <- round(100*scores(enviroPCA, display = "sp", scaling = 0)[,2]^2, 3)
 
+# Extract RDA1 and PC1 species scores and bind contributions
+enviroPCA_vars  <- scores(enviroPCA, display = 'species', choices = c(1, 2), scaling = 2) %>% 
+  as.data.frame() %>% 
+  rownames_to_column(., var = 'var') %>% 
+  mutate(contrib = contrib)
+
+# Plot
 pal <- wes_palette("Darjeeling1", 3, type = "continuous")
 enviroPCA_variableContrib <- ggplot() +
   geom_hline(yintercept = 0, linetype = "dotted") +
   geom_vline(xintercept = 0, linetype = "dotted") +
-  geom_segment(data = enviroPCA_vars, aes(x = 0, xend = Dim.1, y=0, yend = Dim.2, color = contrib), 
+  geom_segment(data = enviroPCA_vars, aes(x = 0, xend = PC1, y=0, yend = PC2, color = contrib), 
                size = 2, arrow = arrow(length = unit(0.02, "npc")), alpha = 1) +
   geom_text(data = enviroPCA_vars,
-            aes(x = Dim.1, y = Dim.2, label = rownames(enviroPCA_vars),
-                hjust = "inward", vjust =  0.5 * (1 - sign(Dim.1))),
+            aes(x = PC1, y = PC2, label = var,
+                hjust = "inward", vjust =  0.5 * (1 - sign(PC1))),
             color = "black", size = 3.5) + 
-  xlab(sprintf("PC1 (%.1f%%)", PC1_varEx)) + ylab(sprintf("PC1 (%.1f%%)", PC2_varEx)) +
+  xlab(sprintf("PC1 (%.1f%%)", PC1_varEx)) + ylab(sprintf("PC2 (%.1f%%)", PC2_varEx)) +
   scale_colour_gradientn(colours = rev(pal), breaks = seq(from = 5, to = 25, by = 5)) +
-  scale_x_continuous(breaks = seq(from = -1, to = 1, by = 0.25)) +
-  scale_y_continuous(breaks = seq(from = -1, to = 1, by = 0.25)) +
+  # scale_x_continuous(breaks = seq(from = -1, to = 1, by = 0.25)) +
+  # scale_y_continuous(breaks = seq(from = -1, to = 1, by = 0.25)) +
   ng1 + theme(legend.position = "top",
               legend.direction="horizontal",
               # legend.title = element_blank(),
@@ -144,12 +158,13 @@ enviroPCA_variableContrib <- ggplot() +
   guides(color = guide_colourbar(barwidth = 10, barheight = 0.5))
 enviroPCA_variableContrib
 
-ggsave(filename = "analysis/figures/manuscript-panels/figure-2/figure2B_enviroPCA_eigenvectorsOnly.pdf", plot = enviroPCA_variableContrib,
-       device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
-
-
+ggsave(filename = "analysis/figures/manuscript-panels/figure-2/figure2B_enviroPCA_eigenvectorsOnly.pdf", 
+       plot = enviroPCA_variableContrib, device = "pdf", width = 8, height = 8, units = "in", dpi = 600, 
+       useDingbats = FALSE)
 
 ### Figure 2C
+
+# PCA of urban vs rural multivariate dispersion
 
 res.dist <- mult.dispersion(all.data = df_all_popMeans_excluded,number.extreme.sites=5)
 multi_disp <- multi.disp.analysis(res.dist,plot.disp=TRUE)
@@ -159,6 +174,7 @@ multi_disp <- multi.disp.analysis(res.dist,plot.disp=TRUE)
 enviroVariancePCA <- multi_disp$pca_stand
 PC1_enviroVariance_varEx <- round(enviroVariancePCA$eig[1, 2], 1)  # Percent variance explained by PC1
 PC2_enviroVariance_varEx <- round(enviroVariancePCA$eig[2, 2], 1)  # Percent variance explained by PC2
+
 
 enviroVariancePCA_sites  <- data.frame(enviroVariancePCA$ind$coord) %>%
   dplyr::select(Dim.1, Dim.2) %>% 
@@ -175,8 +191,8 @@ enviroVariance_PCA_plot <- ggplot(enviroVariancePCA_sites, aes(x = Dim.1, y = Di
   xlab(sprintf("PC1 (%.1f%%)", PC1_enviroVariance_varEx)) + ylab(sprintf("PC1 (%.1f%%)", PC2_enviroVariance_varEx)) +
   scale_x_continuous(breaks = seq(from = -600, to = 1400, by = 400)) +
   scale_y_continuous(breaks = seq(from = -400, to = 800, by = 200)) +
-  scale_colour_manual(values = c("#00A08A", "#F98400")) +
-  scale_fill_manual(values = c("#00A08A", "#F98400")) +
+  scale_colour_manual(values = rev(cols)) +
+  scale_fill_manual(values = rev(cols)) +
   ng1 + theme(legend.position = "top", 
               legend.direction="horizontal",
               legend.text = element_text(size=15), 
@@ -186,10 +202,8 @@ enviroVariance_PCA_plot <- ggplot(enviroVariancePCA_sites, aes(x = Dim.1, y = Di
               legend.spacing.x = unit(0.1, "cm"))
 enviroVariance_PCA_plot
 
-ggsave(filename = "analysis/figures/manuscript-panels/figure-2/figure2C_enviroVariancePCA_withHulls.pdf", plot = enviroVariance_PCA_plot,
-       device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
-ggsave(filename = "analysis/figures/manuscript-panels/figure-2/figure2C_enviroVariancePCA_withLinesAndHulls.pdf", plot = enviroVariance_PCA_plot,
-       device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
+ggsave(filename = "analysis/figures/manuscript-panels/figure-2/figure2C_enviroVariancePCA_withLinesAndHulls.pdf", 
+       plot = enviroVariance_PCA_plot, device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
 
 
 ### Figure 2D
@@ -214,7 +228,7 @@ enviroVariancePCA_variableContrib <- ggplot() +
             aes(x = Dim.1, y = Dim.2, label = rownames(enviroVariancePCA_vars),
                 hjust = "inward", vjust =  0.5 * (1 - sign(Dim.1))),
             color = "black", size = 3.5) + 
-  xlab(sprintf("PC1 (%.1f%%)", PC1_enviroVariance_varEx)) + ylab(sprintf("PC1 (%.1f%%)", PC2_enviroVariance_varEx)) +
+  xlab(sprintf("PC1 (%.1f%%)", PC1_enviroVariance_varEx)) + ylab(sprintf("PC2 (%.1f%%)", PC2_enviroVariance_varEx)) +
   scale_colour_gradientn(colours = rev(pal), breaks = seq(from = 5, to = 25, by = 5)) +
   scale_x_continuous(breaks = seq(from = 0, to = 200, by = 50)) +
   scale_y_continuous(breaks = seq(from = -50, to = 100, by = 25)) +
@@ -227,8 +241,18 @@ enviroVariancePCA_variableContrib <- ggplot() +
   guides(color = guide_colourbar(barwidth = 10, barheight = 0.5))
 enviroVariancePCA_variableContrib
 
-ggsave(filename = "analysis/figures/manuscript-panels/figure-2/figure2D_enviroVariancePCA_eigenvectorsOnly.pdf", plot = enviroVariancePCA_variableContrib,
-       device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
+ggsave(filename = "analysis/figures/manuscript-panels/figure-2/figure2D_enviroVariancePCA_eigenvectorsOnly.pdf", 
+       plot = enviroVariancePCA_variableContrib, device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
+
+### Combine panels for figure 2
+figure2 <- enviroPCA_plot + enviroPCA_variableContrib + enviroVariance_PCA_plot + enviroVariancePCA_variableContrib +
+  plot_annotation(tag_levels = 'A') &
+  theme(plot.tag.position = c(0.05, 0.95),
+        plot.tag = element_text(size = 20))
+figure2
+
+ggsave(filename = "analysis/figures/manuscript-panels/figure-2/figure2.pdf", plot = figure2, 
+       device = "pdf", width = 16, height = 14, units = "in", dpi = 600, useDingbats = FALSE)
 
 #### FIGURE 3 ####
 

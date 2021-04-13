@@ -37,6 +37,7 @@ library(broom)
 library(emmeans)
 library(interactions)
 library(sandwich)
+library(patchwork)
 source("scripts/r/utilityFunctions.R")
 
 # Create directories
@@ -54,6 +55,8 @@ paths <- c("data/clean/environmental_data/annualAI",
            "analysis/figures/cline_biplots/",
            "analysis/figures/environmental_biplots/",
            "analysis/figures/manuscript-panels/",
+           "analysis/figures/manuscript-panels/figure-2/",
+           "analysis/figures/manuscript-panels/figure-3/",
            "analysis/supplementary-tables/")
 
 purrr::walk(paths, dir.create, recursive = T, showWarnings = T)
@@ -188,9 +191,15 @@ print(elasticNet_withMainEffects_withNDSI)
 # NDSI_Mean replaces winterNDVI_Mean as significant main effect when winterNDVI_Mean is excluded
 print(predClines_elasticNet_withNDSI_summary)
 
-####################################################
-#### STEP 5: SUPPLEMENTARY TABLES SNAD DATASETS ####
-####################################################
+#####################################
+#### STEP 5: FIGURES AND TABLES  ####
+#####################################
+
+## Step 5.1 Main text figures and tables
+## Note: This script is standalone and regenerates many of the objects
+##   used in the analysis scripts above
+source("scripts/r/figures-tables/main_text_figures_tables.R")
+
 
 ## Step 5.1: Table with best fit cline model summary for each city
 
