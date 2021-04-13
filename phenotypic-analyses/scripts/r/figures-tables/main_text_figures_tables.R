@@ -377,6 +377,62 @@ ggsave(filename = "analysis/figures/manuscript-panels/figure-3/figure3.pdf", plo
 #### FIGURE 4 ####
 ##################
 
+# Extracts columns from supplementary tables rather than regenerating
+df_wNDVImean_NDSI_HCNslope <- final_table %>% 
+  dplyr::select(city, betaRLM_freqHCN) %>% 
+  left_join(., cityEnviroMeans %>% dplyr::select(city, Mean_winterNDVI, Mean_NDSI),
+            by = 'city') %>% 
+  filter(!(is.na(Mean_winterNDVI))) %>%  # Remove 2 cities with missing values
+  filter(!(city == 'St_Albert'))  # St Albert not in Elastic Net due to outlier
+  
+### Figure 4A
+
+## HCN Slope vs winter NDVI mean
+
+HCNslope_by_winterNDVI <- ggplot(df_wNDVImean_NDSI_HCNslope, aes(x = Mean_winterNDVI, y = betaRLM_freqHCN)) +
+  geom_point(size = 3.5, color = 'black') +
+  geom_smooth(method = 'lm', se = TRUE, color = 'black', size = 1.5) +
+  xlab('Mean winter NDVI') + ylab('Slope of HCN cline') +
+  scale_x_continuous(breaks = seq(from = 0, to = 0.6, by = 0.1)) +
+  scale_y_continuous(breaks = seq(from = -0.4, to = 0.8, by = 0.2)) +
+  ng1
+HCNslope_by_winterNDVI
+
+ggsave(filename = "analysis/figures/manuscript-panels/figure-4/figure4A_HCNslope_wNDVImean.pdf", 
+       plot = HCNslope_by_winterNDVI, device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
+
+
+### Figure 4B
+
+## HCN Slope vs NDSI 
+
+HCNslope_by_NDSI <- ggplot(df_wNDVImean_NDSI_HCNslope, aes(x = Mean_NDSI, y = betaRLM_freqHCN)) +
+  geom_point(size = 3.5, color = 'black') +
+  geom_smooth(method = 'lm', se = TRUE, color = 'black', size = 1.5) +
+  xlab('Mean NDSI') + ylab('Slope of HCN cline') +
+  scale_x_continuous(breaks = seq(from = -0.5, to = 0.8, by = 0.2)) +
+  scale_y_continuous(breaks = seq(from = -0.4, to = 0.8, by = 0.2)) +
+  ng1
+HCNslope_by_NDSI
+
+ggsave(filename = "analysis/figures/manuscript-panels/figure-4/figure4B_HCNslope_NDSImean.pdf", 
+       plot = HCNslope_by_NDSI, device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
+
+# NDVI_by_NDSI <- ggplot(df_wNDVImean_NDSI_HCNslope, aes(x = Mean_NDSI, y = Mean_winterNDVI)) +
+#   geom_point(size = 3.5, color = 'black') +
+#   geom_smooth(method = 'lm', se = TRUE, color = 'black', size = 1.5) +
+#   xlab('Mean NDSI') + ylab('Mean winter NDVI') +
+#   scale_x_continuous(breaks = seq(from = -0.5, to = 0.8, by = 0.2)) +
+#   scale_y_continuous(breaks = seq(from = 0, to = 0.6, by = 0.1)) +
+#   ng1
+# NDVI_by_NDSI
+# 
+# ggsave(filename = "analysis/figures/manuscript-panels/figure-4/figure4B_HCNslope_wNDVImean.pdf", 
+#        plot = HCNslope_by_NDSI, device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
+
+
+### Figure 4C
+
 # Define low, mean, and high AI categories
 LSThigh <- round(mean(model_df_withMainEffects$summerLST_Mean) + sd(model_df_withMainEffects$summerLST_Mean), 1)
 LSTmean <- round(mean(model_df_withMainEffects$summerLST_Mean), 1)
@@ -407,8 +463,8 @@ LST_wNDVI_plot <- LST_wNDVI_df %>%
   ng1 + theme(legend.position = 'right')
 LST_wNDVI_plot
 
-ggsave(filename = "analysis/figures/manuscript-panels/figure-4/figure4.pdf", plot = LST_wNDVI_plot,
-       device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
+ggsave(filename = "analysis/figures/manuscript-panels/figure-4/figure4C_HCNslope_wNDVIslope_sLST.pdf", 
+       plot = LST_wNDVI_plot, device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
 
 
 

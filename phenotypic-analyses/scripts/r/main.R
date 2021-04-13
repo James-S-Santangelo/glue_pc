@@ -197,11 +197,7 @@ print(predClines_elasticNet_withNDSI_summary)
 #### STEP 5: FIGURES AND TABLES  ####
 #####################################
 
-## Step 5.1 Main text figures and tables
-## Note: This script uses objects generated in above analysis scripts
-source("scripts/r/figures-tables/main_text_figures_tables.R")
-
-## Step 5.2: Table with best fit cline model summary for each city
+## Step 5.1: Table with best fit cline model summary for each city
 source("scripts/r/supplementary-tables/generate_allCities_bestFitModel_clineSummary.R")
 
 ## Step 5.2: Table with Means and Robust regression stats for all environmental variables in each city
@@ -209,3 +205,7 @@ source("scripts/r/supplementary-tables/generate_enviroMeansSlopes.R")
 
 ## Step 5.3: Table with city stats, collaborators, HCN slopes
 source("scripts/r/supplementary-tables/generate_allCities_stats.R")
+
+## Step 5.4 Main text figures and tables
+## Note: This script uses objects generated in previous scripts
+source("scripts/r/figures-tables/main_text_figures_tables.R")
