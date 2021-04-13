@@ -87,7 +87,7 @@ load_raster <- function(country_code, city, inpath){
 #' @param outpath Path to which dataframe with GMIS values should be written
 #' @param buffer Radius of buffer around population to include in calculation of GMIS
 #'     
-#' @return Country code as character vector
+#' @return None. Writes GMIS dataframe to disk
 extract_gmis <- function(df, inpath, outpath, buffer = 100){
 
   # Get city name
