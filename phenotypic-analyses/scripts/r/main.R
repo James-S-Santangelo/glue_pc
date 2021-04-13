@@ -58,6 +58,7 @@ paths <- c("data/clean/environmental_data/annualAI",
            "analysis/figures/manuscript-panels/figure-2/",
            "analysis/figures/manuscript-panels/figure-3/",
            "analysis/figures/manuscript-panels/figure-4/",
+           "analysis/figures/supplemental/",
            "analysis/supplementary-tables/")
 
 purrr::walk(paths, dir.create, recursive = T, showWarnings = T)
