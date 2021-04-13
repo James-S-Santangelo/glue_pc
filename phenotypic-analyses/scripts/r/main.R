@@ -12,6 +12,7 @@
 
 # Load required packages
 library(tidyverse)
+library(raster)
 library(sp)
 library(rworldmap)
 library(rworldxtra)
@@ -36,6 +37,7 @@ library(broom)
 library(emmeans)
 library(interactions)
 library(sandwich)
+library(patchwork)
 source("scripts/r/utilityFunctions.R")
 
 # Create directories
@@ -53,6 +55,10 @@ paths <- c("data/clean/environmental_data/annualAI",
            "analysis/figures/cline_biplots/",
            "analysis/figures/environmental_biplots/",
            "analysis/figures/manuscript-panels/",
+           "analysis/figures/manuscript-panels/figure-2/",
+           "analysis/figures/manuscript-panels/figure-3/",
+           "analysis/figures/manuscript-panels/figure-4/",
+           "analysis/figures/supplemental/",
            "analysis/supplementary-tables/")
 
 purrr::walk(paths, dir.create, recursive = T, showWarnings = T)
@@ -77,9 +83,15 @@ source("scripts/r/data-processing/generatePopMeans.R")
 ############################################
 
 # This step used a series of custom Python scripts to interface with ArcMap (v. 10.6.1)
-# and extract environmental data from Landsat 7/8 images and publically curated databases
-# (e.g., CGIAR, SEDAC) for each population sampled by collaborators. Scripts are not shown here.
-# These scripts were written by Alex Tong.
+# and extract environmental data from Landsat 7/8 images and publicly curated databases
+# (e.g., CGIAR) for each population sampled by collaborators. Scripts are not shown here.
+# These scripts were written by Alex Tong. The exception is Impervious surface (GMIS), which 
+# we extract using the script below. This requires GMIS raster datasets in a local directory (see script). 
+# Datasets can be downloaded from https://sedac.ciesin.columbia.edu/data/set/ulandsat-gmis-v1/data-download.
+# Accessed April 9, 2021
+
+# Uncomment to execute. Takes about an hour.
+# source('scripts/data-extraction/gmis_extraction.R')
 
 ######################################
 #### STEP 3: MORE DATA PROCESSING ####
@@ -93,7 +105,7 @@ source("scripts/r/data-processing/cleanEnviroData.R")
 
 source("scripts/r/data-processing/popMeans_addEnviroData.R")
 
-##########################
+ ##########################
 #### STEP 4: ANALYSES ####
 ##########################
 
@@ -101,7 +113,7 @@ source("scripts/r/data-processing/popMeans_addEnviroData.R")
 # Does urbanization lead to convergent environmental change in cities throughout the world? (Question 1)
 
 # Note: Permutations in this script will take a while to run
-n_perm = 100  # Number of permutations testing for urban/rural difference in mean multivariate environments
+n_perm = 1  # Number of permutations testing for urban/rural difference in mean multivariate environments
 source("scripts/r/analyses/enviroAnalyses.R")
 
 # Summary of urban/rural multivariate environment PCA
@@ -148,7 +160,6 @@ print(glueClineModel_randEffect_anova)
 ## Step 4.3: Predicting clines from environment
 # What environmental variables drive convergent evolution to cities on a global scale?
 
-set.seed(42)
 source("scripts/r/analyses/predictingClines.R")
 
 # Look at residual plots
@@ -156,7 +167,8 @@ source("scripts/r/analyses/predictingClines.R")
 plot(predClines_elasticNet)
 
 # Summary of final Elastiv Net model predicting HCN clines from environmetal data
-print(elasticNet_bestTune)  # Alpha and Lambda tuning parameters for Elastic Net. Alpha = 0.9 = Close to full LASSO
+# Alpha and Lambda tuning parameters for Elastic Net. Alpha = 1 = Full LASSO
+print(elasticNet_bestTune)  
 print(predClines_elasticNet_summary)
 
 # Anova of final Elastic Net model
@@ -176,28 +188,43 @@ print(sim_slopes)
 # Main effect of winterNDVI_Mean goes away when NDSI_Mean is added to model
 # likely due to their high correlation (r = 0.93). Let's remove terms with NDSI_Mean
 # to see if winterNDVI_Mean comes back. It does.
-print(elasticNet_withMainEffects_noNDSI)
+print(elasticNet_withMainEffects_withNDSI)
 
 # High correlation between winterNDVI_Mean and NDSI_Mean suggests these effects can't be teased apart
-# Re-run model selection to see if NDSI_Mean replaces main effect of winterNDVI_Mean. It does.
-print(elasticNet_noWinterNDVIMean_summary)
+# NDSI_Mean replaces winterNDVI_Mean as significant main effect when winterNDVI_Mean is excluded
+print(predClines_elasticNet_withNDSI_summary)
 
-####################################################
-#### STEP 5: SUPPLEMENTARY TABLES SNAD DATASETS ####
-####################################################
+#####################################
+#### STEP 5: FIGURES AND TABLES  ####
+#####################################
 
 ## Step 5.1: Table with best fit cline model summary for each city
-
 source("scripts/r/supplementary-tables/generate_allCities_bestFitModel_clineSummary.R")
 
 ## Step 5.2: Table with Means and Robust regression stats for all environmental variables in each city
-
 source("scripts/r/supplementary-tables/generate_enviroMeansSlopes.R")
 
-## Step 5.3: Table combining HCN model stats with environmental means and model stats
+## Step 5.3: Table with city stats, collaborators, HCN slopes
+source("scripts/r/supplementary-tables/generate_allCities_stats.R")
 
-source("scripts/r/supplementary-tables/generate_allCities_HCNslopes_enviroMeansSlopes.R")
+## Step 5.4: Main text figures and tables
+## Note: This script uses objects generated in previous scripts
+source("scripts/r/figures-tables/main_text_figures_tables.R")
 
-## Step 5.4: Table with all info (i.e., clines, environmental, collaborator) for all popuations in all cities
+## Step 5.5: Descriptive statistics (e.g., total number of plant, populations, etc.)
+source('scripts/r/descriptive_stats.R')
 
-source("scripts/r/supplementary-tables/generate_globalTable_allCities_allInfo_allPops.R")
+# Mean number of populations per city
+print(mean_populations)
+
+# Mean number of plants per population
+print(mean_plants_per_pop)
+
+# Percent significant clines. First-order only
+print(percent_sig_clines_linOnly)
+
+# Percent significant clines. Including quadratic fits
+print(percent_sig_clines_withQuad)
+
+# Percent significant clines by direction. First-order only
+print(percent_sig_clines_byDirection)

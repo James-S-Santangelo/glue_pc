@@ -90,6 +90,7 @@ predictors_withInteractions_reduced <- predictors_withInteractions %>%
 model_matrix <- cbind(HCNslopes, predictors_withInteractions_reduced)
 
 # Run Elastic Net model selection
+set.seed(1)
 elasticNet_model <- caret::train(
   y = model_matrix[,1], # HCNslopes
   x = model_matrix[,-1], # All predictores
@@ -128,95 +129,62 @@ predClines_elasticNet_anova <- Anova(predClines_elasticNet, type = 3)
 # Model is written out in full to facilitate plotting the interaction
 missing_main_effects <- predictors_withInteractions_reduced %>%
   as.data.frame() %>%
-  dplyr::select(annualPET_Slope, summerLST_Mean, summerNDVI_Mean,
-                DEM_Slope, NDSI_Mean, summerNDVI_Slope, annualAI_Mean,
-                winterNDVI_Slope)
+  dplyr::select(annualAI_Slope, annualPET_Slope,
+                summerLST_Mean, summerNDVI_Mean, summerNDVI_Slope,
+                annualAI_Mean, winterNDVI_Slope)
 model_df_withMainEffects = as.data.frame(cbind(HCNslopes, missing_main_effects, predictors_finalModel))
-predClines_elasticNet_withMainEffects <- lm(HCNslopes ~ distance_vector +
-                   NDSI_Mean +
+predClines_elasticNet_withMainEffects <- lm(HCNslopes ~
+                   DEM_Slope +
+                   winterNDVI_Mean +
+                   annualAI_Slope +
+                   annualPET_Slope +
                    summerLST_Mean +
                    summerNDVI_Mean +
-                   annualAI_Mean +
-                   annualPET_Slope +
-                   DEM_Slope +
                    summerNDVI_Slope +
+                   annualAI_Mean +
                    winterNDVI_Slope +
-                   GMIS_Slope +
-                   GMIS_Mean + winterNDVI_Mean +
+                   annualAI_Slope:winterNDVI_Mean +
                    annualPET_Slope:summerLST_Mean +
                    annualPET_Slope:summerNDVI_Mean +
-                   DEM_Slope:NDSI_Mean +
                    summerNDVI_Slope:annualAI_Mean +
-                   summerNDVI_Slope:summerLST_Mean +
                    winterNDVI_Slope:annualAI_Mean +
                    winterNDVI_Slope:summerLST_Mean,
                  data = model_df_withMainEffects)
 predClines_elasticNet_withMainEffects_summary <- summary(predClines_elasticNet_withMainEffects)
-predClines_elasticNet_withMainEffects_anova <- summary(predClines_elasticNet_withMainEffects)
+predClines_elasticNet_withMainEffects_anova <- Anova(predClines_elasticNet_withMainEffects, type = 3)
 
-# Simple slopes analysis for significant winterNDVI_Slope x annualAI_Mean interaction
-sim_slopes <- sim_slopes(predClines_elasticNet_withMainEffects, pred = winterNDVI_Slope, modx = annualAI_Mean)
+# Simple slopes analysis for significant winterNDVI_Slope x summerLST_Mean interaction
+sim_slopes <- sim_slopes(predClines_elasticNet_withMainEffects, pred = winterNDVI_Slope, modx = summerLST_Mean)
 
 #######################
 #### SANITY CHECKS ####
 #######################
 
-### Removing NDSI_Mean
+### Add NDSI_Mean
 
-## Main effect of winterNDVI_Mean goes away when NDSI_Mean is added to model
-## likely due to their high correlation (r = 0.93). Let's remove terms with NDSI_Mean
-## to see if winterNDVI_Mean comes back. It does.
+## Use model with all main effects in model
 
-model_df_withMainEffects_noNDSI <- model_df_withMainEffects %>%
-  dplyr::select(-contains('NDSI_Mean'))
+# Effect of winterNDVI_Mean goes away when NDSI is added to model
 
-elasticNet_withMainEffects_noNDSI <- lm(HCNslopes ~ ., data = model_df_withMainEffects_noNDSI[-1])
-elasticNet_withMainEffects_noNDSI <- summary(elasticNet_withMainEffects_noNDSI)
+model_df_withMainEffects_withNDSI <- model_df_withMainEffects %>%
+  bind_cols(., as.data.frame(predictors_withInteractions_reduced) %>% dplyr::select('NDSI_Mean')) %>% 
+  dplyr::select(HCNslope, NDSI_Mean, everything())
 
-### Removing winterNDVI_Mean
+elasticNet_withMainEffects_withNDSI <- lm(HCNslopes ~ ., data = model_df_withMainEffects_withNDSI[-1])
+elasticNet_withMainEffects_withNDSI <- summary(elasticNet_withMainEffects_withNDSI)
 
-## High correlation between winterNDVI_Mean and NDSI_Mean suggests these effects can't be teased apart
-## Re-run model selection to see if NDSI_Mean replaces main effect of winterNDVI_Mean. It does.
+## Replace winterNDVI_Mean with NDSI_Mean in ElasticNet model
 
-# Remove winterNDVI_Mean from predictor matrix
-predictors_withInteractions_reduced_noWinterNDVIMean <- predictors_withInteractions_reduced %>%
-  as.data.frame() %>%
-  dplyr::select(-contains('winterNDVI_Mean')) %>%
-  as.matrix()
-model_matrix_noWinterNDVIMean <- cbind(HCNslopes, predictors_withInteractions_reduced_noWinterNDVIMean)
+# NDSI_Mean replaces winterNDVI as significant main effect.
 
-# Run Elastic Net model selection
-elasticNet_model_noWinterNDVI_Mean <- caret::train(
-  y = model_matrix_noWinterNDVIMean[,1], # HCNslopes
-  x = model_matrix_noWinterNDVIMean[,-1], # All predictores
-  method = "glmnet",
-  metric = "RMSE",
-  trControl = trainControl("cv", number = 10, savePredictions = "all"),
-  tuneLength = 10
-)
-
-# Full list of results
-elasticNet_modelResults_noWinterNDVIMean <- data.frame(elasticNet_model_noWinterNDVI_Mean$results)
-
-# Best tuning parameter
-elasticNet_model_noWinterNDVI_Mean_bestTune <- elasticNet_model_noWinterNDVI_Mean$bestTune
-bestAlpha_noWinterNDVIMean <- elasticNet_model_noWinterNDVI_Mean_bestTune$alpha
-bestLambda_noWinterNDVIMean <- elasticNet_model_noWinterNDVI_Mean_bestTune$lambda
-
-# Final model
-EN_finalModel_noWinterNDVI <- elasticNet_model_noWinterNDVI_Mean$finalModel
-
-# Extract nonzero coefficients
-coef(EN_finalModel_noWinterNDVI, bestLambda_noWinterNDVIMean)
-predictors_nonZero_noWinterNDVIMean <- which(coef(EN_finalModel_noWinterNDVI, bestLambda_noWinterNDVIMean)!=0)
-predictors_nonZero_noWinterNDVIMean <- predictors_nonZero_noWinterNDVIMean[2:length(which(coef(EN_finalModel_noWinterNDVI, bestLambda_noWinterNDVIMean)!=0))]-1
-
-predictors_finalModel_noWinterNDVIMean <- predictors_withInteractions_reduced_noWinterNDVIMean[, predictors_nonZero_noWinterNDVIMean]
+predictors_finalModel_withNDSI <- as.data.frame(predictors_finalModel) %>% 
+  bind_cols(., as.data.frame(predictors_withInteractions_reduced) %>% dplyr::select('NDSI_Mean')) %>% 
+  dplyr::select(-winterNDVI_Mean) %>% 
+  dplyr::select(NDSI_Mean, everything())
 
 # Create data frame for model. Add back in main effects that are not in model
-model_df_noWinterNDVIMean = as.data.frame(cbind(HCNslopes, predictors_finalModel_noWinterNDVIMean))
+model_df_elasticNet_withNDSI = as.data.frame(cbind(HCNslopes, predictors_finalModel_withNDSI))
 
-# Run final model
-elasticNet_noWinterNDVIMean <- lm(HCNslopes ~ ., data = model_df_noWinterNDVIMean[-1])
-elasticNet_noWinterNDVIMean_summary <- summary(elasticNet_noWinterNDVIMean)
-elasticNet_noWinterNDVIMean_anova <- Anova(elasticNet_noWinterNDVIMean, type = 3)
+# Run final model 
+predClines_elasticNet_withNDSI <- lm(HCNslopes ~ ., data = model_df_elasticNet_withNDSI[-1])
+predClines_elasticNet_withNDSI_summary <- summary(predClines_elasticNet_withNDSI)

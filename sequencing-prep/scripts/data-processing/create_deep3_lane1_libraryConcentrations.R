@@ -1,25 +1,24 @@
-# Script to clean CSV with prepped libraries prior to calculating dilution volumes for pooling
+# Script to clean post-PCR library concentrations for the first lane of DEEP3 sequencing
+#
+# Author: James S. Santangelo
 
 # Read in data with library concentrations and other data
-prepped_library_df <- read_csv('resources/20210105_plantsToPrep_Low1_Low2_firstLanePrepped.csv') %>% 
+prepped_library_df <- read_csv('resources/20210411_plantsToPrep_deep3_low2_firstLanePrepped.csv') %>% 
   
   # Select relevant columns
   dplyr::select(continent, city, pop, individual, site, plantID, max_qubit, leftover, Bioruptor_label,
-         'Batch/lane', i5, i7, 'Date prepped', Notes, ends_with('(HS)')) %>% 
+         lane, i5, i7, 'Date prepped', Notes, contains('HS')) %>% 
   
   # Rename columns
-  rename('lane' = 'Batch/lane',
-         'date_prepped' = 'Date prepped',
-         'qubit1_hs' = 'Qubit1_ng/ul (HS)',
-         'qubit2_hs' = 'Qubit2_ng/ul(HS)',
-         'qubit3_hs' = 'Qubit3_ng/ul(HS)',
-         'qubit4_hs' = 'Qubit4_ng/ul(HS)') %>% 
+  rename('date_prepped' = 'Date prepped',
+         'qubit1_hs' = 'Qubit1_HS (ng/ul)',
+         'qubit2_hs' = 'Qubit2_HS (ng/ul)') %>% 
   
   # Include only lane 1
   filter(lane == 1) %>% 
   
   # Get max qubit for prepped libraries
-  mutate(max_library_qubit = pmax(qubit1_hs, qubit2_hs, qubit3_hs, qubit4_hs, na.rm = TRUE))
+  mutate(max_library_qubit = pmax(qubit1_hs, qubit2_hs, na.rm = TRUE))
 
 # Load in index sequences
 i5_indices <- read_csv('resources/illumina_sequencing/iTru5_forward-indices.csv') %>% 
@@ -41,9 +40,10 @@ prepped_library_df_mod <- prepped_library_df %>%
 prepped_library_df_mod %>% 
   mutate(primer_insex_seq_comb = paste0(i5_primer_index_seq, '_', i7_primer_index_seq)) %>% 
   dplyr::select(primer_insex_seq_comb) %>% 
-  duplicated()
+  duplicated() %>% 
+  sum()
 
-outpath <- 'data/clean/low1/'
-print(sprintf('LOW1 with library concentrations saved to %s', outpath))
-write_csv(prepped_library_df_mod, paste0(outpath, 'low1_libraryConcentrations.csv'),
+outpath <- 'data/clean/deep3/'
+print(sprintf('DEEP3 with library concentrations saved to %s', outpath))
+write_csv(prepped_library_df_mod, paste0(outpath, 'deep3_lane1_libraryConcentrations.csv'),
           col_names = TRUE)  

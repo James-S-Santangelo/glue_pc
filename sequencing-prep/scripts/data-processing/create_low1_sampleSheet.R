@@ -13,6 +13,5 @@ low1_sampleSheet <- read_csv('data/clean/low1/low1_libraryConcentrations.csv') %
   bind_rows(., tor_samples)
 
 outpath <- 'resources/'
-dir.create(outpath, showWarnings = FALSE)
 print(sprintf('LOW1 sample sheet save to %s', outpath))
 write_delim(low1_sampleSheet, paste0(outpath, 'low1_sampleSheet.txt'), delim = '\t')

@@ -24,11 +24,11 @@ cityEnviroMeans <- purrr::map_df(df_list, calculate_city_eviro_means) %>%
 envrio_Vars <- c("annualAI_Mean", "annualPET_Mean", "DEM_Mean", "GMIS_Mean", "summerLST_Mean", 
                  "summerNDVI_Mean", "winterLST_Mean", "winterNDVI_Mean", "NDSI_Mean")
 
-# # Cross environmental variable vector with population-mean dataframe list for mapping
+# Cross environmental variable vector with population-mean dataframe list for mapping
 df_forMapping <- crossing(df_list, envrio_Vars)
 
-# Map robust regression estimation actoss environmental variables for each city and 'spread'
-# resulting dataframe to get single row per city. 
+# Map robust regression estimation across environmental variables for each city and 'spread'
+#   resulting dataframe to get single row per city. 
 cityEnviroSlopesRLM <- purrr::map2_dfr(df_forMapping$df_list, df_forMapping$envrio_Vars, rlmStats) %>% 
   pivot_wider(names_from = var, values_from = c(betaRLM, pvalRLM)) %>% 
   rename_at(.vars = vars(ends_with("_Mean")),

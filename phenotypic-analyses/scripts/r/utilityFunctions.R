@@ -177,22 +177,30 @@ filter_environmental_data <- function(df, variable, outpath){
   
   # Get name of city being processed
   city_name <- df$city[1]
-  # print(city_name)
+
+  # Edge case for Newhaven.
+  if(city_name == "New_Haven"){
+    city_name <- "Newhaven"
+    df <- df %>% mutate(city = fct_recode(city, 'Newhaven' = 'New_Haven'))
+  }
   
-  # Retrieve last 2 columns (einvironmental data)
+  # Retrieve last 2 columns (environmental data)
   enviro_data_filtered <- df %>%
-    dplyr::select(city, population, tail(names(.), 2)) %>%
+    dplyr::select(city, population, tail(names(.), 1)) %>%
     
     # Rename variables
-    rename_at(vars(contains('AREA')), function(x) paste0(variable, "_", "Area")) %>%
     rename_at(vars(contains('MEAN')), function(x) paste0(variable, "_", "Mean")) %>%
     
     # Forward fill empty cells
-    fill(tail(names(.), 2), .direction = "down")
+    fill(tail(names(.), 1), .direction = "down")
   
   # Full path to which data frame will be written
   path <- paste0(outpath, city_name, "_", variable, ".csv")
   # print(path)
+  
+  if(file.exists(outpath)){
+    print(sprintf('%s data already exists for %s', variable, city_name))
+  }
   
   # Write dataframe
   write_csv(enviro_data_filtered, path = path, col_names = TRUE)
@@ -348,7 +356,7 @@ add_enviro_data <- function(df, outpath, err_file){
   enviro_datasets <- dir(inpath, recursive = TRUE, full.names = TRUE, 
                          pattern = paste0(city_name, "_"))
   df_list <- lapply(enviro_datasets, read_csv, col_types = cols())
-  # print(enviro_datasets)
+  
   
   cols <- c("annualAI_Mean", "annualPET_Mean", "DEM_Mean", "GMIS_Mean", "summerLST_Mean", 
             "summerNDVI_Mean", "winterLST_Mean", "winterNDVI_Mean", "NDSI_Mean")
@@ -359,11 +367,11 @@ add_enviro_data <- function(df, outpath, err_file){
     merged_enviro_data <- Reduce(function(...) left_join(...,
                                                          by = c("city", "population"),
                                                          all.x = TRUE), df_list) %>%
-      dplyr::select(city, population, ends_with("Mean")) %>% 
+      # dplyr::select(city, population, ends_with("Mean")) %>% 
       mutate(population = as.character(population))
     
     missing_cols <- setdiff(cols, names(merged_enviro_data)) 
-    # print(missing_cols)
+
     merged_enviro_data[missing_cols] <- NA
     
     if(length(missing_cols) > 0){
@@ -565,11 +573,12 @@ clineResults <- function(dataframe_list){
   # Initialize dataset that will hold model outputs
   modelOutputData <- data.frame(
     city = character(),
-    betaBestFit = numeric(),
-    pvalBestFit = numeric(),
-    rSquareBestFit = numeric(),
-    yIntBestFit = numeric(),
-    predictedBestFit = numeric(),
+    betaLin = numeric(),
+    pvalLin = numeric(),
+    betaQuad = numeric(),
+    pvalQuad = numeric(),
+    yInt = numeric(),
+    predicted = numeric(),
     modelOrderBestFit = character(),
     stringsAsFactors = FALSE
   )
@@ -593,7 +602,7 @@ clineResults <- function(dataframe_list){
         mutate(std_distance_squared = std_distance^2) %>% 
         pull(std_distance_squared)
       
-      quadratic_model = lm(response_var ~ std_distance + std_distance_squared) # Specify quadratic model
+      quadratic_model = rlm(response_var ~ std_distance + std_distance_squared, maxit = 200) # Specify quadratic model
       linear_model = update(quadratic_model, ~ . - std_distance_squared) # Specify linear model
       
       AIC_quad = AIC(quadratic_model) # Get AIC of quadratic model
@@ -602,42 +611,44 @@ clineResults <- function(dataframe_list){
       if (abs(AIC_quad) - abs(AIC_lin) > 2) {
         # If quadratic model AIC is > 2 from linear model AIC
         # Get y-intercept
-        yIntBestFit <- round(summary(quadratic_model)$coefficients["(Intercept)", "Estimate"], 3)
+        yInt <- round(summary(quadratic_model)$coefficients["(Intercept)", "Value"], 3)
         
         # Get prediction when standardized distance equals 1
-        predictedBestFit <- round(predict(quadratic_model, data.frame(std_distance = c(1), std_distance_squared = c(1))), 3)
+        predicted <- round(predict(quadratic_model, data.frame(std_distance = c(1), std_distance_squared = c(1))), 3)
         
-        betaBestFit <-
-          round(summary(quadratic_model)$coefficients["std_distance", "Estimate"], 3)
-        pvalBestFit <-
-          round(summary(quadratic_model)$coefficients["std_distance", "Pr(>|t|)"], 3)
-        rSquareBestFit <- round(summary(quadratic_model)$r.squared, 3)
+        betaLin <- round(summary(quadratic_model)$coefficients["std_distance", "Value"], 3)
+        betaQuad <- round(summary(quadratic_model)$coefficients["std_distance_squared", "Value"], 3)
+      
+        # Robust F-tests from sfsmisc package (Wald test)
+        ftestLin <- f.robftest(quadratic_model, var = "std_distance")
+        pvalLin <- round(ftestLin$p.value, 3)
+        ftestQuad <- f.robftest(quadratic_model, var = "std_distance_squared")
+        pvalQuad <- round(ftestQuad$p.value, 3)
         modelOrderBestFit <- "quadratic"
         
-        # print(predictedBestFit, yIntBestFit, diff)
         # Append beta and p-value to results vector
         cline_results <- append(cline_results,
-                                c(betaBestFit, pvalBestFit, rSquareBestFit, yIntBestFit, predictedBestFit, modelOrderBestFit),
+                                c(betaLin, pvalLin, betaQuad, pvalQuad, yInt, predicted, modelOrderBestFit),
                                 after = length(cline_results))
     
       } else {
         # Otherwise (i.e. quadratic model is not better fit)
         # Get y-intercept
-        yIntBestFit <- round(summary(linear_model)$coefficients["(Intercept)", "Estimate"], 3)
+        yInt <- round(summary(linear_model)$coefficients["(Intercept)", "Value"], 3)
         
         # Get prediction when standardized distance equals 1
-        predictedBestFit <- round(predict(linear_model, data.frame(std_distance = c(1))), 3)
+        predicted <- round(predict(linear_model, data.frame(std_distance = c(1))), 3)
         
-        betaBestFit <-
-          round(summary(linear_model)$coefficients["std_distance", "Estimate"], 3)
-        pvalBestFit <-
-          round(summary(linear_model)$coefficients["std_distance", "Pr(>|t|)"], 3)
-        rSquareBestFit <- round(summary(linear_model)$r.squared, 3)
+        betaLin <- round(summary(linear_model)$coefficients["std_distance", "Value"], 3)
+        betaQuad <- NA
+        
+        ftestLin <- f.robftest(linear_model, var = "std_distance")
+        pvalLin <- round(ftestLin$p.value, 3)
+        pvalQuad <- NA
         modelOrderBestFit <- "linear"
         
-        # print(predictedBestFit, yIntBestFit, diff)
         cline_results <- append(cline_results,
-                                c(betaBestFit, pvalBestFit, rSquareBestFit, yIntBestFit, predictedBestFit, modelOrderBestFit),
+                                c(betaLin, pvalLin, betaQuad, pvalQuad, yInt, predicted, modelOrderBestFit),
                                 after = length(cline_results))
         # order = "linear"
       }
@@ -769,7 +780,7 @@ rlmStats <- function(df, response){
   if(!all(is.na(response_var))){
   
     # Run robust regression
-    rlm_mod <- rlm(response_var ~ std_distance, data = df)
+    rlm_mod <- rlm(response_var ~ std_distance, data = df, maxit = 200)
     slope <- round(rlm_mod$coefficients["std_distance"], 3)
 
     # Robust F-tests from sfsmisc package (Wald test)
@@ -1035,10 +1046,10 @@ pick.extreme.values <- function(Predicted.Values,Original.Values,number.extreme.
   RuralExtreme.predicted.dataFrame <- as.matrix(RuralExtreme.predicted.dataFrame[keep.cities,])
   UrbanExtreme.OriginalData.dataFrame <- as.matrix(UrbanExtreme.OriginalData.dataFrame[keep.cities,])
   RuralExtreme.OriginalData.dataFrame <- as.matrix(RuralExtreme.OriginalData.dataFrame[keep.cities,])
-  
+
   city.names <- rep(city.names,each=number.extreme.sites)
   city.names <- city.names[keep.cities]
-  
+
   result <- list(city.names=city.names,UrbanPredExtremes = UrbanExtreme.predicted.dataFrame,RuralPredExtremes = RuralExtreme.predicted.dataFrame,UrbanExtremes = UrbanExtreme.OriginalData.dataFrame,RuralExtremes = RuralExtreme.OriginalData.dataFrame)
   return(result)
 }
