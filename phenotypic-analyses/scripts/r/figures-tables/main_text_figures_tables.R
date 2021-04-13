@@ -254,28 +254,31 @@ figure2
 ggsave(filename = "analysis/figures/manuscript-panels/figure-2/figure2.pdf", plot = figure2, 
        device = "pdf", width = 16, height = 14, units = "in", dpi = 600, useDingbats = FALSE)
 
+##################
 #### FIGURE 3 ####
+##################
 
 ### Figure 3A
 
 ## Histogram showing distribution of slopes of clines, with different colors for significantly negative, positive, and no cline.
-hcnClinesSummary <- read_csv("analysis/supplementary-tables/allCities_HCNslopes_enviroMeansSlopes.csv") %>% 
-  dplyr::select(city, betaRLM_freqHCN, pvalRLM_freqHCN)
+
+# Get betas and pvalues from robust regressions
+hcnClinesSummary <- df_all_popMeans %>% group_split(city) %>% 
+  purrr::map_dfr(., rlmStats, response = 'freqHCN')
 
 pal <- c("#909090", "#FF0000", "#046C9A")
 slopeHistogram <- hcnClinesSummary %>% 
   mutate(Significance = case_when(
-    betaRLM_freqHCN < 0 & pvalRLM_freqHCN < 0.05 ~ "Significantly negative",
-    betaRLM_freqHCN > 0 & pvalRLM_freqHCN < 0.05 ~ "Significantly positive",
+    betaRLM < 0 & pvalRLM < 0.05 ~ "Significantly negative",
+    betaRLM > 0 & pvalRLM < 0.05 ~ "Significantly positive",
     TRUE ~ "Not significant"
   )) %>% 
-  ggplot(., aes(x = betaRLM_freqHCN, fill = Significance)) +
+  ggplot(., aes(x = betaRLM, fill = Significance)) +
   geom_histogram(bins = 50, color = "black") +
   geom_vline(xintercept = 0, linetype = "dotted") +
-  geom_vline(xintercept = mean(hcnClinesSummary$betaRLM_freqHCN), linetype = "dashed", size = 1) +
+  geom_vline(xintercept = mean(hcnClinesSummary$betaRLM, linetype = "dashed", size = 1)) +
   xlab("Standardized slope of cline") + ylab("Count") +
   scale_x_continuous(breaks = seq(-0.75, 0.75, 0.25)) +
-  # scale_colour_manual(values = c("#00A08A", "#F98400")) +
   scale_fill_manual(values = pal) +
   ng1 + theme(legend.position = "top", 
               legend.direction="horizontal",
@@ -283,8 +286,7 @@ slopeHistogram <- hcnClinesSummary %>%
               legend.key = element_rect(fill = "white"),
               legend.title = element_blank(),
               legend.key.size = unit(0.5, "cm"),
-              legend.spacing.x = unit(0.5, "cm"), 
-              axis.text.x = element_text(angle = 45, hjust = 1))
+              legend.spacing.x = unit(0.5, "cm"))
 slopeHistogram
 
 ggsave(filename = "analysis/figures/manuscript-panels/figure-3/figure3A_slopeHistogram.pdf", plot = slopeHistogram,
@@ -298,15 +300,14 @@ ggsave(filename = "analysis/figures/manuscript-panels/figure-3/figure3A_slopeHis
 
 HCN_by_city <- df_all_popMeans %>%
   left_join(., hcnClinesSummary, by = "city") %>% 
-  mutate(significant = ifelse(pvalRLM_freqHCN < 0.05, "Yes", "No"),
-         direction = ifelse(betaRLM_freqHCN > 0, "Positive", "Negative"),
+  mutate(significant = ifelse(pvalRLM < 0.05, "Yes", "No"),
+         direction = ifelse(betaRLM > 0, "Positive", "Negative"),
          color = case_when(significant == "Yes" & direction == "Positive" ~ "Significantly positive",
                            significant == "Yes" & direction == "Negative" ~ "Significantly negative",
                            TRUE ~ "Not significant")) %>%
-  # filter(significant == "Yes") %>% 
   ggplot(., aes(x = std_distance, y = freqHCN)) +  
   geom_line(stat = "smooth", method="rlm", aes(color = color, alpha = color, group = city),
-            size = 0.75) +
+            size = 0.75, show.legend = FALSE) +
   geom_line(stat = "smooth", method="lm", colour = "black", size = 2.5) +
   xlab("Standardized distance") + ylab("Frequency of HCN") + 
   scale_colour_manual(values = pal) +
@@ -314,18 +315,67 @@ HCN_by_city <- df_all_popMeans %>%
   scale_y_continuous(breaks = seq(from = 0, to = 1, by = 0.1)) +
   scale_x_continuous(breaks = seq(from = 0, to = 1.1, by = 0.25)) +
   coord_cartesian(ylim = c(-0.05, 1.05), xlim = c(0, 1), clip = 'off') +
-  ng1 +
-  theme(legend.position = "top", legend.direction = "horizontal",
-        legend.key.height = unit(0.5, "cm")) +
-  guides(color = guide_legend(override.aes = list(size = 2)))
+  ng1 
 HCN_by_city
 
-ggsave(filename = "analysis/figures/manuscript-panels/figure-3/figure3B_clineByCity.pdff", plot = HCN_by_city,
+ggsave(filename = "analysis/figures/manuscript-panels/figure-3/figure3B_clineByCity.pdf", plot = HCN_by_city,
        device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
 
+## Figure 3C, D, and E
 
+temuco <- df_all_popMeans %>% filter(city == "Temuco")  # No cline
+freehold <- df_all_popMeans %>% filter(city == "Freehold")  # Negative cline
+muenster <- df_all_popMeans %>% filter(city == "Muenster")  # Positive cline
 
-### Figure 3C
+#' Function to plot panels C, D, and E for figure 3
+#' 
+#' @param df Population-mean HCN frequency dataframe
+#' 
+#' @return ggplot object
+fig3_inset_biplot <- function(df){
+  
+  city <- df %>% pull(city) %>% unique()
+  col <- case_when(city == 'Muenster' ~ pal[3],
+                   city == 'Freehold' ~ pal[2])
+  
+  plot <- ggplot(df, aes(x = std_distance, y = freqHCN)) +
+    geom_point(size = 3.5) +
+    geom_smooth(method = 'rlm', 
+                color = ifelse(city == "Temuco", "black", col),
+                fill = ifelse(city == "Temuco", "grey", col),
+                size = 1.5) +
+    xlab("Standardized distance") +
+    ylab("Frequency of HCN") +
+    ng1
+  
+  return(plot)
+}
+
+temuco_plot <- fig3_inset_biplot(temuco)
+freehold_plot <- fig3_inset_biplot(freehold)
+muenster_plot <- fig3_inset_biplot(muenster)
+
+ggsave(filename = "analysis/figures/manuscript-panels/figure-3/figure3C_Muenster_HCN_vs_distance.pdf", plot = muenster_plot,
+       device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
+ggsave(filename = "analysis/figures/manuscript-panels/figure-3/figure3D_Freehold_HCN_vs_distance.pdf", plot = freehold_plot,
+       device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
+ggsave(filename = "analysis/figures/manuscript-panels/figure-3/figure3E_Temuco_HCN_vs_distance.pdf", plot = temuco_plot,
+       device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
+
+### Combine panels for figure 2
+figure3 <- (slopeHistogram + HCN_by_city) / (muenster_plot | freehold_plot | temuco_plot) +
+  plot_annotation(tag_levels = 'A') &
+  theme(legend.position = c(1, 1.2),
+        plot.tag.position = c(0.05, 1.05),
+        plot.tag = element_text(size = 20))
+figure3
+
+ggsave(filename = "analysis/figures/manuscript-panels/figure-3/figure3.pdf", plot = figure3, 
+       device = "pdf", width = 16, height = 16, units = "in", dpi = 600, useDingbats = FALSE)
+
+##################
+#### FIGURE 4 ####
+##################
 
 # Define low, mean, and high AI categories
 LSThigh <- round(mean(model_df_withMainEffects$summerLST_Mean) + sd(model_df_withMainEffects$summerLST_Mean), 1)
@@ -344,81 +394,21 @@ LSTmean_col = wes_palette("Zissou1", 5, type = "discrete")[3]
 LSThigh_col = wes_palette("Zissou1", 5, type = "discrete")[1]
 cols = c(LSTlow_col, LSThigh_col)
 
-
-# Dataframe with clines slopes, significance, winterNDVI_Slope, and annualAI_Mean
-# Remove cities that were not included in model due to missing environmental data
-cities_analysed <- results_statsMatrices$city
-df_wNDVIslope_LSTmean <- read_csv("analysis/supplementary-tables/allCities_HCNslopes_enviroMeansSlopes.csv") %>% 
-  filter(city %in% cities_analysed) %>% 
-  dplyr::select(city, betaRLM_freqHCN, sigRLM, Mean_summerLST, betaRLM_winterNDVI) %>% 
-  mutate_at(vars(Mean_summerLST, betaRLM_winterNDVI), .funs = funs(scale)) %>% 
-  mutate(fsummerLST_Mean = case_when(Mean_summerLST <= LSTlow ~ '-1',
-                                     Mean_summerLST >= LSThigh ~ '1',
-                                     TRUE ~ '0')) %>% 
-  mutate(LST_cat = case_when(fsummerLST_Mean == '-1' ~ 'low',
-                             fsummerLST_Mean == '1' ~ 'high',
-                             TRUE ~ 'mean'))
-
 LST_wNDVI_df$fsummerLST_Mean <- factor(LST_wNDVI_df$summerLST_Mean)
-# levels(AI_wNDVI_df) <- c("low (-1 sd)","mean (0)","high (+1 sd)")
 LST_wNDVI_plot <- LST_wNDVI_df %>% 
   filter(fsummerLST_Mean != '0') %>% 
   ggplot(., aes(x = winterNDVI_Slope, y = yvar)) + 
-  # geom_point(data = df_wNDVIslope_AImean %>% filter(sigRLM == 'Yes'), 
-  #            aes(x = betaRLM_winterNDVI, y = betaRLM_freqHCN, color = fannualAI_Mean), 
-  #            size = 3, shape = 17) +
-  # geom_point(data = df_wNDVIslope_AImean %>% filter(sigRLM == 'No'), 
-  #            aes(x = betaRLM_winterNDVI, y = betaRLM_freqHCN), 
-  #            size = 1.5, shape = 19, alpha = 0.2) + 
   geom_ribbon(aes(ymin = LCL, ymax = UCL, fill = fsummerLST_Mean), alpha = 0.25) +
   geom_line(aes(color = fsummerLST_Mean), size = 2) +
   ylab("Predicted HCN slope") + xlab("Slope of winter NDVI") +
-  # scale_alpha_discrete(range = c(0.5, 1.0), name = "Significant", labels = c('NS', 'Yes')) + 
-  # scale_shape_discrete(name = "Significant", labels = c('NS', 'Yes')) + 
   scale_color_manual(values = rev(cols), name = "Mean summer LST", labels = c("low (-1 sd)","high (+1 sd)")) +
   scale_fill_manual(values = rev(cols), name = "Mean summer LST", labels = c("low (-1 sd)","high (+1 sd)")) +
   scale_y_continuous(breaks = seq(from = -0.4, to = 1.0, by = 0.2)) +
-  # geom_point() +
   ng1 + theme(legend.position = 'right')
 LST_wNDVI_plot
 
-write_csv(df_wNDVIslope_LSTmean, 'analysis/supplementary-tables/HCNslope_by_wNDVIslope_by_summerLSTmean.csv')
-ggsave(filename = "analysis/figures/manuscript-panels/figure-3/figure3C_HCNslope_by_wNDVIslope_by_AImean_CIs.pdf", plot = AI_wNDVI_plot,
+ggsave(filename = "analysis/figures/manuscript-panels/figure-4/figure4.pdf", plot = LST_wNDVI_plot,
        device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
 
-## Figure 3 insets
 
-temuco <- df_all_popMeans %>% filter(city == "Temuco")  # No cline
-freehold <- df_all_popMeans %>% filter(city == "Freehold")  # Negative cline
-muenster <- df_all_popMeans %>% filter(city == "Muenster")  # Positive cline
-
-fig3_inset_biplot <- function(df){
-  
-  city <- df %>% pull(city) %>% unique()
-  col <- case_when(city == 'Muenster' ~ pal[3],
-                   city == 'Freehold' ~ pal[2])
-  
-  plot <- ggplot(df, aes(x = std_distance, y = freqHCN)) +
-    geom_point(size = 3.5) +
-    geom_smooth(method = 'lm', 
-                color = ifelse(city == "Temuco", "black", col),
-                fill = ifelse(city == "Temuco", "grey", col),
-                size = 1.5) +
-    xlab("Standardized distance from the city centre (km)") +
-    ylab("Frequency of HCN") +
-    ng1
-  
-  return(plot)
-}
-
-temuco_plot <- fig3_inset_biplot(temuco)
-freehold_plot <- fig3_inset_biplot(freehold)
-muenster_plot <- fig3_inset_biplot(muenster)
-
-ggsave(filename = "analysis/figures/manuscript-panels/figure-3/figure3inset_Temuco_HCN_vs_distance.pdf", plot = temuco_plot,
-       device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
-ggsave(filename = "analysis/figures/manuscript-panels/figure-3/figure3inset_Freehold_HCN_vs_distance.pdf", plot = freehold_plot,
-       device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
-ggsave(filename = "analysis/figures/manuscript-panels/figure-3/figure3inset_Muenster_HCN_vs_distance.pdf", plot = muenster_plot,
-       device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
 

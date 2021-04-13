@@ -57,6 +57,7 @@ paths <- c("data/clean/environmental_data/annualAI",
            "analysis/figures/manuscript-panels/",
            "analysis/figures/manuscript-panels/figure-2/",
            "analysis/figures/manuscript-panels/figure-3/",
+           "analysis/figures/manuscript-panels/figure-4/",
            "analysis/supplementary-tables/")
 
 purrr::walk(paths, dir.create, recursive = T, showWarnings = T)
@@ -165,7 +166,8 @@ source("scripts/r/analyses/predictingClines.R")
 plot(predClines_elasticNet)
 
 # Summary of final Elastiv Net model predicting HCN clines from environmetal data
-print(elasticNet_bestTune)  # Alpha and Lambda tuning parameters for Elastic Net. Alpha = 0.9 = Close to full LASSO
+# Alpha and Lambda tuning parameters for Elastic Net. Alpha = 1 = Full LASSO
+print(elasticNet_bestTune)  
 print(predClines_elasticNet_summary)
 
 # Anova of final Elastic Net model
