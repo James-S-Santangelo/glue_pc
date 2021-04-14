@@ -192,7 +192,12 @@ rule pairwise_pi_fst_notebook:
     output:
         '{0}/supplemental/pop_diff/wc_hudson_fst_corr.pdf'.format(FIGURES_DIR),
         '{0}/supplemental/pop_diff/Fst_by_minSampleSize_byFstType.pdf'.format(FIGURES_DIR),
-        '{0}/supplemental/pop_diff/hudsonFst_euclDist_corr.pdf'.format(FIGURES_DIR)
+        '{0}/supplemental/pop_diff/hudsonFst_euclDist_corr.pdf'.format(FIGURES_DIR),
+        '{0}/main_text/figure_4/figure4A_pi_histogram_by_habitat.pdf'.format(FIGURES_DIR),
+        '{0}/main_text/figure_4/figure4B_HCNslope_byu_pi_diff.pdf'.format(FIGURES_DIR),
+        '{0}/main_text/figure_4/figure4C_Fst_by_clines.pdf'.format(FIGURES_DIR),
+        '{0}/main_text/figure_4/figure4D_HCNslope_by_Fst.pdf'.format(FIGURES_DIR)
+
     conda: '../envs/notebooks.yaml'
     notebook:
         "../notebooks/pairwise_pi_fst.r.ipynb"
