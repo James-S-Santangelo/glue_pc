@@ -88,7 +88,7 @@ h <- plot_envar_vs_dist(df_all_popMeans, 'winterLST_Mean')
 i <- plot_envar_vs_dist(df_all_popMeans, 'winterNDVI_Mean')
 
 ### Combine panels for figure 2
-figureSX <- (a | b | c) / (d | e | f) / (g | h | i) +
+figureSX <- (a | b | c) / (d | e | f) / (h | g | i) +
   plot_layout(guides = "collect") &
   plot_annotation(tag_levels = 'A') &
   theme(legend.position = 'bottom', 
