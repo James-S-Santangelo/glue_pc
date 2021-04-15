@@ -169,10 +169,6 @@ plot(predClines_elasticNet)
 # Summary of final Elastiv Net model predicting HCN clines from environmetal data
 # Alpha and Lambda tuning parameters for Elastic Net. Alpha = 1 = Full LASSO
 print(elasticNet_bestTune)  
-print(predClines_elasticNet_summary)
-
-# Anova of final Elastic Net model
-print(predClines_elasticNet_anova)
 
 # Summary of Elastic Net model with all Main Effects added back in
 print(predClines_elasticNet_withMainEffects_summary)
