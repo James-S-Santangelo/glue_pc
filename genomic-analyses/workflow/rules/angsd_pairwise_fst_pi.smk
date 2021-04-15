@@ -196,7 +196,8 @@ rule pairwise_pi_fst_notebook:
         '{0}/main_text/figure_4/figure4A_pi_histogram_by_habitat.pdf'.format(FIGURES_DIR),
         '{0}/main_text/figure_4/figure4B_HCNslope_byu_pi_diff.pdf'.format(FIGURES_DIR),
         '{0}/main_text/figure_4/figure4C_Fst_by_clines.pdf'.format(FIGURES_DIR),
-        '{0}/main_text/figure_4/figure4D_HCNslope_by_Fst.pdf'.format(FIGURES_DIR)
+        '{0}/main_text/figure_4/figure4D_HCNslope_by_Fst.pdf'.format(FIGURES_DIR),
+        '{0}/supplemental/population_structure/figureSX_PCA_URcentroids.pdf'.format(FIGURES_DIR)
 
     conda: '../envs/notebooks.yaml'
     notebook:
