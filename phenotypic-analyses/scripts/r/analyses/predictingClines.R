@@ -188,3 +188,14 @@ model_df_elasticNet_withNDSI = as.data.frame(cbind(HCNslopes, predictors_finalMo
 # Run final model 
 predClines_elasticNet_withNDSI <- lm(HCNslopes ~ ., data = model_df_elasticNet_withNDSI[-1])
 predClines_elasticNet_withNDSI_summary <- summary(predClines_elasticNet_withNDSI)
+
+### Full winterNDVI_Mean replacement
+
+model_df_withMainEffects_NDVI_sub_NDSI <- model_df_withMainEffects %>%
+  bind_cols(., as.data.frame(predictors_withInteractions_reduced) %>% dplyr::select('NDSI_Mean')) %>% 
+  bind_cols(., as.data.frame(predictors_withInteractions_reduced) %>% dplyr::select('annualAI_Slope:NDSI_Mean')) %>% 
+  dplyr::select(-'winterNDVI_Mean', -'annualAI_Slope:winterNDVI_Mean') %>% 
+  dplyr::select(HCNslope, NDSI_Mean, everything())
+
+elasticNet_withMainEffects_NDVI_sub_NDSI <- lm(HCNslopes ~ ., data = model_df_withMainEffects_NDVI_sub_NDSI[-1])
+elasticNet_withMainEffects_NDVI_sub_NDSI <- summary(elasticNet_withMainEffects_NDVI_sub_NDSI)
