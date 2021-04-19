@@ -1,12 +1,4 @@
-.snakemake
-data/
-*.done
-*.json
-results*
-*log*/
-*.pdf
-__pycache__/
-.ipynb_checkpoints
-.Rproj.user
-md5/
+.DS_Store
+.Rhistory
+.Rproj.user/
 .Rhistory
