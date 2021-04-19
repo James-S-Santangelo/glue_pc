@@ -1,0 +1,1 @@
+This directory contains raw data files used by [scripts](../../scripts/) to generate [clean data files](../clean/). Examples of raw data include Qubit concentrations for sample DNA extractions and Qubit concentrations for post-library-prep samples. 

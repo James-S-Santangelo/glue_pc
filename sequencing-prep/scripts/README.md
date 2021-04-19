@@ -1,0 +1,1 @@
+This directory contains scripts used in generating all of the [clean data files](../data/clean). [main.R](./main.R) will run all scripts in the correct order, but feel free to poke around in the [individual scripts](./data-processing)
