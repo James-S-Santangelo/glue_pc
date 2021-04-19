@@ -19,7 +19,7 @@ low1_prepped <- read_csv('data/clean/low1/plantsToPrep_low1.csv')
 low2_prepped <- read_csv('data/clean/low2/plantsToPrep_low2.csv')
 
 # Previous plants chosen as part of DEEP sequencing
-deepSample_previousPlants <- read_csv('resources/plantsToPrep_deepSample_withBioruptorTubes.csv')
+deepSample_previousPlants <- read_csv('data/raw/plantsToPrep_deepSample_withBioruptorTubes.csv')
 
 # Datasheet with DNA extraction data
 extraction_data <- read_csv("data/clean/extractions/allExtractions.csv",
