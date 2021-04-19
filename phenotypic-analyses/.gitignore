@@ -6,6 +6,7 @@ data/raw/*
 data/raw/mtjj_jss/*
 !data/raw/mtjj_jss/mtjj_popMeans/
 !data/raw/environmental_data/
+!data/raw/city_data/
 analysis/*
 !analysis/supplementary-tables/
 *.ipynb
