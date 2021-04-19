@@ -190,6 +190,13 @@ print(elasticNet_withMainEffects_withNDSI)
 # NDSI_Mean replaces winterNDVI_Mean as significant main effect when winterNDVI_Mean is excluded
 print(predClines_elasticNet_withNDSI_summary)
 
+# Step 4.4: Predict clines from city characteristics
+source('scripts/r/analyses/cityCharacteristics.R')
+
+print(finalModel_cityStats)
+plot(modlog_popout)
+hist(residuals(modlog_popout))
+
 #####################################
 #### STEP 5: FIGURES AND TABLES  ####
 #####################################
