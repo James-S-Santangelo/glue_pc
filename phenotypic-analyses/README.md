@@ -8,6 +8,8 @@ Before running the analyses, the individual-plant phenotype data submitted by co
 This is done using a series of [Python scripts](./scripts/python), which are provided for posterity and transparency. However, we have 
 distributed the cleaned and standardized datasets with the manuscript so this step is already done. 
 
+### Using the repository 
+
 The analyses can then be run by following these steps:
 
 1. Open RStudio, navitate to `File` > `Open Project`, and open the `.Rproj` file in this repository.
