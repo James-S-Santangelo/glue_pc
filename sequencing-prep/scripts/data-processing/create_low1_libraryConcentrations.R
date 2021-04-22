@@ -1,7 +1,7 @@
 # Script to clean CSV with prepped libraries prior to calculating dilution volumes for pooling
 
 # Read in data with library concentrations and other data
-prepped_library_df <- read_csv('resources/20210105_plantsToPrep_Low1_Low2_firstLanePrepped.csv') %>% 
+prepped_library_df <- read_csv('data/raw/20210105_plantsToPrep_Low1_Low2_firstLanePrepped.csv') %>% 
   
   # Select relevant columns
   dplyr::select(continent, city, pop, individual, site, plantID, max_qubit, leftover, Bioruptor_label,

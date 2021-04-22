@@ -1,0 +1,3 @@
+This directory contains configfiles used for the main Snakemake pipeline (_hpcnode.yaml_, _graham.yaml_, _niagara.yaml_) and by external programs (*multiqc_config.yaml*). 
+
+There are 3 configfiles for the Snakemake pipeline because different processes were sometimes executed on different clusters for computational efficiency. However, they can all be run on the same cluster, provided `Conda` and `Singularity` are installed. 

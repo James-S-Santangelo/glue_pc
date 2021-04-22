@@ -151,7 +151,7 @@ plantsToPrep_low1_low2 <- map_dfr(df_list, sampleShallow) %>%
 ## This sheet was created after samples were already sent for sequencing and is generated
 ## here for completeness
 
-low1_low2_fisrtLanePrepped <- read_csv("resources/20210105_plantsToPrep_Low1_Low2_firstLanePrepped.csv") %>% 
+low1_low2_fisrtLanePrepped <- read_csv("data/raw/20210105_plantsToPrep_Low1_Low2_firstLanePrepped.csv") %>% 
   dplyr::select(continent, city, pop, individual, plantID, 'Batch/lane', "Date prepped", "Bioruptor_label")
 
 low1_prepped <- low1_low2_fisrtLanePrepped %>% 

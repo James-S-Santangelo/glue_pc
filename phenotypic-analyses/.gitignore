@@ -2,10 +2,12 @@ data/clean/*
 !data/clean/individualPlant_allCities/
 data/raw/*
 !data/raw/latLongs_cityCenters.csv
+!data/raw/GLUE_collaborators.csv 
 !data/raw/mtjj_jss/
 data/raw/mtjj_jss/*
 !data/raw/mtjj_jss/mtjj_popMeans/
 !data/raw/environmental_data/
+data/raw/environmental_data/README.md
 !data/raw/city_data/
 analysis/*
 !analysis/supplementary-tables/

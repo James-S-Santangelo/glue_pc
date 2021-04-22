@@ -76,8 +76,9 @@ all_ext <- full_join(Qubit, new_ext, by = c("name", "pop", "individual", "contin
 #############################################################################
 
 # Load cline summary 
-clineSummary <- read_csv("data/raw/linearClinesSummary.csv") %>% 
-  dplyr::select(pvalHCN, city) %>% 
+clineSummary <- read_csv("../phenotypic-analyses/analysis/supplementary-tables/allCities_stats.csv") %>% 
+  dplyr::select(sigRLM, city) %>% 
+  rename("significant" = "sigRLM") %>% 
   mutate(city = as.character(fct_recode(city, "Munster" = "Muenster")))
 
 # Useable plants with minimum concentration of 10 ng/uL
@@ -108,8 +109,6 @@ numGoodplants_10 <- Goodplants_10 %>%
               summarize(total_plants = sum(is_good)) %>% 
               spread(key = sitePop, value = total_plants),
             by = "city") %>% 
-  mutate(significant = ifelse(pvalHCN < 0.05, "Yes", "No")) %>% 
-  dplyr::select(-pvalHCN) %>% 
   arrange(continent, city) %>% 
   left_join(Goodplants_10 %>% 
               select(city, site, pop) %>% 

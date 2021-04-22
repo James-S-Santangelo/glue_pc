@@ -3,7 +3,7 @@
 # Author: James S. Santangelo
 
 # Read in data with library concentrations and other data
-prepped_library_df <- read_csv('resources/20210411_plantsToPrep_deep3_low2_firstLanePrepped.csv') %>% 
+prepped_library_df <- read_csv('data/raw/20210411_plantsToPrep_deep3_low2_firstLanePrepped.csv') %>% 
   
   # Select relevant columns
   dplyr::select(continent, city, pop, individual, site, plantID, max_qubit, leftover, Bioruptor_label,
