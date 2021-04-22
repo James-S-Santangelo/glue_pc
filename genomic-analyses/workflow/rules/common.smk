@@ -1,6 +1,10 @@
 # Python functions used throughout snakemake workflow
 
 def create_raw_read_dict(RAW_READ_DIR, SAMPLES):
+    """
+    Uses Sample IDs and path to raw reads to create a dictionary with paths to 
+    raw read files.
+    """
     raw_read_dict = {}
     for sample in SAMPLES:
         R1 = glob.glob('{0}/{1}/{1}_*_1.fq.gz'.format(RAW_READ_DIR, sample))[0]
@@ -9,27 +13,45 @@ def create_raw_read_dict(RAW_READ_DIR, SAMPLES):
     return raw_read_dict
 
 def get_fastas_to_concat(wildcards):
+    """
+    Retrieves all consensus FASTA files for rbcL or matK, depending on value of "gene" wildcard.
+    """
     if wildcards.gene == 'rbcl':
         return expand(rules.chloroplast_gene_consensus.output, sample=SAMPLES, gene='rbcl')
     elif wildcards.gene == 'matk':
         return expand(rules.chloroplast_gene_consensus.output, sample=SAMPLES, gene='matk')
 
 def get_toronto_bam(wildcards):
+    """
+    Returns list with only those Toronto BAMs for samples to be included in GLUE
+    """
     bam = glob.glob('{0}/{1}_*.bam'.format(TOR_BAMS, wildcards.tor_sample))
     return bam
 
 def get_bed_to_subset(wildcards):
+    """
+    Returns BED file for either 0fold or 4fold sites, depending on value of "site" wildcard.
+    """
     all_bed_files = rules.get_fourfold_zerofold.output
     bed = [bed for bed in all_bed_files if wildcards.site in os.path.basename(bed)]
     return bed
 
 def get_bams_for_angsd(wildcards):
+    """
+    Returns correct text file with paths to BAM file to be including in ANGSD, depending on
+    value of "sample_set" wildcard.
+    """
     if wildcards.sample_set == 'highErrorRemoved':
         return rules.create_bam_list_highErrorRemoved.output
     elif wildcards.sample_set == 'finalSamples_lowCovRemoved':
         return rules.create_bam_list_finalSamples_lowCovRemoved.output
 
 def angsd_sfs_input(wildcards):
+    """
+    Returns dictionary with correct SAF and sites files, depending 
+    on whether all sites are being analysed (i.e., "site" wildcard == "allSites")
+    or whether degenerate sites are being analysed ("site" wildcard == '4fold' or '0fold')
+    """
     saf_idx = rules.angsd_saf_likelihood_allSites.output.saf_idx
     if wildcards.site == 'allSites':
         sites = rules.extract_angsd_allSites.output.sites
@@ -40,6 +62,11 @@ def angsd_sfs_input(wildcards):
     return { 'saf_idx' : saf_idx, 'sites' : sites, 'sites_idx' : idx }
 
 def angsd_estimate_thetas_input(wildcards):
+    """
+    Returns dictionary with correct SAF, sites, and sfs files, depending 
+    on whether all sites are being analysed (i.e., "site" wildcard == "allSites")
+    or whether degenerate sites are being analysed ("site" wildcard == '4fold' or '0fold')
+    """
     saf_idx = rules.angsd_saf_likelihood_allSites.output.saf_idx
     sfs = rules.angsd_estimate_sfs.output
     if wildcards.site == 'allSites':
@@ -51,6 +78,10 @@ def angsd_estimate_thetas_input(wildcards):
     return { 'saf_idx' : saf_idx, 'sfs' : sfs, 'sites' : sites, 'sites_idx' : idx }
 
 def get_angsd_stats_toConcat(wildcards):
+    """
+    Returns list with correct diversity and neutrality stats files for concatenation, depending on combination
+    of "sample_set" and "site" wildcard values
+    """
     if wildcards.sample_set == 'highErrorRemoved':
         if wildcards.site == '0fold':
             return expand(rules.angsd_diversity_neutrality_stats.output, chrom=CHROMOSOMES, site='0fold', sample_set='highErrorRemoved')
@@ -67,6 +98,10 @@ def get_angsd_stats_toConcat(wildcards):
             return expand(rules.angsd_diversity_neutrality_stats.output, chrom=CHROMOSOMES, site='allSites', sample_set='finalSamples_lowCovRemoved')
 
 def get_angsd_sfs_toConcat(wildcards):
+    """
+    Returns list with correct sfs files for concatenation, depending on combination
+    of "sample_set" and "site" wildcard values
+    """
     if wildcards.sample_set == 'highErrorRemoved':
         if wildcards.site == '0fold':
             return expand(rules.angsd_estimate_sfs.output, chrom=CHROMOSOMES, site='0fold', sample_set='highErrorRemoved')
@@ -83,6 +118,10 @@ def get_angsd_sfs_toConcat(wildcards):
             return expand(rules.angsd_estimate_sfs.output, chrom=CHROMOSOMES, site='allSites', sample_set='finalSamples_lowCovRemoved')
 
 def get_angsd_gl_toConcat(wildcards):
+    """
+    Returns list with correct genotype likelihood files for concatenation, depending on combination
+    of "sample_set", "site", and "maf" wildcard values
+    """
     if wildcards.maf == '0.005':
         if wildcards.site == '0fold':
             if wildcards.sample_set == 'highErrorRemoved':
@@ -134,6 +173,10 @@ def get_angsd_gl_toConcat(wildcards):
     return out
 
 def get_angsd_maf_toConcat(wildcards):
+    """
+    Returns list with correct minor allele frequency files for concatenation, depending on combination
+    of "sample_set", "site", and "maf" wildcard values
+    """
     if wildcards.maf == '0.005':
         if wildcards.site == '0fold':
             if wildcards.sample_set == 'highErrorRemoved':
@@ -185,15 +228,24 @@ def get_angsd_maf_toConcat(wildcards):
     return out
 
 def get_habitat_saf_files_byCity(wildcards):
+    """
+    Returns list with 4fold urban and rural SAF files by city
+    """
     all_saf_files = expand(rules.angsd_saf_likelihood_byCity_byHabitat.output.saf_idx, city=CITIES, habitat=HABITATS, site=['4fold'])
     city_saf_files = [x for x in all_saf_files if wildcards.city in x and wildcards.site in x]
     return city_saf_files
 
 def get_toronto_bam_pi_fst_test(wildcards):
+    """
+    Returns BAM for Toronto sample to be included in sample size test
+    """
     bam = glob.glob('{0}/{1}_*.bam'.format(TOR_BAMS, wildcards.tor_test_sample))
     return bam
 
 def toronto_pi_fst_test_saf_input(wildcards):
+    """
+    Returns dictionary with correct bam list and ANGSD sites files, depending on value of "group" wildcard.
+    """
     if wildcards.group == 'highCov':
         bams = rules.urban_rural_toronto_bam_lists.output
     elif wildcards.group == 'lowCov':
@@ -205,6 +257,9 @@ def toronto_pi_fst_test_saf_input(wildcards):
     return {'bams' : bams, 'sites' : sites, 'sites_idx' : sites_idx}
 
 def get_saf_joint_sfs_pi_fst_test(wildcards):
+    """
+    Returns list with two SAF files depending on combinations of the "group" and "joint_sfs_ss" wildcards
+    """
     if wildcards.group == 'highCov':
         out = expand(rules.angsd_saf_likelihood_toronto_pi_fst_test.output.saf_idx, group = 'highCov', habitat = ['urban', 'rural'], ss = '7')
     elif wildcards.group == 'lowCov':

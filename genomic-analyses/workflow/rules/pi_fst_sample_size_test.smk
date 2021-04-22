@@ -103,7 +103,7 @@ rule urban_rural_toronto_downsampled_bam_lists:
 rule angsd_saf_likelihood_toronto_pi_fst_test:
     """
     Estimate Site Allele Frequency (SAF) likelihood file for urban and rural sample size combinations. 
-    Includes "control" (i.e., max urban and rural sample size and high coverage data)
+    Includes "control" (i.e., max urban and rural sample size and high coverage data). Uses only chromosome 1
     """
     input:
         unpack(toronto_pi_fst_test_saf_input),
