@@ -1,161 +1,161 @@
-continent,Country,city,latitude_city,longitude_city,area,human_population_size,density,age,num_populations,total_num_plants,transect_length,betaRLM_freqHCN,sigRLM,meanHCN,sampled_by
-North America,Canada,Acton,43.63,-80.041,3.97,9462,2383.375,NA,20,400,4.94,0.022,No,0.376,Marc T.J. Johnson; Cindy Prashad
-North America,USA,Albuquerque,35.084,-106.65,608.4,546191,897.75,65,40,792,17.27,-0.185,Yes,0.225,Nora Mitchell; Kenneth D. Whitney
-Europe,Portugal,Almada,38.68,-9.158,147.8,174030,1177.47,33,44,880,16.48,0.026,No,0.968,Filipa Grilo; Cristina Branquinho; Pedro Pinho
-Europe,Netherlands,Amsterdam,52.373,4.891,315.54,1114745,3532.817,374,40,724,9.74,0.108,No,0.203,Jacintha Ellers; Janine Marien
-North America,USA,Anchorage,61.216,-149.895,NA,NA,NA,NA,44,699,15.2,-0.011,No,0.091,Justin R Fulkerson; 
-North America,Canada,Angus,44.326,-79.888,4.74,12640,2666.667,NA,20,400,3.98,0.032,No,0.341,Marc T.J. Johnson; Cindy Prashad
-Europe,Belgium,Antwerp,51.219,4.402,365.31,483505,1323.547,161,40,697,13.65,0.333,Yes,0.234,; 
-Oceania,Australia,Armidale,-30.513,151.669,19.87,23352,1175.239,NA,40,746,13.34,0.319,Yes,0.702,Nigel R. Andrew; Sarah J. Hill
-North America,USA,Athens,33.96,-83.376,113.15,115441,1020.247,NA,28,560,17.16,0.423,Yes,0.489,Susana M. Wadgymar; Jill T. Anderson
-North America,USA,Atlanta,33.758,-84.388,3324.2,426821,128.398,111,45,654,33.71,0.379,Yes,0.421,James S. Santangelo; Ken A. Thompson
-North America,USA,Atlantic_City,39.356,-74.436,364.64,39558,108.485,NA,45,810,37.22,-0.207,Yes,0.431,Amy M. Savage; Jennifer Le; Ourania Nikolaidis
-North America,USA,Baltimore,39.29,-76.612,1230.45,620862,504.581,173,39,584,51.35,0.032,No,0.216,James S. Santangelo; Ken A. Thompson
-North America,Canada,Barrie,44.389,-79.686,69.6,145614,2092.155,NA,25,500,8.1,0.044,No,0.307,Marc T.J. Johnson; Cindy Prashad
-North America,USA,Baton_Rouge,30.448,-91.189,604.59,229422,379.467,61,45,886,26.61,0.35,Yes,0.82,Luis Santiago-Rosario; Joanna Griffiths; Katherine Hovanes
-Asia,China,Beijing,39.904,116.407,6142.22,16704306,2719.588,763,24,515,16.42,-0.376,No,0.61,Ai-Ying Wang; Wan-Jin Liao
-Europe,Germany,Berlin,52.514,13.393,1139.9,3644826,3197.496,227,34,528,21.41,0.191,Yes,0.17,Frauke Garbsch; Amy G. Foster; Stephan Greiner
-Europe,Switzerland,Bern,46.948,7.447,56.34,133883,2376.34,NA,40,687,8.7,-0.062,No,0.539,Diana J. Rennison; Matthew P. Josephson; Matthew P. Zuellig
-South America,Colombia,Bogota,4.627,-74.107,431.6,7387400,17116.311,116,40,671,24.72,0.208,No,0.391,Andrew J. Crawford; Erika Rodriguez; Melissa Hernández
-North America,USA,Boston,42.357,-71.056,789.01,617786,782.989,167,44,876,43.28,0.134,Yes,0.197,Ken A. Thompson; Marc T.J. Johnson
-North America,Canada,Bradford,44.114,-79.565,12.33,29862,2421.898,NA,20,400,6.31,-0.065,No,0.263,Marc T.J. Johnson; Cindy Prashad
-North America,Canada,Brantford,43.139,-80.264,49.09,98179,1999.98,NA,27,540,8.15,0.091,No,0.323,Marc T.J. Johnson; Cindy Prashad
-Europe,UK,Brighton,50.822,-0.137,94.67,244329,2580.849,124,40,722,8.84,0.326,Yes,0.47,Maria Clara Castellanos; Christopher R. Mackin
-Europe,Belgium,Brussels,50.846,4.356,281.52,157673,560.077,191,30,553,14.02,0.117,No,0.361,Kiani Cuypers; Kristien Brans
-South America,Argentina,Buenos_Aires,-34.604,-58.382,2356.31,13588171,5766.716,156,45,827,73.44,0.021,No,0.748,Concordia E. Gundel; Camila Cordoba Fradinger
-North America,USA,Burlington,44.476,-73.214,101.13,42899,424.197,NA,50,727,18.74,-0.251,Yes,0.568,Aimee Classen; Nathan J. Sanders; Raina M. Fitzpatrick
-North America,Canada,Calgary,51.047,-114.072,625.23,1237656,1979.521,67,40,571,34.29,0.193,Yes,0.142,Daniel N. Anstett; Julia Anstett
-Europe,UK,Cambridge,52.205,0.122,43.43,145818,3357.541,NA,40,754,8.82,0.427,Yes,0.308,Kiyoko M. Gotanda; Benjamin J. M. Jarrett; Howard A. Baylis
-Oceania,Australia,Canberra,-35.308,149.124,326.91,432141,1321.896,49,40,697,9.94,-0.014,No,0.736,Lauren Kirn; Christopher Lee; Kathryn Hodgins
-Africa,South Africa,Cape_Town,-33.925,18.424,684.07,3430992,5015.557,119,20,336,38.74,0.022,No,0.813,Peta D Brom; 
-North America,USA,Charlotte,35.227,-80.844,1448.68,753692,520.261,68,40,588,39.81,-0.002,No,0.338,James S. Santangelo; Ken A. Thompson
-North America,Canada,Charlottetown,46.235,-63.127,38.22,44739,1170.565,NA,45,891,14.31,0.032,No,0.359,Edeline Gagnon; 
-North America,USA,Chicago,41.878,-87.63,5366.15,2695624,502.339,158,45,664,61.59,0.167,Yes,0.233,Windsor E. Aguirre; Jalene M. LaMontagne
-Oceania,New Zealand,Christchurch,-43.532,172.636,181.67,374100,2059.228,74,39,743,27.01,0.429,Yes,0.617,William Godsoe; 
-North America,USA,Cincinnati,39.103,-84.512,1793.38,296893,165.549,162,40,588,50.81,0.03,No,0.207,James S. Santangelo; Marc T.J. Johnson
-North America,USA,Cleveland,41.499,-81.694,2179.6,396629,181.973,142,40,594,44.59,0.064,No,0.269,James S. Santangelo; Marc T.J. Johnson
-North America,Canada,Cobourg,43.96,-78.165,15.99,19031,1190.181,NA,27,540,6.17,0.052,No,0.206,Marc T.J. Johnson; Cindy Prashad
-Europe,Germany,Cologne,50.941,6.96,434.41,1085664,2499.169,162,28,409,20.87,0.023,No,0.404,Pádraic J Flood; Emmanuel Tergemina
-South America,Brazil,Curitiba,-25.433,-49.272,707.95,1893997,2675.326,112,35,606,36.6,-0.041,No,0.762,João C. Castro Pena; Felipe Aoki-Gonçalves; Milton C. Ribeiro
-North America,USA,Denver,39.745,-104.99,1704.65,599815,351.87,118,43,811,57.5,-0.044,No,0.203,Shannon M. Murphy; Robin M. Tinghitella; Erica L. Larson
-North America,USA,Detroit,42.333,-83.048,2776.49,713885,257.118,136,40,593,59.86,0.063,No,0.32,James S. Santangelo; Marc T.J. Johnson
-North America,Canada,Edmonton,53.544,-113.491,605.8,1062643,1754.115,70,44,788,22.68,0.046,No,0.169,James F. Cahill; Megan Ljubotina; Margarete A. Dettlaff
-North America,Canada,Elmira,43.6,-80.558,6.12,10161,1660.294,NA,20,400,2.61,-0.058,No,0.388,Marc T.J. Johnson; Cindy Prashad
-North America,Canada,Everett,44.19,-79.937,1.37,1670,1218.978,NA,20,400,3.77,0.133,No,0.273,Marc T.J. Johnson; Cindy Prashad
-North America,USA,Fairbanks,64.838,-147.716,NA,NA,NA,NA,40,799,8.68,0.016,No,0.096,Cristina Ornelas; 
-North America,Canada,Fergus,43.704,-80.38,8.81,20767,2357.208,NA,20,400,7.94,0.288,Yes,0.447,Marc T.J. Johnson; Cindy Prashad
-North America,USA,Fort_Collins,40.588,-105.076,201.39,144855,719.276,NA,23,318,4.9,-0.083,No,0.146,Brook T. Moyers; 
-Europe,Germany,Frankfurt,50.111,8.682,624.61,753056,1205.642,155,41,647,16.79,0.314,Yes,0.364,Juraj Paule; Indra Starke-Ottich
-North America,Canada,Fredericton,45.962,-66.644,57.97,59405,1024.754,NA,40,800,11.71,-0.001,No,0.166,Stephen B. Heard; Amy L. Parachnowitsch; Mischa M. Giasson
-North America,USA,Freehold,40.26,-74.274,107.92,12052,111.675,NA,47,926,15.63,-0.132,Yes,0.166,Tiffany C. Longo; Jesse R. Bragger; Summer A. Shaheed
-North America,Canada,Georgetown,43.651,-79.899,16.85,42123,2499.881,NA,20,400,6.44,0.088,No,0.346,Marc T.J. Johnson; Cindy Prashad
-Europe,Belgium,Ghent,51.054,3.725,138.97,243366,1751.212,147,40,664,9.3,0.173,No,0.189,Jiao Qu; Dries Bonte; Martijn L. Vandegehuchte
-Europe,UK,Glasgow,55.866,-4.257,448.82,999300,2226.505,201,40,465,24.65,-0.245,No,0.332,Davide M. Dominoni; Thomas MacGilavry; Giuditta Migiani
-North America,Canada,Guelph,43.545,-80.248,63.75,132397,2076.816,NA,20,400,8.44,0.286,Yes,0.315,Marc T.J. Johnson; Cindy Prashad
-North America,Canada,Halifax,44.649,-63.575,146.8,316701,2157.364,72,40,744,23.29,0.042,No,0.102,Jeremy T. Lundholm; Hannah Corney; Owen Yoshida
-Europe,Germany,Halle,51.483,11.971,83.29,239257,2872.578,125,40,741,10.04,0.237,Yes,0.266,Panagiotis Theodorou; Antonella Soro
-Europe,Finland,Helsinki,60.17,24.938,388.83,648042,1666.646,108,40,663,23.94,-0.024,No,0.084,Aapo Kahilainen; Michelle F. DiLeo
-North America,USA,Hempstead,40.706,-73.626,370.02,53891,145.643,NA,39,577,12.75,0.193,Yes,0.191,Steve M. Raciti; 
-Asia,Japan,Hiroshima,34.385,132.455,476.36,1194034,2506.579,109,45,883,36.11,-0.007,No,0.296,Marc T.J. Johnson; 
-North America,USA,Houston,29.759,-95.368,3597.93,2093615,581.894,99,43,750,71.15,0.118,Yes,0.907,Rebecca A. Zufall; Kerri M. Crawford; Hannah Locke
-North America,USA,Indianapolis,39.768,-86.158,1294.87,820436,633.605,123,50,974,24.37,0.036,No,0.119,Jessica D. Stephens; Travis J. Ryan
-North America,USA,Jacksonville,30.326,-81.657,1219.62,821764,673.787,85,35,500,40.31,0.203,Yes,0.872,James S. Santangelo; Ken A. Thompson
-North America,USA,Kalamazoo,42.29,-85.585,180.7,74262,410.968,NA,40,776,8.27,0.015,No,0.249,Santiago Salinas; E. Binney Girdler; Benjamin J. Rivera
-North America,Canada,Kingston,44.23,-76.481,64.92,117660,1812.384,NA,27,461,7.03,0.083,No,0.24,Anneke M. Golemiec; Mireille Golemiec; Molly C. Hetherington-Rauth
-Asia,China,Kunming,25.037,102.717,880.35,3385363,3845.474,105,50,800,18.74,-0.111,No,0.535,Jianqiang Wu; Jingxiong Zhang; Yunting Lei
-Asia,Japan,Kyoto,35.004,135.76,3406.11,1475183,433.099,1170,44,859,23.16,-0.154,No,0.285,Marc T.J. Johnson; 
-North America,USA,La_Verne,34.101,-117.768,82.28,31063,377.528,NA,40,600,5.84,0.087,No,0.19,David Bickford; Gabriela Biedebach
-North America,USA,Lake_Charles,30.227,-93.217,236.1,71993,304.926,NA,40,742,28.79,0.119,No,0.817,Glen R. Hood; Mattheau S. Comerford
-Europe,Germany,Landshut,48.536,12.152,30.11,63544,2110.395,NA,50,952,9.36,-0.021,No,0.211,Sharon E. Zytynska; Miriam Wiesmeier
-North America,USA,Lansing,42.734,-84.555,279.43,114253,408.879,NA,40,685,15.37,0.015,No,0.184,Acer VanWallendael; 
-Asia,China,Lanzhou,36.058,103.826,245.24,2438595,9943.708,83,38,570,32.81,-0.127,No,0.57,Zhigang Zhao; Jiahe Yao
-South America,Ecuador,Latacunga,-0.934,-78.615,15.84,63842,4030.429,NA,40,606,27.32,0.232,No,0.357,Diego F. Cisneros-Heredia; Izan Chalen; Jackie Álvarez
-Europe,Netherlands,Leiden,52.161,4.49,72.12,270225,3746.88,214,38,699,6.8,0.155,No,0.123,Menno Schilthuizen; Iva Njunjić
-Europe,Belgium,Leuven,50.88,4.701,42.91,95463,2224.726,NA,32,600,8.64,0.081,No,0.297,Kristien I. Brans; 
-Europe,Sweden,Linkoping,58.412,15.622,41.36,116368,2813.54,NA,44,854,11.43,0.194,Yes,0.085,Adriana Puentes; Gustaf Granath
-Europe,Portugal,Lisbon,38.711,-9.128,409.62,552700,1349.299,386,47,905,22.89,-0.103,No,0.786,Octávio S. Paulo; André F. Henriques
-North America,USA,Little_Rock,34.745,-92.275,435.75,193490,444.039,43,35,620,14.17,0.42,Yes,0.359,Joyce M. Hardin; J. Tristian Wiles; Sierra C. Hubbard
-South America,Ecuador,Loja,-3.998,-79.202,25.58,170280,6656.763,20,40,800,7.44,0.156,Yes,0.175,Carlos Iñiguez-Armijos; Carlos I. Espinosa
-North America,Canada,London,42.984,-81.248,196.42,383437,1952.128,62,40,800,16.55,0.001,No,0.289,Marc T.J. Johnson; Cindy Prashad
-North America,USA,Los_Angeles,34.05,-118.255,5378.66,3792820,705.161,118,42,791,41.13,0.111,No,0.437,Jeremy B. Yoder; Nicholas Poulos
-North America,USA,Louisville,38.257,-85.757,849.9,595386,700.537,142,46,749,40.07,-0.023,No,0.178,Christopher J. Frost; Jared Scott
-North America,USA,Madison,43.075,-89.384,247.36,233163,942.606,55,50,990,15.41,0.069,No,0.129,Vera W. Pfeiffer; Carly Ziter
-Europe,UK,Manchester,53.481,-2.243,647.75,510746,788.492,202,40,782,32.44,0.19,No,0.355,Jennifer K. Rowntree; Clare Dean
-South America,Colombia,Medellin,6.25,-75.566,176.89,2382399,13468.251,97,40,714,16.7,0,No,0.032,Santiago David; Paula A. Morales M; Estela Quintero-Vallejo
-Oceania,Australia,Melbourne,-37.814,144.963,1903.15,4196201,2204.871,155,31,493,52.44,0.26,No,0.59,Gareth R. Hopkins; Martin T. Lockett
-North America,USA,Memphis,35.149,-90.052,898.09,651885,725.857,104,50,901,18.2,0.436,Yes,0.401,Adam C. Schneider; Caralee A. Shepard; Savannah Draud
-North America,Mexico,Mexico_City,19.433,-99.133,1579.06,8421000,5332.92,205,33,648,28.33,-0.103,No,0.774,Juan Fornoni; Mariana Chávez-Pesqueira; Diego Carmona
-North America,USA,Minneapolis,44.977,-93.265,1442.55,382603,265.227,131,44,653,51,0.018,No,0.053,Amanda J. Gorton; Nicholas J. Deacon
-North America,Canada,Moncton,46.089,-64.776,85.71,108620,1267.297,NA,40,756,8.99,0.008,No,0.126,Emily J. Austen; SHAD Mount Allison 2018
-North America,Canada,Montreal,45.502,-73.567,1048.97,1782844,1699.614,152,49,969,39.17,-0.079,No,0.447,Ken A. Thompson; Marc T.J. Johnson
-North America,Mexico,Morelia,19.703,-101.195,130.19,901782,6926.661,52,40,457,10.81,0.323,No,0.495,Ek del-Val; Wendy Mendoza-Arroyo; Lizet Solis-Gabriel
-Europe,Germany,Muenster,51.962,7.625,65.07,314319,4830.475,86,40,765,9.87,0.467,Yes,0.26,Anna Bucharova; Christian Lampei
-Europe,Germany,Munich,48.135,11.582,401.94,1471508,3661.014,161,51,1001,19.65,0.092,No,0.286,Sharon E. Zytynska; Miriam Wiesmeier
-North America,Canada,New_Tecumseth,44.154,-79.869,10.36,18809,1815.541,NA,20,400,4.94,-0.043,No,0.312,Marc T.J. Johnson; Cindy Prashad
-North America,USA,New_York,40.731,-73.987,3296.97,8174988,2479.546,201,48,946,46.52,0.165,Yes,0.192,Ken A. Thompson; Marc T.J. Johnson
-Oceania,Australia,Newcastle,-32.928,151.782,194.25,322279,1659.094,73,45,751,21.5,0.303,No,0.541,Miriam Muñoz-Rojas; Jose R. Román; Angela M. Chilton
-NA,NA,Newhaven,NA,NA,213.57,129884,608.157,NA,40,794,17.5,0.163,Yes,0.218,A.Z. Andis Arietta; Adam B. Roddy
-North America,USA,Norfolk,36.846,-76.289,703.07,242827,345.381,79,40,585,35.52,0.353,Yes,0.395,James S. Santangelo; Ken A. Thompson
-Europe,Sweden,Norrtalje,59.76,18.701,8.49,56080,6605.418,NA,36,620,6.49,-0.11,Yes,0.136,Jörg G. Stephan; Tiffany Scholier
-North America,Canada,North_Bay,46.309,-79.461,40.2,50396,1253.632,NA,45,674,17.43,-0.023,No,0.291,Peter Nosko; Montana L. Warbrick; Laura S. Rossi
-North America,Canada,Orangeville,43.919,-80.097,18.82,30734,1633.05,NA,30,600,6.38,0.055,No,0.365,Marc T.J. Johnson; Cindy Prashad
-North America,Canada,Ottawa,45.422,-75.697,401.57,989567,2464.245,100,40,563,14.25,0.023,No,0.285,Cory A. Barker; Katelyn D. Campbell
-Oceania,New Zealand,Palmerston_North,-40.356,175.611,36.89,75400,2043.914,NA,40,732,7.61,0.405,Yes,0.738,Angela M. Parody-Merino; Jorge C. Bresciano
-Europe,France,Paris,48.857,2.352,1751.72,2187526,1248.787,780,49,933,32.84,-0.087,No,0.639,Jacqui A. Shykoff; 
-Oceania,Australia,Parramata,-33.815,151.001,1618.04,25798,15.944,NA,40,502,28.63,0.876,Yes,0.562,Manuel Lequerica; Caragh G. Threlfall; Dieter F. Hochuli
-North America,USA,Philadelphia,39.951,-75.166,2424.4,1526009,629.438,179,40,588,52.9,-0.012,No,0.199,James S. Santangelo; Ken A. Thompson
-North America,USA,Pittsburgh,40.441,-80.003,1199.77,305376,254.529,141,40,590,50.69,0.095,No,0.221,James S. Santangelo; Marc T.J. Johnson
-North America,Canada,Port_Hope,43.952,-78.294,10.31,12587,1220.854,NA,25,500,4.6,0.129,No,0.259,Marc T.J. Johnson; Cindy Prashad
-North America,USA,Portland,45.516,-122.681,1017.18,583792,573.932,115,40,548,45.91,0.007,No,0.184,James S. Santangelo; Ken A. Thompson
-North America,USA,Portlandme,43.657,-70.253,102.19,66194,647.754,NA,40,794,12.91,-0.028,No,0.165,Christopher M. Moore; 
-North America,USA,Providence,41.824,-71.413,596.25,177844,298.271,126,43,682,17.31,0.117,Yes,0.188,Jonathan L. Richardson; Georgianna Silveira
-South America,Chile,Punta_Arenas,-53.163,-70.908,24.45,124169,5078.487,NA,42,839,23.27,0.218,Yes,0.666,Mary T.K. Arroyo; Paola Jara-Arancio; Ítalo Tamburrino
-North America,Canada,Quebec_City,46.814,-71.206,360.06,705103,1958.293,93,42,761,23.19,0.075,No,0.412,Gwylim S. Blackburn; Anthony Piot; Ilga Porth
-South America,Ecuador,Quito,-0.187,-78.48,498.68,1607734,3223.979,89,41,754,23.06,-0.005,No,0.123,Jaime A. Chaves; Gonzalo Rivas-Torres
-North America,USA,Raleigh,35.775,-78.64,1281.85,404073,315.226,40,40,638,28.64,0.089,No,0.404,Emily K. Meineke; Michael G. Just
-South America,Chile,Rancagua,-34.168,-70.738,55.17,231890,4203.19,23,39,765,16.87,0.056,No,0.7,Maureen Murua; Carlos Lara; César González-Lagos
-Europe,UK,Reading,51.455,-0.969,91.31,218705,2395.192,14,43,645,9.05,0.702,Yes,0.49,Mark D. E. Fellowes; 
-Europe,France,Rennes,48.112,-1.68,119.31,216815,1817.241,62,42,795,11.95,-0.009,No,0.834,Maxime Dahirel; Léa Uroy
-Europe,Germany,Reutlingen,48.492,9.211,38.39,115966,3020.735,NA,40,792,9.3,0.255,No,0.409,J.F. Scheepens; 
-North America,USA,Rochester,43.156,-77.605,523.41,210565,402.295,124,41,651,23.11,-0.002,No,0.129,Kaitlin Stack Whitney; Ibrahim K. Cisse; Aaron S. Paratore
-North America,USA,Rockford,42.271,-89.094,460.91,153283,332.566,20,40,798,20.35,0.024,No,0.115,Emily S. Minor; Philip P. Johnson; Alexis D. Smith
-North America,USA,Sacramento,38.582,-121.494,932.05,466390,500.392,68,41,799,14.32,0.334,Yes,0.462,Connor R. Fitzpatrick; Adam C. Schneider
-North America,Canada,Saint_Thomas,42.779,-81.166,22.71,41813,1841.171,NA,26,520,3.82,-0.122,No,0.368,Marc T.J. Johnson; Cindy Prashad
-North America,USA,Salem,44.941,-123.039,330.43,154909,468.81,13,40,797,22.54,0.181,No,0.353,Ava R. Howard; Tayler D. Tate; Isaac A. Manju
-South America,Brazil,Santa_Maria,-29.686,-53.811,57.74,248347,4301.126,51,16,271,9.79,0.159,No,0.678,Fabio Angeoletto; Liliana Essi; Deleon S. Leandro
-South America,Chile,Santiago,-33.442,-70.646,653.94,5220161,7982.63,148,44,853,47.55,0.153,Yes,0.743,Marc T.J. Johnson; César González-Lagos; Alfonso Benitéz-Mora
-Asia,Japan,Sapporo,43.061,141.355,441.56,1952356,4421.497,100,44,872,20.99,0.104,No,0.257,Shunsuke Utsumi; Yoshino Ando
-North America,USA,Seattle,47.606,-122.332,2167.94,608666,280.758,116,40,710,52.17,0.148,No,0.305,Ken A. Thompson; Mannfred M. A. Boehm
-Asia,China,Shanghai,31.23,121.474,9212.14,20217748,2194.685,173,41,628,32.46,0.669,Yes,0.796,Xiao-Yong Chen; Xin Tong; Yuan-Yuan Ding
-North America,USA,Sioux_Falls,43.546,-96.728,148.12,153972,1039.509,11,38,570,12.87,-0.025,No,0.144,Philips O. Akinwole; Robert De Haan
-North America,Canada,St_Albert,53.643,-113.626,27.49,66082,2403.856,NA,40,711,6.52,0.064,No,0.175,Leah Flaherty; 
-North America,USA,St_Louis,38.627,-90.198,1679.01,319275,190.157,161,40,602,36.97,0.112,No,0.226,Kenneth M. Olsen; Alex R. Mahmoud; Julia M. Beliz
-North America,USA,Starkville,33.463,-88.81,25.08,23888,952.472,NA,40,800,5.24,-0.056,No,0.794,Marina Martínez-Bartolomé; Adrián Lázaro-Lobo
-Europe,Sweden,Stockholm,59.329,18.069,453.5,962154,2121.619,156,45,801,10.79,-0.053,No,0.075,Ayco J. M. Tack; Giada Centenaro
-North America,Canada,Stratford,43.37,-80.982,18.58,31053,1671.313,NA,25,500,4.86,0.098,No,0.389,Marc T.J. Johnson; Cindy Prashad
-Europe,Germany,Stuttgart,48.777,9.181,160.13,634830,3964.466,140,50,972,12.31,-0.022,No,0.303,Anna Kirschbaum; J.F. Scheepens
-North America,Canada,Sudbury,46.492,-80.994,123.39,161531,1309.109,21,20,200,9.21,-0.137,Yes,0.115,Thomas J S Merritt; Lila Elizabeth L Merritt; Danica C Levesque
-North America,USA,Tacoma,47.25,-122.44,1764.38,198243,112.358,57,40,686,11.82,-0.033,No,0.256,Marina Alberti; Karen Dyson; Tracy Fuentes
-South America,Chile,Talca,-35.428,-71.655,35.43,237295,6697.573,45,40,766,13.42,-0.058,No,0.712,Carolina A. León; Melisa Neila; César González-Lagos
-North America,USA,Tampa,27.947,-82.459,165.9,336154,2026.245,68,15,215,45.4,0,No,0.991,James S. Santangelo; Ken A. Thompson
-Asia,Iran,Tehran,35.689,51.417,1163.44,8693706,7472.415,120,40,674,45.97,0.431,Yes,0.27,Mohsen Falahati-Anbaran; Mitra Mohammadi Bazargani
-South America,Chile,Temuco,-38.74,-72.59,41.1,236377,5751.265,40,50,995,19.56,0.016,No,0.759,Mary T.K. Arroyo; Paula M. Vidal; Marìa F Flores
-Europe,Greece,Thessaloniki,40.64,22.944,144.17,315196,2186.28,118,44,872,14.38,0.421,Yes,0.519,Spyros Gkelis; Regina Karousou; Eleftherios K. Deligiannis
-Asia,Japan,Tokyo,35.689,139.692,6185.82,9272740,1499.032,411,50,946,65.72,0.066,No,0.22,Richard P. Shefferson; 
-North America,Mexico,Toluca,19.292,-99.656,305.24,2260149,7404.498,53,22,440,27.67,0.631,No,0.625,Vania Jiménez-Lobato; Eunice B. Kariñho; Juan Núñez-Farfán
-North America,Canada,Toronto,43.653,-79.383,1646.97,2731571,1658.543,145,121,2379,45.81,0.301,Yes,0.323,Ken A. Thompson; Marc T.J. Johnson
-Europe,Norway,Trondheim,63.43,10.395,62.95,170936,2715.425,19,41,721,8.31,-0.022,No,0.066,Joost A. M. Raeymaekers; Øystein H. Opedal; Manon Jeannot
-Europe,Sweden,Uppsala,59.858,17.645,41.96,162089,3862.941,39,39,747,6.88,-0.026,No,0.031,Amy L. Parachnowitsch; Joseph Anderson
-North America,Mexico,Uruapan,19.421,-102.062,41.61,299965,7208.964,36,20,355,6.29,-0.131,No,0.777,Carlos N. Ibarra-Cerdeña; Lilibeth Toledo-Chelala; Deysi N. Martínez
-North America,Canada,Vancouver,49.283,-123.121,697.06,672963,965.431,96,40,762,45.99,0.243,Yes,0.24,Ken A. Thompson; Mannfred M. A. Boehm
-North America,Canada,Victoria,48.428,-123.366,111.51,92041,825.406,NA,40,800,14.27,0.303,Yes,0.424,Daniel N. Anstett; Julia Anstett
-Europe,Poland,Warsaw,52.23,21.012,422.21,1777972,4211.108,693,50,735,26.59,0,No,0.039,Marta Szulkin; Justyna Szulc
-North America,USA,Washington,38.907,-77.037,2077.09,601766,289.716,146,45,658,47.64,0.205,Yes,0.236,James S. Santangelo; Ken A. Thompson
-North America,Canada,Waterloo,43.464,-80.52,221.21,104986,474.599,NA,30,600,8.27,-0.086,No,0.275,Marc T.J. Johnson; Cindy Prashad
-North America,Canada,Whitchurch-Stouffville,43.969,-79.257,9.94,32634,3283.099,NA,25,500,5.35,0.034,No,0.309,Marc T.J. Johnson; Cindy Prashad
-North America,Canada,Winnipeg,49.895,-97.138,332.49,711925,2141.192,106,43,754,29.65,-0.018,No,0.088,Aleeza C. Gerstein; Colin J. Garroway
-Oceania,Australia,Wollongong,-34.424,150.894,163.53,261897,1601.523,22,40,788,16.48,0.629,Yes,0.394,Angela T. Moles; Stephen P. Bonser; Zoe A. Xirocostas
-North America,Canada,Woodstock,43.131,-80.747,27.72,40404,1457.576,NA,30,600,NA,0.028,No,0.403,Marc T.J. Johnson; Cindy Prashad
-Asia,China,Wuhan,30.601,114.296,1603.94,7541527,4701.876,241,41,820,17.51,-0.109,No,0.868,Zhaogui Yan; Nian Wang; Tianhua He
-North America,Mexico,Xalapa,19.527,-96.924,68.7,732835,10667.176,51,23,445,5.62,0.027,No,0.104,Daniel González-Tokman; Fernanda Baena-Díaz; Jéssica Falcão
-Europe,Switzerland,Zurich,47.377,8.542,318.56,415367,1303.889,120,40,791,19.34,-0.011,No,0.574,Krista Raveala; Anna-Liisa Laine
+continent,Country,city,latitude_city,longitude_city,area,pop_size,density,city_age,no_cities,num_populations,total_num_plants,transect_length,betaRLM_freqHCN,sigRLM,meanHCN,sampled_by
+North America,Canada,Acton,43.63,-80.041,3.97,9462,2383.375,0,8,20,400,4.94,0.022,No,0.376,Marc T.J. Johnson; Cindy Prashad
+North America,USA,Albuquerque,35.084,-106.65,608.4,546191,897.75,65,3,40,792,17.27,-0.185,Yes,0.225,Nora Mitchell; Kenneth D. Whitney
+Europe,Portugal,Almada,38.68,-9.158,147.8,174030,1177.47,33,5,44,880,16.48,0.026,No,0.968,Filipa Grilo; Cristina Branquinho; Pedro Pinho
+Europe,Netherlands,Amsterdam,52.373,4.891,315.54,1114745,3532.817,374,10,40,724,9.74,0.108,No,0.203,Jacintha Ellers; Janine Marien
+North America,USA,Anchorage,61.216,-149.895,163.8,291826,1781.6,42,3,44,699,15.2,-0.011,No,0.091,Justin R Fulkerson; 
+North America,Canada,Angus,44.326,-79.888,4.74,12640,2666.667,0,4,20,400,3.98,0.032,No,0.341,Marc T.J. Johnson; Cindy Prashad
+Europe,Belgium,Antwerp,51.219,4.402,365.31,483505,1323.547,161,8,40,697,13.65,0.333,Yes,0.234,; 
+Oceania,Australia,Armidale,-30.513,151.669,19.87,23352,1175.239,0,1,40,746,13.34,0.319,Yes,0.702,Nigel R. Andrew; Sarah J. Hill
+North America,USA,Athens,33.96,-83.376,113.15,115441,1020.247,0,4,28,560,17.16,0.423,Yes,0.489,Susana M. Wadgymar; Jill T. Anderson
+North America,USA,Atlanta,33.758,-84.388,3324.2,426821,128.398,111,7,45,654,33.71,0.379,Yes,0.421,James S. Santangelo; Ken A. Thompson
+North America,USA,Atlantic_City,39.356,-74.436,364.64,39558,108.485,0,8,45,810,37.22,-0.207,Yes,0.431,Amy M. Savage; Jennifer Le; Ourania Nikolaidis
+North America,USA,Baltimore,39.29,-76.612,1230.45,620862,504.581,173,5,39,584,51.35,0.032,No,0.216,James S. Santangelo; Ken A. Thompson
+North America,Canada,Barrie,44.389,-79.686,69.6,145614,2092.155,0,5,25,500,8.1,0.044,No,0.307,Marc T.J. Johnson; Cindy Prashad
+North America,USA,Baton_Rouge,30.448,-91.189,604.59,229422,379.467,61,2,45,886,26.61,0.35,Yes,0.82,Luis Santiago-Rosario; Joanna Griffiths; Katherine Hovanes
+Asia,China,Beijing,39.904,116.407,6142.22,16704306,2719.588,763,5,24,515,16.42,-0.376,No,0.61,Ai-Ying Wang; Wan-Jin Liao
+Europe,Germany,Berlin,52.514,13.393,1139.9,3644826,3197.496,227,6,34,528,21.41,0.191,Yes,0.17,Frauke Garbsch; Amy G. Foster; Stephan Greiner
+Europe,Switzerland,Bern,46.948,7.447,56.34,133883,2376.34,0,6,40,687,8.7,-0.062,No,0.539,Diana J. Rennison; Matthew P. Josephson; Matthew P. Zuellig
+South America,Colombia,Bogota,4.627,-74.107,431.6,7387400,17116.311,116,3,40,671,24.72,0.208,No,0.391,Andrew J. Crawford; Erika Rodriguez; Melissa Hernández
+North America,USA,Boston,42.357,-71.056,789.01,617786,782.989,167,6,44,876,43.28,0.134,Yes,0.197,Ken A. Thompson; Marc T.J. Johnson
+North America,Canada,Bradford,44.114,-79.565,12.33,29862,2421.898,0,4,20,400,6.31,-0.065,No,0.263,Marc T.J. Johnson; Cindy Prashad
+North America,Canada,Brantford,43.139,-80.264,49.09,98179,1999.98,0,8,27,540,8.15,0.091,No,0.323,Marc T.J. Johnson; Cindy Prashad
+Europe,UK,Brighton,50.822,-0.137,94.67,244329,2580.849,124,5,40,722,8.84,0.326,Yes,0.47,Maria Clara Castellanos; Christopher R. Mackin
+Europe,Belgium,Brussels,50.846,4.356,281.52,157673,560.077,191,8,30,553,14.02,0.117,No,0.361,Kiani Cuypers; Kristien Brans
+South America,Argentina,Buenos_Aires,-34.604,-58.382,2356.31,13588171,5766.716,156,2,45,827,73.44,0.021,No,0.748,Concordia E. Gundel; Camila Cordoba Fradinger
+North America,USA,Burlington,44.476,-73.214,101.13,42899,424.197,0,2,50,727,18.74,-0.251,Yes,0.568,Aimee Classen; Nathan J. Sanders; Raina M. Fitzpatrick
+North America,Canada,Calgary,51.047,-114.072,625.23,1237656,1979.521,67,3,40,571,34.29,0.193,Yes,0.142,Daniel N. Anstett; Julia Anstett
+Europe,UK,Cambridge,52.205,0.122,43.43,145818,3357.541,0,5,40,754,8.82,0.427,Yes,0.308,Kiyoko M. Gotanda; Benjamin J. M. Jarrett; Howard A. Baylis
+Oceania,Australia,Canberra,-35.308,149.124,326.91,432141,1321.896,49,3,40,697,9.94,-0.014,No,0.736,Lauren Kirn; Christopher Lee; Kathryn Hodgins
+Africa,South Africa,Cape_Town,-33.925,18.424,684.07,3430992,5015.557,119,3,20,336,38.74,0.022,No,0.813,Peta D Brom; 
+North America,USA,Charlotte,35.227,-80.844,1448.68,753692,520.261,68,4,40,588,39.81,-0.002,No,0.338,James S. Santangelo; Ken A. Thompson
+North America,Canada,Charlottetown,46.235,-63.127,38.22,44739,1170.565,0,1,45,891,14.31,0.032,No,0.359,Edeline Gagnon; 
+North America,USA,Chicago,41.878,-87.63,5366.15,2695624,502.339,158,5,45,664,61.59,0.167,Yes,0.233,Windsor E. Aguirre; Jalene M. LaMontagne
+Oceania,New Zealand,Christchurch,-43.532,172.636,181.67,374100,2059.228,74,1,39,743,27.01,0.429,Yes,0.617,William Godsoe; 
+North America,USA,Cincinnati,39.103,-84.512,1793.38,296893,165.549,162,3,40,588,50.81,0.03,No,0.207,James S. Santangelo; Marc T.J. Johnson
+North America,USA,Cleveland,41.499,-81.694,2179.6,396629,181.973,142,4,40,594,44.59,0.064,No,0.269,James S. Santangelo; Marc T.J. Johnson
+North America,Canada,Cobourg,43.96,-78.165,15.99,19031,1190.181,0,3,27,540,6.17,0.052,No,0.206,Marc T.J. Johnson; Cindy Prashad
+Europe,Germany,Cologne,50.941,6.96,434.41,1085664,2499.169,162,7,28,409,20.87,0.023,No,0.404,Pádraic J Flood; Emmanuel Tergemina
+South America,Brazil,Curitiba,-25.433,-49.272,707.95,1893997,2675.326,112,4,35,606,36.6,-0.041,No,0.762,João C. Castro Pena; Felipe Aoki-Gonçalves; Milton C. Ribeiro
+North America,USA,Denver,39.745,-104.99,1704.65,599815,351.87,118,4,43,811,57.5,-0.044,No,0.203,Shannon M. Murphy; Robin M. Tinghitella; Erica L. Larson
+North America,USA,Detroit,42.333,-83.048,2776.49,713885,257.118,136,5,40,593,59.86,0.063,No,0.32,James S. Santangelo; Marc T.J. Johnson
+North America,Canada,Edmonton,53.544,-113.491,605.8,1062643,1754.115,70,4,44,788,22.68,0.046,No,0.169,James F. Cahill; Megan Ljubotina; Margarete A. Dettlaff
+North America,Canada,Elmira,43.6,-80.558,6.12,10161,1660.294,0,7,20,400,2.61,-0.058,No,0.388,Marc T.J. Johnson; Cindy Prashad
+North America,Canada,Everett,44.19,-79.937,1.37,1670,1218.978,0,5,20,400,3.77,0.133,No,0.273,Marc T.J. Johnson; Cindy Prashad
+North America,USA,Fairbanks,64.838,-147.716,81.93,31535,384.902,0,1,40,799,8.68,0.016,No,0.096,Cristina Ornelas; 
+North America,Canada,Fergus,43.704,-80.38,8.81,20767,2357.208,0,7,20,400,7.94,0.288,Yes,0.447,Marc T.J. Johnson; Cindy Prashad
+North America,USA,Fort_Collins,40.588,-105.076,201.39,144855,719.276,0,4,23,318,4.9,-0.083,No,0.146,Brook T. Moyers; 
+Europe,Germany,Frankfurt,50.111,8.682,624.61,753056,1205.642,155,8,41,647,16.79,0.314,Yes,0.364,Juraj Paule; Indra Starke-Ottich
+North America,Canada,Fredericton,45.962,-66.644,57.97,59405,1024.754,0,1,40,800,11.71,-0.001,No,0.166,Stephen B. Heard; Amy L. Parachnowitsch; Mischa M. Giasson
+North America,USA,Freehold,40.26,-74.274,107.92,12052,111.675,0,7,47,926,15.63,-0.132,Yes,0.166,Tiffany C. Longo; Jesse R. Bragger; Summer A. Shaheed
+North America,Canada,Georgetown,43.651,-79.899,16.85,42123,2499.881,0,8,20,400,6.44,0.088,No,0.346,Marc T.J. Johnson; Cindy Prashad
+Europe,Belgium,Ghent,51.054,3.725,138.97,243366,1751.212,147,9,40,664,9.3,0.173,No,0.189,Jiao Qu; Dries Bonte; Martijn L. Vandegehuchte
+Europe,UK,Glasgow,55.866,-4.257,448.82,999300,2226.505,201,4,40,465,24.65,-0.245,No,0.332,Davide M. Dominoni; Thomas MacGilavry; Giuditta Migiani
+North America,Canada,Guelph,43.545,-80.248,63.75,132397,2076.816,0,9,20,400,8.44,0.286,Yes,0.315,Marc T.J. Johnson; Cindy Prashad
+North America,Canada,Halifax,44.649,-63.575,146.8,316701,2157.364,72,2,40,744,23.29,0.042,No,0.102,Jeremy T. Lundholm; Hannah Corney; Owen Yoshida
+Europe,Germany,Halle,51.483,11.971,83.29,239257,2872.578,125,5,40,741,10.04,0.237,Yes,0.266,Panagiotis Theodorou; Antonella Soro
+Europe,Finland,Helsinki,60.17,24.938,388.83,648042,1666.646,108,4,40,663,23.94,-0.024,No,0.084,Aapo Kahilainen; Michelle F. DiLeo
+North America,USA,Hempstead,40.706,-73.626,370.02,53891,145.643,0,6,39,577,12.75,0.193,Yes,0.191,Steve M. Raciti; 
+Asia,Japan,Hiroshima,34.385,132.455,476.36,1194034,2506.579,109,3,45,883,36.11,-0.007,No,0.296,Marc T.J. Johnson; 
+North America,USA,Houston,29.759,-95.368,3597.93,2093615,581.894,99,3,43,750,71.15,0.118,Yes,0.907,Rebecca A. Zufall; Kerri M. Crawford; Hannah Locke
+North America,USA,Indianapolis,39.768,-86.158,1294.87,820436,633.605,123,5,50,974,24.37,0.036,No,0.119,Jessica D. Stephens; Travis J. Ryan
+North America,USA,Jacksonville,30.326,-81.657,1219.62,821764,673.787,85,3,35,500,40.31,0.203,Yes,0.872,James S. Santangelo; Ken A. Thompson
+North America,USA,Kalamazoo,42.29,-85.585,180.7,74262,410.968,0,4,40,776,8.27,0.015,No,0.249,Santiago Salinas; E. Binney Girdler; Benjamin J. Rivera
+North America,Canada,Kingston,44.23,-76.481,64.92,117660,1812.384,0,2,27,461,7.03,0.083,No,0.24,Anneke M. Golemiec; Mireille Golemiec; Molly C. Hetherington-Rauth
+Asia,China,Kunming,25.037,102.717,880.35,3385363,3845.474,105,6,50,800,18.74,-0.111,No,0.535,Jianqiang Wu; Jingxiong Zhang; Yunting Lei
+Asia,Japan,Kyoto,35.004,135.76,3406.11,1475183,433.099,1170,8,44,859,23.16,-0.154,No,0.285,Marc T.J. Johnson; 
+North America,USA,La_Verne,34.101,-117.768,82.28,31063,377.528,0,6,40,600,5.84,0.087,No,0.19,David Bickford; Gabriela Biedebach
+North America,USA,Lake_Charles,30.227,-93.217,236.1,71993,304.926,0,1,40,742,28.79,0.119,No,0.817,Glen R. Hood; Mattheau S. Comerford
+Europe,Germany,Landshut,48.536,12.152,30.11,63544,2110.395,0,7,50,952,9.36,-0.021,No,0.211,Sharon E. Zytynska; Miriam Wiesmeier
+North America,USA,Lansing,42.734,-84.555,279.43,114253,408.879,0,3,40,685,15.37,0.015,No,0.184,Acer VanWallendael; 
+Asia,China,Lanzhou,36.058,103.826,245.24,2438595,9943.708,83,4,38,570,32.81,-0.127,No,0.57,Zhigang Zhao; Jiahe Yao
+South America,Ecuador,Latacunga,-0.934,-78.615,15.84,63842,4030.429,0,3,40,606,27.32,0.232,No,0.357,Diego F. Cisneros-Heredia; Izan Chalen; Jackie Álvarez
+Europe,Netherlands,Leiden,52.161,4.49,72.12,270225,3746.88,214,8,38,699,6.8,0.155,No,0.123,Menno Schilthuizen; Iva Njunjić
+Europe,Belgium,Leuven,50.88,4.701,42.91,95463,2224.726,0,8,32,600,8.64,0.081,No,0.297,Kristien I. Brans; 
+Europe,Sweden,Linkoping,58.412,15.622,41.36,116368,2813.54,0,2,44,854,11.43,0.194,Yes,0.085,Adriana Puentes; Gustaf Granath
+Europe,Portugal,Lisbon,38.711,-9.128,409.62,552700,1349.299,386,6,47,905,22.89,-0.103,No,0.786,Octávio S. Paulo; André F. Henriques
+North America,USA,Little_Rock,34.745,-92.275,435.75,193490,444.039,43,3,35,620,14.17,0.42,Yes,0.359,Joyce M. Hardin; J. Tristian Wiles; Sierra C. Hubbard
+South America,Ecuador,Loja,-3.998,-79.202,25.58,170280,6656.763,20,1,40,800,7.44,0.156,Yes,0.175,Carlos Iñiguez-Armijos; Carlos I. Espinosa
+North America,Canada,London,42.984,-81.248,196.42,383437,1952.128,62,2,40,800,16.55,0.001,No,0.289,Marc T.J. Johnson; Cindy Prashad
+North America,USA,Los_Angeles,34.05,-118.255,5378.66,3792820,705.161,118,6,42,791,41.13,0.111,No,0.437,Jeremy B. Yoder; Nicholas Poulos
+North America,USA,Louisville,38.257,-85.757,849.9,595386,700.537,142,3,46,749,40.07,-0.023,No,0.178,Christopher J. Frost; Jared Scott
+North America,USA,Madison,43.075,-89.384,247.36,233163,942.606,55,4,50,990,15.41,0.069,No,0.129,Vera W. Pfeiffer; Carly Ziter
+Europe,UK,Manchester,53.481,-2.243,647.75,510746,788.492,202,11,40,782,32.44,0.19,No,0.355,Jennifer K. Rowntree; Clare Dean
+South America,Colombia,Medellin,6.25,-75.566,176.89,2382399,13468.251,97,2,40,714,16.7,0,No,0.032,Santiago David; Paula A. Morales M; Estela Quintero-Vallejo
+Oceania,Australia,Melbourne,-37.814,144.963,1903.15,4196201,2204.871,155,4,31,493,52.44,0.26,No,0.59,Gareth R. Hopkins; Martin T. Lockett
+North America,USA,Memphis,35.149,-90.052,898.09,651885,725.857,104,3,50,901,18.2,0.436,Yes,0.401,Adam C. Schneider; Caralee A. Shepard; Savannah Draud
+North America,Mexico,Mexico_City,19.433,-99.133,1579.06,8421000,5332.92,205,4,33,648,28.33,-0.103,No,0.774,Juan Fornoni; Mariana Chávez-Pesqueira; Diego Carmona
+North America,USA,Minneapolis,44.977,-93.265,1442.55,382603,265.227,131,4,44,653,51,0.018,No,0.053,Amanda J. Gorton; Nicholas J. Deacon
+North America,Canada,Moncton,46.089,-64.776,85.71,108620,1267.297,0,1,40,756,8.99,0.008,No,0.126,Emily J. Austen; SHAD Mount Allison 2018
+North America,Canada,Montreal,45.502,-73.567,1048.97,1782844,1699.614,152,5,49,969,39.17,-0.079,No,0.447,Ken A. Thompson; Marc T.J. Johnson
+North America,Mexico,Morelia,19.703,-101.195,130.19,901782,6926.661,52,1,40,457,10.81,0.323,No,0.495,Ek del-Val; Wendy Mendoza-Arroyo; Lizet Solis-Gabriel
+Europe,Germany,Muenster,51.962,7.625,65.07,314319,4830.475,86,10,40,765,9.87,0.467,Yes,0.26,Anna Bucharova; Christian Lampei
+Europe,Germany,Munich,48.135,11.582,401.94,1471508,3661.014,161,3,51,1001,19.65,0.092,No,0.286,Sharon E. Zytynska; Miriam Wiesmeier
+North America,Canada,New_Tecumseth,44.154,-79.869,10.36,18809,1815.541,0,5,20,400,4.94,-0.043,No,0.312,Marc T.J. Johnson; Cindy Prashad
+North America,USA,New_York,40.731,-73.987,3296.97,8174988,2479.546,201,7,48,946,46.52,0.165,Yes,0.192,Ken A. Thompson; Marc T.J. Johnson
+Oceania,Australia,Newcastle,-32.928,151.782,194.25,322279,1659.094,73,3,45,751,21.5,0.303,No,0.541,Miriam Muñoz-Rojas; Jose R. Román; Angela M. Chilton
+NA,NA,Newhaven,NA,NA,213.57,129884,608.157,0,8,40,794,17.5,0.163,Yes,0.218,A.Z. Andis Arietta; Adam B. Roddy
+North America,USA,Norfolk,36.846,-76.289,703.07,242827,345.381,79,2,40,585,35.52,0.353,Yes,0.395,James S. Santangelo; Ken A. Thompson
+Europe,Sweden,Norrtalje,59.76,18.701,8.49,56080,6605.418,0,2,36,620,6.49,-0.11,Yes,0.136,Jörg G. Stephan; Tiffany Scholier
+North America,Canada,North_Bay,46.309,-79.461,40.2,50396,1253.632,0,1,45,674,17.43,-0.023,No,0.291,Peter Nosko; Montana L. Warbrick; Laura S. Rossi
+North America,Canada,Orangeville,43.919,-80.097,18.82,30734,1633.05,0,4,30,600,6.38,0.055,No,0.365,Marc T.J. Johnson; Cindy Prashad
+North America,Canada,Ottawa,45.422,-75.697,401.57,989567,2464.245,100,3,40,563,14.25,0.023,No,0.285,Cory A. Barker; Katelyn D. Campbell
+Oceania,New Zealand,Palmerston_North,-40.356,175.611,36.89,75400,2043.914,0,1,40,732,7.61,0.405,Yes,0.738,Angela M. Parody-Merino; Jorge C. Bresciano
+Europe,France,Paris,48.857,2.352,1751.72,2187526,1248.787,780,3,49,933,32.84,-0.087,No,0.639,Jacqui A. Shykoff; 
+Oceania,Australia,Parramata,-33.815,151.001,NA,NA,NA,NA,NA,40,502,28.63,0.876,Yes,0.562,Manuel Lequerica; Caragh G. Threlfall; Dieter F. Hochuli
+North America,USA,Philadelphia,39.951,-75.166,2424.4,1526009,629.438,179,5,40,588,52.9,-0.012,No,0.199,James S. Santangelo; Ken A. Thompson
+North America,USA,Pittsburgh,40.441,-80.003,1199.77,305376,254.529,141,2,40,590,50.69,0.095,No,0.221,James S. Santangelo; Marc T.J. Johnson
+North America,Canada,Port_Hope,43.952,-78.294,10.31,12587,1220.854,0,2,25,500,4.6,0.129,No,0.259,Marc T.J. Johnson; Cindy Prashad
+North America,USA,Portland,45.516,-122.681,NA,NA,NA,NA,NA,40,548,45.91,0.007,No,0.184,James S. Santangelo; Ken A. Thompson
+North America,USA,Portlandme,43.657,-70.253,NA,NA,NA,NA,NA,40,794,12.91,-0.028,No,0.165,Christopher M. Moore; 
+North America,USA,Providence,41.824,-71.413,596.25,177844,298.271,126,5,43,682,17.31,0.117,Yes,0.188,Jonathan L. Richardson; Georgianna Silveira
+South America,Chile,Punta_Arenas,-53.163,-70.908,24.45,124169,5078.487,0,1,42,839,23.27,0.218,Yes,0.666,Mary T.K. Arroyo; Paola Jara-Arancio; Ítalo Tamburrino
+North America,Canada,Quebec_City,46.814,-71.206,360.06,705103,1958.293,93,1,42,761,23.19,0.075,No,0.412,Gwylim S. Blackburn; Anthony Piot; Ilga Porth
+South America,Ecuador,Quito,-0.187,-78.48,498.68,1607734,3223.979,89,1,41,754,23.06,-0.005,No,0.123,Jaime A. Chaves; Gonzalo Rivas-Torres
+North America,USA,Raleigh,35.775,-78.64,1281.85,404073,315.226,40,3,40,638,28.64,0.089,No,0.404,Emily K. Meineke; Michael G. Just
+South America,Chile,Rancagua,-34.168,-70.738,55.17,231890,4203.19,23,1,39,765,16.87,0.056,No,0.7,Maureen Murua; Carlos Lara; César González-Lagos
+Europe,UK,Reading,51.455,-0.969,91.31,218705,2395.192,14,10,43,645,9.05,0.702,Yes,0.49,Mark D. E. Fellowes; 
+Europe,France,Rennes,48.112,-1.68,119.31,216815,1817.241,62,1,42,795,11.95,-0.009,No,0.834,Maxime Dahirel; Léa Uroy
+Europe,Germany,Reutlingen,48.492,9.211,38.39,115966,3020.735,0,7,40,792,9.3,0.255,No,0.409,J.F. Scheepens; 
+North America,USA,Rochester,43.156,-77.605,523.41,210565,402.295,124,1,41,651,23.11,-0.002,No,0.129,Kaitlin Stack Whitney; Ibrahim K. Cisse; Aaron S. Paratore
+North America,USA,Rockford,42.271,-89.094,460.91,153283,332.566,20,6,40,798,20.35,0.024,No,0.115,Emily S. Minor; Philip P. Johnson; Alexis D. Smith
+North America,USA,Sacramento,38.582,-121.494,932.05,466390,500.392,68,4,41,799,14.32,0.334,Yes,0.462,Connor R. Fitzpatrick; Adam C. Schneider
+North America,Canada,Saint_Thomas,42.779,-81.166,NA,NA,NA,NA,NA,26,520,3.82,-0.122,No,0.368,Marc T.J. Johnson; Cindy Prashad
+North America,USA,Salem,44.941,-123.039,330.43,154909,468.81,13,8,40,797,22.54,0.181,No,0.353,Ava R. Howard; Tayler D. Tate; Isaac A. Manju
+South America,Brazil,Santa_Maria,-29.686,-53.811,57.74,248347,4301.126,51,1,16,271,9.79,0.159,No,0.678,Fabio Angeoletto; Liliana Essi; Deleon S. Leandro
+South America,Chile,Santiago,-33.442,-70.646,653.94,5220161,7982.63,148,1,44,853,47.55,0.153,Yes,0.743,Marc T.J. Johnson; César González-Lagos; Alfonso Benitéz-Mora
+Asia,Japan,Sapporo,43.061,141.355,441.56,1952356,4421.497,100,5,44,872,20.99,0.104,No,0.257,Shunsuke Utsumi; Yoshino Ando
+North America,USA,Seattle,47.606,-122.332,2167.94,608666,280.758,116,3,40,710,52.17,0.148,No,0.305,Ken A. Thompson; Mannfred M. A. Boehm
+Asia,China,Shanghai,31.23,121.474,9212.14,20217748,2194.685,173,3,41,628,32.46,0.669,Yes,0.796,Xiao-Yong Chen; Xin Tong; Yuan-Yuan Ding
+North America,USA,Sioux_Falls,43.546,-96.728,148.12,153972,1039.509,11,1,38,570,12.87,-0.025,No,0.144,Philips O. Akinwole; Robert De Haan
+North America,Canada,St_Albert,53.643,-113.626,NA,NA,NA,NA,NA,40,711,6.52,0.064,No,0.175,Leah Flaherty; 
+North America,USA,St_Louis,38.627,-90.198,NA,NA,NA,NA,NA,40,602,36.97,0.112,No,0.226,Kenneth M. Olsen; Alex R. Mahmoud; Julia M. Beliz
+North America,USA,Starkville,33.463,-88.81,25.08,23888,952.472,0,2,40,800,5.24,-0.056,No,0.794,Marina Martínez-Bartolomé; Adrián Lázaro-Lobo
+Europe,Sweden,Stockholm,59.329,18.069,453.5,962154,2121.619,156,2,45,801,10.79,-0.053,No,0.075,Ayco J. M. Tack; Giada Centenaro
+North America,Canada,Stratford,43.37,-80.982,18.58,31053,1671.313,0,3,25,500,4.86,0.098,No,0.389,Marc T.J. Johnson; Cindy Prashad
+Europe,Germany,Stuttgart,48.777,9.181,160.13,634830,3964.466,140,5,50,972,12.31,-0.022,No,0.303,Anna Kirschbaum; J.F. Scheepens
+North America,Canada,Sudbury,46.492,-80.994,123.39,161531,1309.109,21,1,20,200,9.21,-0.137,Yes,0.115,Thomas J S Merritt; Lila Elizabeth L Merritt; Danica C Levesque
+North America,USA,Tacoma,47.25,-122.44,1764.38,198243,112.358,57,3,40,686,11.82,-0.033,No,0.256,Marina Alberti; Karen Dyson; Tracy Fuentes
+South America,Chile,Talca,-35.428,-71.655,35.43,237295,6697.573,45,1,40,766,13.42,-0.058,No,0.712,Carolina A. León; Melisa Neila; César González-Lagos
+North America,USA,Tampa,27.947,-82.459,165.9,336154,2026.245,68,5,15,215,45.4,0,No,0.991,James S. Santangelo; Ken A. Thompson
+Asia,Iran,Tehran,35.689,51.417,1163.44,8693706,7472.415,120,3,40,674,45.97,0.431,Yes,0.27,Mohsen Falahati-Anbaran; Mitra Mohammadi Bazargani
+South America,Chile,Temuco,-38.74,-72.59,41.1,236377,5751.265,40,1,50,995,19.56,0.016,No,0.759,Mary T.K. Arroyo; Paula M. Vidal; Marìa F Flores
+Europe,Greece,Thessaloniki,40.64,22.944,144.17,315196,2186.28,118,1,44,872,14.38,0.421,Yes,0.519,Spyros Gkelis; Regina Karousou; Eleftherios K. Deligiannis
+Asia,Japan,Tokyo,35.689,139.692,6185.82,9272740,1499.032,411,1,50,946,65.72,0.066,No,0.22,Richard P. Shefferson; 
+North America,Mexico,Toluca,19.292,-99.656,305.24,2260149,7404.498,53,2,22,440,27.67,0.631,No,0.625,Vania Jiménez-Lobato; Eunice B. Kariñho; Juan Núñez-Farfán
+North America,Canada,Toronto,43.653,-79.383,1646.97,2731571,1658.543,145,6,121,2379,45.81,0.301,Yes,0.323,Ken A. Thompson; Marc T.J. Johnson
+Europe,Norway,Trondheim,63.43,10.395,62.95,170936,2715.425,19,1,41,721,8.31,-0.022,No,0.066,Joost A. M. Raeymaekers; Øystein H. Opedal; Manon Jeannot
+Europe,Sweden,Uppsala,59.858,17.645,41.96,162089,3862.941,39,3,39,747,6.88,-0.026,No,0.031,Amy L. Parachnowitsch; Joseph Anderson
+North America,Mexico,Uruapan,19.421,-102.062,41.61,299965,7208.964,36,1,20,355,6.29,-0.131,No,0.777,Carlos N. Ibarra-Cerdeña; Lilibeth Toledo-Chelala; Deysi N. Martínez
+North America,Canada,Vancouver,49.283,-123.121,697.06,672963,965.431,96,3,40,762,45.99,0.243,Yes,0.24,Ken A. Thompson; Mannfred M. A. Boehm
+North America,Canada,Victoria,48.428,-123.366,111.51,92041,825.406,0,2,40,800,14.27,0.303,Yes,0.424,Daniel N. Anstett; Julia Anstett
+Europe,Poland,Warsaw,52.23,21.012,422.21,1777972,4211.108,693,3,50,735,26.59,0,No,0.039,Marta Szulkin; Justyna Szulc
+North America,USA,Washington,38.907,-77.037,2077.09,601766,289.716,146,9,45,658,47.64,0.205,Yes,0.236,James S. Santangelo; Ken A. Thompson
+North America,Canada,Waterloo,43.464,-80.52,221.21,104986,474.599,0,6,30,600,8.27,-0.086,No,0.275,Marc T.J. Johnson; Cindy Prashad
+North America,Canada,Whitchurch-Stouffville,43.969,-79.257,NA,NA,NA,NA,NA,25,500,5.35,0.034,No,0.309,Marc T.J. Johnson; Cindy Prashad
+North America,Canada,Winnipeg,49.895,-97.138,332.49,711925,2141.192,106,1,43,754,29.65,-0.018,No,0.088,Aleeza C. Gerstein; Colin J. Garroway
+Oceania,Australia,Wollongong,-34.424,150.894,163.53,261897,1601.523,22,5,40,788,16.48,0.629,Yes,0.394,Angela T. Moles; Stephen P. Bonser; Zoe A. Xirocostas
+North America,Canada,Woodstock,43.131,-80.747,27.72,40404,1457.576,0,4,30,600,NA,0.028,No,0.403,Marc T.J. Johnson; Cindy Prashad
+Asia,China,Wuhan,30.601,114.296,1603.94,7541527,4701.876,241,3,41,820,17.51,-0.109,No,0.868,Zhaogui Yan; Nian Wang; Tianhua He
+North America,Mexico,Xalapa,19.527,-96.924,68.7,732835,10667.176,51,1,23,445,5.62,0.027,No,0.104,Daniel González-Tokman; Fernanda Baena-Díaz; Jéssica Falcão
+Europe,Switzerland,Zurich,47.377,8.542,318.56,415367,1303.889,120,5,40,791,19.34,-0.011,No,0.574,Krista Raveala; Anna-Liisa Laine

@@ -1,6 +1,3 @@
-.DS_Store
-.Rhistory
-.Rproj.user/
 data/clean/*
 !data/clean/individualPlant_allCities/
 data/raw/*
@@ -9,6 +6,7 @@ data/raw/*
 data/raw/mtjj_jss/*
 !data/raw/mtjj_jss/mtjj_popMeans/
 !data/raw/environmental_data/
+!data/raw/city_data/
 analysis/*
 !analysis/supplementary-tables/
 *.ipynb
@@ -18,3 +16,4 @@ misc/
 *venv
 renv/Library
 *.pdf
+_archive/

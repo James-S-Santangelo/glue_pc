@@ -12,14 +12,11 @@ allPopMeans <- do.call(rbind, create_df_list(inpath))
 city_centres <- read_csv("data/clean/latLong_cityCenters_clean.csv")
 
 # Get city stats
-city_stats <- read_csv("data/raw/city_data/City_Metrics.csv") %>% 
-  dplyr::select(City_Name, Population, Area, Age) %>% 
-  rename(city = "City_Name",
-         human_population_size = "Population",
-         area = "Area",
-         age = "Age") %>% 
-  mutate(density = human_population_size / area,
-         city = as.character(fct_recode(city, "Newhaven" = "New_Haven"))) %>% 
+city_stats <- read_csv("data/raw/city_data/City_characteristics.csv") %>% 
+  dplyr::select(City, area, pop_size, density, city_age, no_cities) %>% 
+  rename('city' = 'City') %>% 
+  mutate(city = str_replace(city, ' ', '_')) %>% 
+  mutate(city = as.character(fct_recode(city, "Newhaven" = "New_Haven"))) %>% 
   filter(!(city %in% exclude))
 
 # Cline summary
@@ -77,7 +74,7 @@ final_table <- cline_summary %>%
   left_join(., more_city_vars, by = "city") %>% 
   left_join(., collectors, by = "city") %>% 
   dplyr::select(continent, Country, city, latitude_city, longitude_city,
-                area, human_population_size, density, age, num_populations, 
+                area, pop_size, density, city_age, no_cities, num_populations, 
                 total_num_plants, transect_length, betaRLM_freqHCN, 
                 sigRLM, meanHCN, sampled_by) %>% 
   mutate_if(is.numeric, round, 3)
