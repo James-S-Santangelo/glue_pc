@@ -1,4 +1,11 @@
+# Downsample 20 Toronto samples for inclusion in GLUE
+# This is kind of hacky and not very reproducible since BAMs will not be distributed.
+# Need to incorporate raw reads for these samples instead
+
 rule downsample_toronto_bam:
+    """
+    Sample 25% of reads from Toronto sample using samtools. 
+    """
     input:
         get_toronto_bam
     output:
@@ -14,6 +21,9 @@ rule downsample_toronto_bam:
         """
 
 rule index_toronto_bam:
+    """
+    Index downsampled Toronto BAM using samtools. Required for variant calling using ANGSD.
+    """
     input:
         rules.downsample_toronto_bam.output
     output:
@@ -29,6 +39,9 @@ rule index_toronto_bam:
         """
 
 rule downsample_toronto_done:
+    """
+    Generate empty flag file signalling successful completion of Toronto BAM downsampling.
+    """
     input:
         expand(rules.index_toronto_bam.output, tor_sample=TOR_SAMPLES)
     output:

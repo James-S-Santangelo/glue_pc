@@ -1,4 +1,10 @@
+# Rules for QC of reads and BAM files
+
 rule fastqc_raw_reads:
+    """
+    QC of raw reads using FastQC. Output files need to be manually renamed because of default FastQC naming
+    convention. Renaming eliminates extraneous info in raw read filenames.
+    """
     input:
         tmp = rules.create_tmp_dir.output,
         read1 = lambda wildcards: raw_read_dict[wildcards.sample]['R1'],
@@ -25,6 +31,9 @@ rule fastqc_raw_reads:
         """.format(QC_DIR)
 
 rule fastqc_trimmed_reads:
+    """
+    QC of trimmed reads using FastQC.
+    """
     input:
         tmp = rules.create_tmp_dir.output,
         read1 = rules.fastp_trim.output.r1_trim,
@@ -46,6 +55,9 @@ rule fastqc_trimmed_reads:
         """.format(QC_DIR, TMPDIR)
 
 rule qualimap_bam_qc:
+    """
+    QC of read mapping using Qualimap. Generates per-sample HTML report.
+    """
     input:
         bam = rules.samtools_markdup.output.bam,
         index = rules.index_bam.output
@@ -70,6 +82,11 @@ rule qualimap_bam_qc:
         """.format(QC_DIR)
 
 rule bamtools_stats:
+    """
+    Generate stats for read mapping (e.g., mapped reads, duplicates, % paired e.g.).
+    Bamtools stats is similar to samtools stats. Used this because I had a hard time
+    incorporating the samtools stats output in the multiQC report and this was a quickfix.
+    """
     input:
         bam = rules.samtools_markdup.output.bam,
         index = rules.index_bam.output
@@ -86,6 +103,10 @@ rule bamtools_stats:
         """
 
 rule bamutil_validate:
+    """
+    Validate BAMs using bamUtil. Basically checks sort order and makes sure BAMs are corretly formated. 
+    Similar to GATK ValidateSamFile. 
+    """
     input:
         bam = rules.samtools_markdup.output,
         index = rules.index_bam.output
@@ -104,6 +125,9 @@ rule bamutil_validate:
         """
 
 rule multiqc:
+    """
+    Generate single HTML report with all QC info for all samples using multiQC
+    """
     input:
        fastqc_raw = expand('{0}/fastqc_raw_reads/{{sample}}_{{read}}_fastqc.zip'.format(QC_DIR), sample=SAMPLES, read=['1', '2']),
        fastqc_trim = expand('{0}/fastqc_trimmed_reads/{{sample}}_trimmed_{{read}}_fastqc.zip'.format(QC_DIR), sample=SAMPLES, read=['1', '2']),
@@ -130,6 +154,9 @@ rule multiqc:
         """.format(QC_DIR)
 
 rule qc_analysis_notebook:
+    """
+    Notebook for interactive exploration of QC results using some of the text files written by multiQC.
+    """
     input:
         rules.multiqc.output,
         rules.single_sample_sfs_done.output

@@ -1,4 +1,11 @@
+# Rules to perform a small-scale test of the effects of number of sites on SFS estimation
+
 rule angsd_saf_nSites_test:
+    """
+    Estimate Site Allele Frequency (SAF) likelihood file using 2 Mb region of chromosome 1. 
+    Manipulate sites by changing the proportion of individuals required to have reads
+    (lower proportion = less missing data = more sites)
+    """
     input:
         bams = get_bams_for_angsd,
         ref = REFERENCE_GENOME
@@ -33,6 +40,9 @@ rule angsd_saf_nSites_test:
         """
 
 rule angsd_sfs_nSites_test:
+    """
+    Estimate folded SFS from SAF files using realSFS.
+    """
     input:
         rules.angsd_saf_nSites_test.output.saf_idx
     output:
@@ -42,10 +52,14 @@ rule angsd_sfs_nSites_test:
     threads: 6
     shell:
         """
-        realSFS {input} -P {threads} -fold 1 -maxIter 2000 > {output} 2> {log}
+        realSFS {input} -P {threads} -fold 1 -seed 42 -maxIter 2000 > {output} 2> {log}
         """
 
 rule angsd_nSites_test_done:
+    """
+    Generate empty flag file signalling successful completion of small-scale test of the number of sites
+    effects on the SFS estimation.
+    """
     input:
         expand(rules.angsd_sfs_nSites_test.output, sample_set=['finalSamples_lowCovRemoved', 'highErrorRemoved'], prop=['30','40','50','60','70'])
     output:
@@ -56,6 +70,9 @@ rule angsd_nSites_test_done:
         """
 
 rule angsd_nSites_test_notebook:
+    """
+    Interactive exploration of the effects of the number of sites on SFS estimation in ANGSD
+    """
     input:
         rules.angsd_nSites_test_done.output
     output:

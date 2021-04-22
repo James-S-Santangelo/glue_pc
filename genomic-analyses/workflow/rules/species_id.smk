@@ -1,4 +1,12 @@
+# Rules to generate per-sample consensus sequences of matK and rbcL chloroplast genes. 
+# Sequences are blasted against NCBI nt database to identify species.
+# Used during QC to confirm species identity. Likely not actually needed since Qualimap 
+# alignment error rate seems to catch mistaken species. 
+
 rule create_bam_list_forSpeciesID:
+    """
+    Create text files with paths to all BAM files
+    """
     input:
         expand(rules.samtools_markdup.output.bam, sample=SAMPLES)
     output:
@@ -12,6 +20,9 @@ rule create_bam_list_forSpeciesID:
                 f.write('{0}\n'.format(bam))
 
 rule bcftools_chloroplast_gene_variants:
+    """
+    Call variants in matK and rbcL genes using bcftools. Generates single VCF for each gene. 
+    """
     input:
         rules.create_bam_list_forSpeciesID.output
     output:
@@ -40,6 +51,10 @@ rule bcftools_chloroplast_gene_variants:
         """.format(REFERENCE_GENOME)
 
 rule chloroplast_gene_fasta:
+    """
+    Extract FASTA sequence for matK and rbcL genes from reference genome using samtools faidx.
+    One FASTA for each gene.
+    """
     input:
        REFERENCE_GENOME
     output:
@@ -54,6 +69,9 @@ rule chloroplast_gene_fasta:
         """
 
 rule index_chloroplast_gene_vcf:
+    """
+    Index VCF files with variants in each gene. Required for generating consensus
+    """
     input:
         rules.bcftools_chloroplast_gene_variants.output
     output:
@@ -66,6 +84,10 @@ rule index_chloroplast_gene_vcf:
         """
 
 rule chloroplast_gene_consensus:
+    """
+    Use genotype calls in VCFs to generate per-sample matK and rbcL consensus sequences. 
+    Outputs two FASTAs per sample (one for each gene)
+    """
     input:
         ref = rules.chloroplast_gene_fasta.output,
         vcf = rules.bcftools_chloroplast_gene_variants.output,
@@ -85,6 +107,9 @@ rule chloroplast_gene_consensus:
         """
 
 rule concat_fasta:
+    """
+    Concatenate per-sample consensus sequences into single FASTA file. One FASTA for each gene.
+    """
     input:
         get_fastas_to_concat
     output:
@@ -101,6 +126,12 @@ rule concat_fasta:
                     fout.write('>{0};{1}\n{2}\n'.format(sample, wildcards.gene, seq))
 
 rule download_nt_database:
+    """
+    Download NCBI "nt" database. 
+
+    TODO: Checkpoint this since database will likely grow in the future. Currently expects a fixed
+    number of database files (specified in configfile)
+    """
     output:
         file_db = temp(expand('{0}/ncbi_nt_database/nt.{{num}}.{{ext}}'.format(PROGRAM_RESOURCE_DIR), num=NT_DB_FILE, ext=NT_DB_FILE_EXT)), 
         db = temp(expand('{0}/ncbi_nt_database/nt.{{ext}}'.format(PROGRAM_RESOURCE_DIR), ext=NT_DB_FINAL_EXT)),
@@ -118,6 +149,10 @@ rule download_nt_database:
         """
 
 rule blast_chloroplast_genes:
+    """
+    BLAST matK and rbcL FASTA sequences against local NCBI "nt" database using blastn. 
+    Outputs single tab-separated text files for each gene.
+    """
     input:
         fasta = rules.concat_fasta.output,
         done = rules.download_nt_database.output.done
@@ -144,6 +179,9 @@ rule blast_chloroplast_genes:
         """
 
 rule species_id_done:
+    """
+    Collect final output files and write flag file signalling successful completion of species ID
+    """
     input:
         expand(rules.concat_fasta.output, gene = ['rbcl','matk']),
         expand(rules.blast_chloroplast_genes.output, gene = ['rbcl','matk'])

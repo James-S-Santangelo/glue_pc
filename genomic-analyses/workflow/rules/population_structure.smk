@@ -1,4 +1,9 @@
+# Perform Principal Components Analysis from genotype likelihoods using PCAngsd
+
 rule pcangsd:
+    """
+    Perform PCA using genome-wide 4fold dengenerate sites. PCA is performed o both sample sets for comparison.  
+    """
     input:
         rules.concat_angsd_gl.output
     output:
@@ -24,6 +29,9 @@ rule pcangsd:
         """
 
 rule pop_structure_done:
+    """
+    Generate empty flag file signaling successful completion of PCAngsd
+    """
     input:
         expand(rules.pcangsd.output, site = '4fold', maf = '0.05', sample_set=['highErrorRemoved','finalSamples_lowCovRemoved'])
     output:
@@ -34,6 +42,10 @@ rule pop_structure_done:
         """
 
 rule global_depth_pi_sfs_theta_notebook:
+    """
+    Interactive exploration of global ANGSD analysis and population structure. Include analysis of depth
+    along chromosome 1, and patterns of diversity and structure across all samples. 
+    """
     input:
         rules.angsd_done.output,
         rules.pop_structure_done.output

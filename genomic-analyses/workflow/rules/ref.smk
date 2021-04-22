@@ -1,4 +1,9 @@
+# Rules to handle reference genome and annotation file
+
 rule clone_degeneracy:
+    """
+    Clone Degeneracy GitHub repo for getting 4fold and 0fold sites.
+    """
     output:
         temp(directory('Degeneracy'))
     log: 'logs/clone_degeneracy/clone_degeneracy.log'
@@ -8,6 +13,10 @@ rule clone_degeneracy:
         """
 
 rule get_fourfold_zerofold:
+    """
+    Uses get_4fold_sites.sh from Degeneracy to get 4fold and 0fold sites across white clover
+    genome from reference sequence (FASTA) and annotation file (GFF).
+    """
     input:
         degen = rules.clone_degeneracy.output,
         ref = REFERENCE_GENOME,

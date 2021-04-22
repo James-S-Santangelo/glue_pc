@@ -1,4 +1,4 @@
-# Configuration file for running Snakemake pipeline on Niagara (Compute Canada)
+# Configuration file for running Snakemake pipeline on Compute Canada clusters
 # Rule resources (e.g., mem, cpus, time) specified in Snakefiles
 
 __default__:

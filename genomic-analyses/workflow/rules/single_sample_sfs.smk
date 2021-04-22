@@ -1,4 +1,11 @@
+# Rules to estimate heterozygosity from single-sample SFS
+# Used duing QC to examine effects of coverage and mapping % on diversity
+
 rule angsd_single_sample_saf:
+    """
+    Generate Site Allele Frequency (SAF) likelihood file for every sample using ANGSD.
+    Uses only chromosome 1.
+    """
     input:
         bam = rules.samtools_markdup.output.bam,
         index = rules.index_bam.output,
@@ -27,6 +34,10 @@ rule angsd_single_sample_saf:
         """
 
 rule angsd_estimate_sfs_single_sample:
+    """
+    Gererate unfolded SFS for each each sample using realSFS. 
+    Second bin of resulting file is heterozygosity.
+    """
     input:
         rules.angsd_single_sample_saf.output.saf_idx
     output:
@@ -43,6 +54,9 @@ rule angsd_estimate_sfs_single_sample:
         """
 
 rule single_sample_sfs_done:
+    """
+    Generate empty flag file signaling successful completion of single-sample SFS estimation.
+    """
     input:
         expand(rules.angsd_estimate_sfs_single_sample.output, sample=SAMPLES)
     output:

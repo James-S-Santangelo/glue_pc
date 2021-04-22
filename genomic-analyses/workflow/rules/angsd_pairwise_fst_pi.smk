@@ -1,4 +1,10 @@
+# Rules for analysing urban-rural differences in diversity and urban-rural Fst across cities.
+
 rule create_bam_list_byCity_byHabitat:
+    """
+    Create text file with paths to BAM files in each habitat by city. Uses only "finalSample_lowCovRemoved"
+    sample set. Generates two bam lists per city (i.e., one per habitat -- urban vs. rural)
+    """
     input:
         rules.create_bam_list_finalSamples_lowCovRemoved.output
     output:
@@ -18,6 +24,10 @@ rule create_bam_list_byCity_byHabitat:
                     f.write('{0}'.format(bam))
 
 rule angsd_index_degenerate_allChroms:
+    """
+    Indexes ANGSD sites files containing genome-wide positions. Since only 4fold sites are going to be
+    used here, we can generate the SAF file across all chromosomes simultaneously.
+    """
     input:
         rules.convert_sites_for_angsd.output
     output:
@@ -31,6 +41,10 @@ rule angsd_index_degenerate_allChroms:
         """
 
 rule angsd_saf_likelihood_byCity_byHabitat:
+    """
+    Generate Site Allele Frequency (SAF) likelihood file for each habitat in each city using ANGSD. 
+    Uses only 4fold sites.
+    """
     input:
         bams = rules.create_bam_list_byCity_byHabitat.output,
         sites_idx = rules.angsd_index_degenerate_allChroms.output,
@@ -73,6 +87,9 @@ rule angsd_saf_likelihood_byCity_byHabitat:
         """
 
 rule angsd_estimate_joint_sfs_byCity:
+    """
+    Estimated folded, two-dimensional urban-rural SFS for each city using realSFS. Uses 4fold sites.
+    """
     input:
         get_habitat_saf_files_byCity
     output:
@@ -89,6 +106,10 @@ rule angsd_estimate_joint_sfs_byCity:
         """
 
 rule angsd_fst_index:
+    """
+    Estimate per-site alphas (numerator) and betas (denominator) for Fst estimation. Done separately using 
+    both Weir and Cockeram and Hudson's Fst
+    """
     input: 
         saf_idx = get_habitat_saf_files_byCity,
         joint_sfs = rules.angsd_estimate_joint_sfs_byCity.output
@@ -109,6 +130,9 @@ rule angsd_fst_index:
         """
 
 rule angsd_fst_readable:
+    """
+    Create readable Fst files. Required due to format of realSFS fst index output files. 
+    """
     input:
         rules.angsd_fst_index.output.idx
     output:
@@ -121,6 +145,9 @@ rule angsd_fst_readable:
         """
 
 rule angsd_estimate_sfs_byCity_byHabitat:
+    """
+    Estimate folded SFS separately for each habitat in each city (i.e., 1D SFS) using realSFS. 
+    """
     input:
         rules.angsd_saf_likelihood_byCity_byHabitat.output.saf_idx
     output:
@@ -137,6 +164,9 @@ rule angsd_estimate_sfs_byCity_byHabitat:
         """
 
 rule angsd_estimate_thetas_byCity_byHabitat:
+    """
+    Generate per-site thetas in each habitat for each city from 1DSFS
+    """
     input:
         saf_idx = rules.angsd_saf_likelihood_byCity_byHabitat.output.saf_idx,
         sfs = rules.angsd_estimate_sfs_byCity_byHabitat.output
@@ -161,6 +191,9 @@ rule angsd_estimate_thetas_byCity_byHabitat:
         """
 
 rule angsd_diversity_neutrality_stats_byCity_byHabitat:
+    """
+    Estimate pi, Waterson's theta, Tajima's D, etc. in each habitat in each city.
+    """
     input:
         rules.angsd_estimate_thetas_byCity_byHabitat.output.idx
     output:
@@ -176,6 +209,9 @@ rule angsd_diversity_neutrality_stats_byCity_byHabitat:
         """
 
 rule angsd_pairwise_done:
+    """
+    Generate empty flag file signalling successful completion of pairwise pi and Fst analysis
+    """
     input:
         expand(rules.angsd_fst_readable.output, city=CITIES, site=['4fold'], fst=['0', '1']),
         expand(rules.angsd_diversity_neutrality_stats_byCity_byHabitat.output, city=CITIES, habitat=HABITATS, site=['4fold'])
@@ -187,6 +223,10 @@ rule angsd_pairwise_done:
         """
 
 rule pairwise_pi_fst_notebook:
+    """
+    Interactive exploration of pairwise urban-rural pi and Fst analysis. Generates Figure 4 panels
+    in the main text. 
+    """
     input:
         rules.angsd_pairwise_done.output
     output:

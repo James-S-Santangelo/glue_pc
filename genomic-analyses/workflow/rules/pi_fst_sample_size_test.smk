@@ -1,4 +1,13 @@
+# Rules to perform small-scale test of the effects of sample size (i.e., # individuals)
+# on estimating Pi and Fst. Compares Pi and Fst estimated using combinations of 1, 3, 5, or 7
+# individuals in each habitat (sampled without replacement). "Control" is pi and Fst estimated
+# from 7 urban and 7 rural individuals from high-coverage data (~12X).
+
 rule urban_rural_toronto_bam_lists:
+    """
+    Generates bam lists with differing numbers of urban and rural individuals from Toronto populations.
+    Samples either 1, 3, 5, or 7 individuals without replacement. Writes paths to raw BAMs (i.e., not downsampled)
+    """
     input:
         TOR_BAMS
     output:
@@ -24,6 +33,10 @@ rule urban_rural_toronto_bam_lists:
                 fout.write('{0}\n'.format(bam))
 
 rule downsample_urban_rural_toronto_pi_fst_test_bams:
+    """
+    Downsamples all Toronto BAMs from select urban (population = 41) and rural (population = 83)
+    populations. Samples 10% of reads.
+    """
     input:
         get_toronto_bam_pi_fst_test
     output:
@@ -42,6 +55,9 @@ rule downsample_urban_rural_toronto_pi_fst_test_bams:
         """
 
 rule index_urban_rural_toronto_pi_fst_test_bam:
+    """
+    Indexes downsampled Toronto BAMs.
+    """
     input:
         rules.downsample_urban_rural_toronto_pi_fst_test_bams.output
     output:
@@ -57,6 +73,10 @@ rule index_urban_rural_toronto_pi_fst_test_bam:
         """
 
 rule urban_rural_toronto_downsampled_bam_lists:
+    """
+    Generates bam lists with differing numbers of urban and rural individuals from Toronto populations.
+    Samples either 1, 3, 5, or 7 individuals without replacement. Writes paths to downsampled_bams.
+    """
     input:
         expand(rules.downsample_urban_rural_toronto_pi_fst_test_bams.output, tor_test_sample=TOR_SAMPLES_PI_FST_TEST)
     output:
@@ -81,6 +101,10 @@ rule urban_rural_toronto_downsampled_bam_lists:
 
 
 rule angsd_saf_likelihood_toronto_pi_fst_test:
+    """
+    Estimate Site Allele Frequency (SAF) likelihood file for urban and rural sample size combinations. 
+    Includes "control" (i.e., max urban and rural sample size and high coverage data)
+    """
     input:
         unpack(toronto_pi_fst_test_saf_input),
         ref = REFERENCE_GENOME
@@ -119,6 +143,9 @@ rule angsd_saf_likelihood_toronto_pi_fst_test:
 
 
 rule angsd_estimate_joint_sfs_toronto_fst_test:
+    """
+    Estimate 2D urban-rural folded SFS from SAF files for sample size test.
+    """
     input:
         get_saf_joint_sfs_pi_fst_test
     output:
@@ -135,6 +162,9 @@ rule angsd_estimate_joint_sfs_toronto_fst_test:
         """
 
 rule angsd_fst_index_toronto_fst_test:
+    """
+    Estimate per-site alphas (numerator) and betas (denominator) for Hudson's Fst
+    """
     input: 
         saf_idx = get_saf_joint_sfs_pi_fst_test,
         joint_sfs = rules.angsd_estimate_joint_sfs_toronto_fst_test.output
@@ -155,6 +185,10 @@ rule angsd_fst_index_toronto_fst_test:
         """
 
 rule angsd_fst_readable_toronto_fst_test:
+    """
+    Generate readable version of per-site Fst. Required due to file format of raw per-site Fst
+    written by realSFS fst index.
+    """
     input:
         rules.angsd_fst_index_toronto_fst_test.output.idx
     output:
@@ -167,6 +201,9 @@ rule angsd_fst_readable_toronto_fst_test:
         """
 
 rule angsd_estimate_sfs_toronto_pi_test:
+    """
+    Estimate 1D folded SFS from SAF files for sample size test. 
+    """
     input:
         rules.angsd_saf_likelihood_toronto_pi_fst_test.output.saf_idx
     output:
@@ -183,6 +220,9 @@ rule angsd_estimate_sfs_toronto_pi_test:
         """
 
 rule angsd_estimate_thetas_torontp_pi_test:
+    """
+    Estimate per-site thetas for urban/rural habitats under varying sample size combinations.
+    """
     input:
         saf_idx = rules.angsd_saf_likelihood_toronto_pi_fst_test.output.saf_idx,
         sfs = rules.angsd_estimate_sfs_toronto_pi_test.output
@@ -207,6 +247,9 @@ rule angsd_estimate_thetas_torontp_pi_test:
         """
 
 rule angsd_diversity_neutrality_stats_toronto_pi_test:
+    """
+    Estimate pi, Waterson's theta, Tajima's D, etc., for urban/rural habitat under varying sample size combinations. 
+    """
     input:
         rules.angsd_estimate_thetas_torontp_pi_test.output.idx
     output:
@@ -222,6 +265,10 @@ rule angsd_diversity_neutrality_stats_toronto_pi_test:
         """
 
 rule pi_fst_sample_size_test_done:
+    """
+    Generates empty flag file signaling successful completion of test of the effects of sample sizes on
+    estimation of pi and Fst
+    """
     input:
         expand(rules.urban_rural_toronto_bam_lists.output, habitat=['urban', 'rural'], group = 'highCov', ss='7'),
         expand(rules.index_urban_rural_toronto_pi_fst_test_bam.output, tor_test_sample=TOR_SAMPLES_PI_FST_TEST),
@@ -238,6 +285,9 @@ rule pi_fst_sample_size_test_done:
         """
 
 rule toronto_pi_fst_test_notebook:
+    """
+    Interactive exploration of the effects of varying sample sizes on estimation of Pi and Fst. 
+    """
     input:
         rules.pi_fst_sample_size_test_done.output
     output:
