@@ -277,7 +277,7 @@ generate_popMeans <- function(df, city_centers, outpath){
 #'     should be written
 #'     
 #' @return df_popMeans. Cleaned and processed dataframe
-clean_mtjj_popMeans <- function(df, city_centers, outpath){
+clean_mtjj_popMeans <- function(df, city_centers, plantsPerPop, outpath){
   
   # Get name of city being processed
   city_name <- df$city[1]
@@ -295,11 +295,10 @@ clean_mtjj_popMeans <- function(df, city_centers, outpath){
            # min_dist = min(distance, na.rm = TRUE),
            std_distance = (distance / max_dist), 
            std_distance = round(std_distance, 4)) %>%
-    rename(., "freqHCN" = "HCN_Result") %>%
+    rename(., "freqHCN" = "HCN_Result") %>% 
     
-    # Add columns not present in dataframe
-    add_column(., numCyanogenic = "NA", .after = ncol(.)) %>%
-    add_column(., total_plants = "NA", .after = ncol(.)) %>%
+    # Add number of plants per pop
+    left_join(., plantsPerPop, by = c('city', 'population')) %>% 
     
     # Select columns, preserving order of other pop mean datasets
     dplyr::select(city, population, population_latitude, population_longitude,
