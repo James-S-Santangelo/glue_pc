@@ -796,6 +796,29 @@ rlmStats <- function(df, response){
   return(df_out)
 }
 
+#' Run logistic regression with HCN frequency as response and
+#'   standardised distance as the sole predictor
+#' 
+#' @param df Population-mean HCN frequency dataset for city
+#' 
+#' @return Dataframe with summary of model output
+logistic_regression_stats <- function(df){
+  
+  city <- df %>% distinct(city) %>% pull()
+  print(city)
+  
+  # Perform logistic regression
+  mod <- glm(freqHCN ~ std_distance, weights = total_plants, data = df, family = 'binomial')
+  
+  betaLog <- round(summary(mod)$coefficients['std_distance', 'Estimate'], 3)
+  pvalLog <- round(summary(mod)$coefficients['std_distance', 'Pr(>|z|)'], 3)
+  
+  df_out <- data.frame(city = city, betaLog = betaLog, pvalLog = pvalLog)
+  
+  return(df_out)
+}
+
+
 #' Calculate pariwise pearson correlations among columns in data matrix
 #'     
 #' @param Matrix Matrix containing variables of interest as columns
