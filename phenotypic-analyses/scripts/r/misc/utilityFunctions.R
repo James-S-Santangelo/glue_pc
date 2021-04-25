@@ -805,8 +805,7 @@ rlmStats <- function(df, response){
 logistic_regression_stats <- function(df){
   
   city <- df %>% distinct(city) %>% pull()
-  print(city)
-  
+
   # Perform logistic regression
   mod <- glm(freqHCN ~ std_distance, weights = total_plants, data = df, family = 'binomial')
   

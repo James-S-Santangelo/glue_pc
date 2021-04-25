@@ -19,8 +19,9 @@ linearClineTable_mod <- clineResults(df_list) %>%
 
 # Get stats from logistic regression by city
 log_reg_stats <- df_list %>% 
-  map_dfr(., logistic_reg_stats)
+  map_dfr(., logistic_regression_stats)
 
+# Merge logistic regression stats
 linearClineTable_mod <- linearClineTable_mod %>% 
   left_join(., log_reg_stats, by = 'city')
 

@@ -39,13 +39,23 @@ percent_sig_clines_linOnly <- final_table %>%
             percent = (count / num_cities) * 100)
 
 # How does this change with quadratic clines?
-percent_sig_clines_withQuad <- linearClineTable_mod %>% 
-  mutate(sig = case_when(modelOrderBestFit == 'linear' & pvalLin < 0.05 ~ 'Yes',
-                         modelOrderBestFit == 'quadratic' & pvalLin < 0.05 & pvalQuad < 0.05 ~ 'Yes',
+percent_sig_clines_logReg <- linearClineTable_mod %>% 
+  mutate(sig = case_when(pvalLog < 0.05 ~ 'Yes',
                          TRUE ~ 'No')) %>% 
   group_by(sig) %>% 
   summarise(count = n(),
             percent = (count / num_cities) * 100)
+
+# How does this change with quadratic clines?
+percent_sig_clines_logReg_byDirection <- linearClineTable_mod %>% 
+  mutate(sig = case_when(pvalLog < 0.05 ~ 'Yes',
+                         TRUE ~ 'No'),
+         direction = case_when(betaLog < 0 ~ 'Neg',
+                               TRUE ~ 'Pos')) %>% 
+  group_by(direction, sig) %>% 
+  summarise(count = n(),
+            percent = (count / num_cities) * 100)
+
 
 # Percent clines by direction. Linear RLM only
 percent_sig_clines_byDirection <- final_table %>% 
