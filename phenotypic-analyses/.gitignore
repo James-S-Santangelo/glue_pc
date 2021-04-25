@@ -2,6 +2,7 @@ data/clean/*
 !data/clean/individualPlant_allCities/
 data/raw/*
 !data/raw/latLongs_cityCenters.csv
+!data/raw/johnson_2018_plantsPerPop.csv
 !data/raw/GLUE_collaborators.csv 
 !data/raw/mtjj_jss/
 data/raw/mtjj_jss/*
@@ -13,9 +14,7 @@ analysis/*
 !analysis/supplementary-tables/
 *.ipynb
 Rmarkdown/
-misc/
 *.pyc
-*venv
 renv/Library
 *.pdf
 _archive/
