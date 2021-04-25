@@ -53,3 +53,4 @@ percent_sig_clines_byDirection <- final_table %>%
   group_by(direction, sigRLM) %>% 
   summarise(count = n(),
             percent = (count / num_cities) * 100)
+

@@ -37,5 +37,3 @@ purrr::walk(df_list, clean_mtjj_popMeans,
             city_centers = city_centers,
             plantsPerPop = plantsPerPop,
             outpath = outpath)
-
-View(mtjj_popMeans[[1]])

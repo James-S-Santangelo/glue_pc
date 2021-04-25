@@ -227,6 +227,9 @@ print(mean_populations)
 # Mean number of plants per population
 print(mean_plants_per_pop)
 
+# Total number of plants
+print(num_plants)
+
 # Percent significant clines. First-order only
 print(percent_sig_clines_linOnly)
 
