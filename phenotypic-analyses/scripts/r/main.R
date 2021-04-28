@@ -164,31 +164,19 @@ source("scripts/r/analyses/predictingClines.R")
 
 # Look at residual plots
 # Everything looks good
+# Maybe look into Shanghai outlier
 plot(predClines_elasticNet)
+hist(residuals(predClines_elasticNet))
 
 # Summary of final Elastiv Net model predicting HCN clines from environmetal data
 # Alpha and Lambda tuning parameters for Elastic Net. Alpha = 1 = Full LASSO
 print(elasticNet_bestTune)  
 
 # Summary of Elastic Net model with all Main Effects added back in
-print(predClines_elasticNet_withMainEffects_summary)
+print(predClines_elasticNet_summary)
 
 # Anova of Elastic Net with Main effects back in
-print(predClines_elasticNet_withMainEffects_anova)
-
-# Simple slopes analysis for significant winterNDVI_Slope x annualAI_Mean interaction
-print(sim_slopes)
-
-# SANITY CHECKS
-
-# Main effect of winterNDVI_Mean goes away when NDSI_Mean is added to model
-# likely due to their high correlation (r = 0.93). Let's remove terms with NDSI_Mean
-# to see if winterNDVI_Mean comes back. It does.
-print(elasticNet_withMainEffects_withNDSI)
-
-# High correlation between winterNDVI_Mean and NDSI_Mean suggests these effects can't be teased apart
-# NDSI_Mean replaces winterNDVI_Mean as significant main effect when winterNDVI_Mean is excluded
-print(predClines_elasticNet_withNDSI_summary)
+print(predClines_elasticNet_anova)
 
 # Step 4.4: Predict clines from city characteristics
 source('scripts/r/analyses/cityCharacteristics.R')
