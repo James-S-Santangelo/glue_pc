@@ -13,7 +13,7 @@ options(contrasts = c("contr.sum", "contr.poly"))
 
 # Dataframe with population-Mean HCN frequencies for all cities.
 # Includes continent and country columns.
-inpath <- "data/clean/popMeans_allCities/"
+inpath <- "data/clean/popMeans_allCities_withEnviro/"
 popMeans_dfList <- create_df_list(inpath)
 df_all_popMeans <- do.call(rbind, popMeans_dfList) %>% 
   filter(!(is.na(std_distance)))
@@ -60,7 +60,6 @@ glueClineModel_unsStdDist <- glmer(freqHCN ~ distance + continent + distance:con
                          weights = total_plants,
                          family = 'binomial',
                          control = glmerControl(optimizer="bobyqa", optCtrl = list(maxfun = 100000)))
-summary(glueClineModel_unsStdDist)
 glueClineModel_unsStdDist_distEffect <- round(coef(summary(glueClineModel_unsStdDist))["distance", "Estimate"], 3)
 glueClineModel_unsStdDist_distOdds <- exp(glueClineModel_unsStdDist_distEffect)
 percent_oddInc_perKM <- round((glueClineModel_unsStdDist_distOdds - 1) * 100, 2)
