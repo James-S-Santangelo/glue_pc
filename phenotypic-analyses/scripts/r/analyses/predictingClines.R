@@ -38,11 +38,17 @@ envMeans <- calculate_city_eviro_means(df_all_popMeans) %>%
   rename_if(is.numeric, paste0, "_Mean")
 
 # Get change in log-odds of HCN from Robust regression
-logOdds <- df_all_popMeans %>% 
-  group_split(city) %>% 
-  map_df(., logistic_regression_stats) %>% 
-  dplyr::select(city, betaLog) %>% 
-  filter(city %in% envSlopes$city)  # Only cities with environmental data
+logOdds <- coef(glueClineModel_stdDist)$city %>%
+  rownames_to_column(var = 'city') %>% 
+  dplyr::select(city, std_distance) %>% 
+  rename('betaLog' = 'std_distance') %>% 
+  filter(city %in% envMeans$city)
+
+# logOdds <- df_all_popMeans %>% 
+#   group_split(city) %>% 
+#   map_df(., logistic_regression_stats) %>% 
+#   dplyr::select(city, betaLog) %>% 
+#   filter(city %in% envSlopes$city)  # Only cities with environmental data
 
 # Distance vector: Distance between urban and rural multivariate environments for each city
 distance_vector <- results_statsMatrices$D.UR
@@ -142,77 +148,6 @@ df_slopes_enviro %>%
   bind_cols(., residuals(predClines_elasticNet) %>% as.tibble()) %>% 
   filter(value < -5 | value > 5) %>% 
   dplyr::select(city)
-  
-############################################
-#### OUTLIER SENSITIVITY OF ELASTIC NET ####
-############################################
-
-## Remove Tampa and Shanghai 
-
-# Model matrix without Tampa and Shanghai
-model_matrix_noTamp_noShang <- model_matrix %>% 
-  cbind(., df_slopes_enviro %>% dplyr::select(city)) %>% 
-  filter(!(city %in% c('Shanghai'))) %>% 
-  dplyr::select(-city)
-
-predictors_withInteractions_noTamp_noShang <- predictors_withInteractions %>% 
-  cbind(., df_slopes_enviro %>% dplyr::select(city)) %>% 
-  filter(!(city %in% c('Shanghai'))) %>% 
-  dplyr::select(-city) %>% 
-  as.matrix()
-
-logOdds_mat_noTamp_noShang <- logOdds_mat %>% 
-  cbind(., df_slopes_enviro %>% dplyr::select(city)) %>% 
-  filter(!(city %in% c('Shanghai'))) %>% 
-  dplyr::select(-city) %>% 
-  as.matrix()
-
-# Run Elastic Net model selection
-set.seed(1)
-elasticNet_model_noTamp_noShang <- caret::train(
-  y = model_matrix_noTamp_noShang[,1], # Log Odds
-  x = model_matrix_noTamp_noShang[,-1], # All predictores
-  method = "glmnet",
-  metric = "RMSE",
-  trControl = trainControl("cv", number = 10, savePredictions = "all"),
-  tuneLength = 25
-)
-
-# Full list of results
-elasticNet_modelResults_noTamp_noShang <- data.frame(elasticNet_model_noTamp_noShang$results)
-
-# Best tuning parameter
-elasticNet_bestTune_noTamp_noShang <- elasticNet_model_noTamp_noShang$bestTune
-bestAlpha_noTamp_noShang <- elasticNet_bestTune_noTamp_noShang$alpha
-bestLambda_noTamp_noShang <- elasticNet_bestTune_noTamp_noShang$lambda
-
-# Final model
-EN_finalModel_noTamp_noShang <- elasticNet_model_noTamp_noShang$finalModel
-
-# Extract nonzero coefficients
-EN_final_modelCoefs_noTamp_noShang <- coef(EN_finalModel_noTamp_noShang, bestLambda_noTamp_noShang)
-predictors_nonZero_noTamp_noShang <- which(EN_final_modelCoefs_noTamp_noShang!=0)[2:length(which(EN_final_modelCoefs_noTamp_noShang!=0))]-1
-predictors_finalModel_noTamp_noShang <- predictors_withInteractions_noTamp_noShang[, predictors_nonZero_noTamp_noShang]
-
-# Create data frame for model. Add back in main effects that are not in model
-model_df_elasticNet_noTamp_noShang = as.data.frame(cbind(logOdds_mat_noTamp_noShang, predictors_finalModel_noTamp_noShang))
-
-# Run final model 
-predClines_elasticNet_noTamp_noShang <- lm(betaLog ~ ., data = model_df_elasticNet_noTamp_noShang)
-
-# Diagnostics. A couple outliers
-plot(predClines_elasticNet_noTamp_noShang)
-hist(residuals(predClines_elasticNet_noTamp_noShang))
-
-# Model summary
-predClines_elasticNet_summary_noTamp_noShang <- summary(predClines_elasticNet_noTamp_noShang)
-predClines_elasticNet_anova_noTamp_noShang <- Anova(predClines_elasticNet_noTamp_noShang, type = 3)
-
-
-
-
-
-
 
 ##############################################
 #### ADD MAIN EFFECTS BACK TO ELASTIC NET ####
