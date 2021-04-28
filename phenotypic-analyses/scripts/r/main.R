@@ -151,11 +151,11 @@ print(glueClineModel_stdDist_anova)
 # Marginal and conditional R-squared for global cline model
 print(glueClineModel_stdDist_r_squared)
 
-# Estimated increase in HCN frequency per kilometer away from urban core
-print(avg_increaseHCN_perKM)
+# Estimated increase in odds that a plant is HCN+ per KM
+print(percent_oddInc_perKM)
 
 # Anova for random effect of effect of distance varying by city
-print(glueClineModel_randEffect_anova)
+print(glueClineModel_stdDist_slopeRE_test)
 
 ## Step 4.3: Predicting clines from environment
 # What environmental variables drive convergent evolution to cities on a global scale?
