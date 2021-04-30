@@ -20,11 +20,10 @@ city_stats <- read_csv("data/raw/city_data/City_characteristics.csv") %>%
   filter(!(city %in% exclude))
 
 # Cline summary
-cline_summary <- allPopMeans %>% group_split(city) %>% 
-  purrr::map_dfr(., rlmStats, "freqHCN") %>% 
-  pivot_wider(names_from = var, values_from = c(betaRLM, pvalRLM)) %>% 
-  mutate(city = replace(city, city == "New_Haven", "Newhaven")) %>% 
-  mutate(sigRLM = ifelse(pvalRLM_freqHCN < 0.05, "Yes", "No"))
+cline_summary <- allPopMeans %>% 
+  group_split(city) %>% 
+  purrr::map_dfr(., logistic_regression_stats) %>% 
+  mutate(sigLog = ifelse(pvalLog < 0.05, "Yes", "No"))
 
 # Number of pops and plants. Enviro variables and HCN
 more_city_vars <- allPopMeans %>% 
@@ -75,8 +74,8 @@ final_table <- cline_summary %>%
   left_join(., collectors, by = "city") %>% 
   dplyr::select(continent, Country, city, latitude_city, longitude_city,
                 area, pop_size, density, city_age, no_cities, num_populations, 
-                total_num_plants, transect_length, betaRLM_freqHCN, 
-                sigRLM, meanHCN, sampled_by) %>% 
+                total_num_plants, transect_length, betaLog, 
+                sigLog, meanHCN, sampled_by) %>% 
   mutate_if(is.numeric, round, 3)
 
 write_csv(final_table, path = "analysis/supplementary-tables/allCities_stats.csv")
