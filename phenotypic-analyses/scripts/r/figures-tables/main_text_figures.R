@@ -217,21 +217,29 @@ ggsave(filename = "analysis/figures/manuscript-panels/figure-2/figure2.pdf", plo
 
 # Get betas and pvalues from robust regressions
 hcnClinesSummary <- df_all_popMeans %>% group_split(city) %>% 
-  purrr::map_dfr(., rlmStats, response = 'freqHCN')
+  purrr::map_dfr(., logistic_regression_stats)
 
 pal <- c("#909090", "#FF0000", "#046C9A")
-slopeHistogram <- hcnClinesSummary %>% 
+logOddsHistogram <- hcnClinesSummary %>% 
   mutate(Significance = case_when(
-    betaRLM < 0 & pvalRLM < 0.05 ~ "Significantly negative",
-    betaRLM > 0 & pvalRLM < 0.05 ~ "Significantly positive",
+    betaLog < 0 & pvalLog < 0.05 ~ "Significantly negative",
+    betaLog > 0 & pvalLog < 0.05 ~ "Significantly positive",
     TRUE ~ "Not significant"
   )) %>% 
-  ggplot(., aes(x = betaRLM, fill = Significance)) +
-  geom_histogram(bins = 50, color = "black") +
+  ggplot(., aes(x = betaLog, fill = Significance)) +
+  geom_histogram(data = . %>% filter(Significance == 'Significantly negative'), 
+                 bins = 50,
+                 color = 'black') +
+  geom_histogram(data = . %>% filter(Significance == 'Significantly positive'), 
+                 bins = 50,
+                 color = 'black') +
+  geom_histogram(data = . %>% filter(Significance == 'Not significant'), 
+                 bins = 50,
+                 color = 'black',
+                 alpha = 0.4) +
   geom_vline(xintercept = 0, linetype = "dotted") +
-  geom_vline(xintercept = mean(hcnClinesSummary$betaRLM, linetype = "dashed", size = 1)) +
+  geom_vline(xintercept = mean(hcnClinesSummary$betaLog, linetype = "dashed", size = 1)) +
   xlab("Standardized slope of cline") + ylab("Count") +
-  scale_x_continuous(breaks = seq(-0.75, 0.75, 0.25)) +
   scale_fill_manual(values = pal) +
   ng1 + theme(legend.position = "top", 
               legend.direction="horizontal",
@@ -240,9 +248,9 @@ slopeHistogram <- hcnClinesSummary %>%
               legend.title = element_blank(),
               legend.key.size = unit(0.5, "cm"),
               legend.spacing.x = unit(0.5, "cm"))
-slopeHistogram
+logOddsHistogram
 
-ggsave(filename = "analysis/figures/manuscript-panels/figure-3/figure3A_slopeHistogram.pdf", plot = slopeHistogram,
+ggsave(filename = "analysis/figures/manuscript-panels/figure-3/figure3A_logOddsHistogram.pdf", plot = logOddsHistogram,
        device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
 
 ### Figure 3B
@@ -253,15 +261,23 @@ ggsave(filename = "analysis/figures/manuscript-panels/figure-3/figure3A_slopeHis
 
 HCN_by_city <- df_all_popMeans %>%
   left_join(., hcnClinesSummary, by = "city") %>% 
-  mutate(significant = ifelse(pvalRLM < 0.05, "Yes", "No"),
-         direction = ifelse(betaRLM > 0, "Positive", "Negative"),
+  mutate(significant = ifelse(pvalLog < 0.05, "Yes", "No"),
+         direction = ifelse(betaLog > 0, "Positive", "Negative"),
          color = case_when(significant == "Yes" & direction == "Positive" ~ "Significantly positive",
                            significant == "Yes" & direction == "Negative" ~ "Significantly negative",
                            TRUE ~ "Not significant")) %>%
-  ggplot(., aes(x = std_distance, y = freqHCN)) +  
-  geom_line(stat = "smooth", method="rlm", aes(color = color, alpha = color, group = city),
-            size = 0.75, show.legend = FALSE) +
-  geom_line(stat = "smooth", method="lm", colour = "black", size = 2.5) +
+  ggplot(., aes(x = std_distance, y = freqHCN, weight = total_plants)) +  
+  geom_line(stat = "smooth", 
+            method="glm", 
+            aes(color = color, alpha = color, group = city),
+            size = 0.5, 
+            show.legend = FALSE,
+            method.args = list(family = "binomial")) +
+  geom_line(stat = "smooth", 
+            method="glm", 
+            colour = "black", 
+            size = 2.5,
+            method.args = list(family = "binomial")) +
   xlab("Standardized distance") + ylab("Frequency of HCN") + 
   scale_colour_manual(values = pal) +
   scale_alpha_discrete(range = c(0.5, 0.8)) +
@@ -291,11 +307,12 @@ fig3_inset_biplot <- function(df){
   col <- case_when(city == 'Muenster' ~ pal[3],
                    city == 'Freehold' ~ pal[2])
   
-  plot <- ggplot(df, aes(x = std_distance, y = freqHCN)) +
+  plot <- ggplot(df, aes(x = std_distance, y = freqHCN, weight = total_plants)) +
     geom_point(size = 3.5) +
-    geom_smooth(method = 'rlm', 
+    geom_smooth(method = 'glm', 
                 color = ifelse(city == "Temuco", "black", col),
                 fill = ifelse(city == "Temuco", "grey", col),
+                method.args = list(family = "binomial"),
                 size = 1.5) +
     xlab("Standardized distance") +
     ylab("Frequency of HCN") +
@@ -316,7 +333,7 @@ ggsave(filename = "analysis/figures/manuscript-panels/figure-3/figure3E_Temuco_H
        device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
 
 ### Combine panels for figure 2
-figure3 <- (slopeHistogram + HCN_by_city) / (muenster_plot | freehold_plot | temuco_plot) +
+figure3 <- (logOddsHistogram + HCN_by_city) / (muenster_plot | freehold_plot | temuco_plot) +
   plot_annotation(tag_levels = 'A') &
   theme(legend.position = c(1, 1.2),
         plot.tag.position = c(0.05, 1.05),
