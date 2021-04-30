@@ -3,7 +3,7 @@ samples: ../../sequencing-prep/resources/low1_sampleSheet.txt
 chromosomes: ../resources/chromosome_file.txt
 
 results_prefix: ../results
-raw_read_prefix: /node1nfs/archive/data/trifolium/glue-low1/128.120.88.245
+raw_read_prefix: /node1nfs/archive/data/trifolium
 temp_dir: /scratch/santang3/tmp 
 
 # Include 10 urban and rural samples from Toronto data

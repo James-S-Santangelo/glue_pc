@@ -6,9 +6,8 @@ rule fastqc_raw_reads:
     convention. Renaming eliminates extraneous info in raw read filenames.
     """
     input:
-        tmp = rules.create_tmp_dir.output,
-        read1 = lambda wildcards: raw_read_dict[wildcards.sample]['R1'],
-        read2 = lambda wildcards: raw_read_dict[wildcards.sample]['R2']
+        unpack(get_raw_reads),
+        tmp = rules.create_tmp_dir.output
     output:
         html1 = '{0}/fastqc_raw_reads/{{sample}}_1_fastqc.html'.format(QC_DIR),
         html2 = '{0}/fastqc_raw_reads/{{sample}}_2_fastqc.html'.format(QC_DIR),

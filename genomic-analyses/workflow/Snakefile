@@ -1,6 +1,7 @@
 import os
 import glob
 import pandas as pd
+from pathlib import Path
 from snakemake.utils import min_version
 
 ###############
@@ -30,7 +31,7 @@ GFF_FILE = ancient(config['files']['gff'])
 
 # Paths for output files
 TMPDIR = config['temp_dir']
-RAW_READ_DIR = '{0}/raw_data'.format(config['raw_read_prefix'])
+RAW_READ_DIR = '{0}'.format(config['raw_read_prefix'])
 TRIMMED_READ_DIR = '{0}/trimmed_reads'.format(config['raw_read_prefix'])
 QC_DIR = '{0}/qc'.format(config['results_prefix'])
 SPECIES_ID_DIR = '{0}/species_id'.format(config['results_prefix'])

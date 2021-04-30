@@ -1,16 +1,17 @@
 # Python functions used throughout snakemake workflow
 
-def create_raw_read_dict(RAW_READ_DIR, SAMPLES):
+def get_raw_reads(wildcards): 
     """
-    Uses Sample IDs and path to raw reads to create a dictionary with paths to 
-    raw read files.
+    Get raw reads from sample name and read number
     """
-    raw_read_dict = {}
-    for sample in SAMPLES:
-        R1 = glob.glob('{0}/{1}/{1}_*_1.fq.gz'.format(RAW_READ_DIR, sample))[0]
-        R2 = glob.glob('{0}/{1}/{1}_*_2.fq.gz'.format(RAW_READ_DIR, sample))[0]
-        raw_read_dict[sample] = {'R1': R1, 'R2': R2}
-    return raw_read_dict
+    for dirpath, dirnames, files in os.walk(RAW_READ_DIR):
+        for name in files:
+            if name.startswith(wildcards.sample):
+                if name.endswith('1.fq.gz'):
+                    R1 = dirpath + '/' + name
+                elif name.endswith('2.fq.gz'):
+                    R2 = dirpath + '/' + name
+    return {'read1' : R1, 'read2': R2}
 
 def get_fastas_to_concat(wildcards):
     """
