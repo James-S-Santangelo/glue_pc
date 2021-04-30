@@ -135,6 +135,7 @@ print(enviroVariance_leveneCAN)
 
 ## Step 4.2: Cline analyses
 # Does convergent urban environmental change cause parallel evolution in an ecologically important trait?
+# This script will produce a few warning message, but these are all normal.
 
 source("scripts/r/analyses/clineAnalyses.R")
 
