@@ -8,8 +8,7 @@ rule create_bam_list_highErrorRemoved:
     TODO: Should rename this to "full" sample set to match manuscript. 
     """
     input:
-        glue_bams = expand(rules.samtools_markdup.output.bam, sample=SAMPLES),
-        tor_bams = expand(rules.downsample_toronto_bam.output, tor_sample=TOR_SAMPLES),
+        bams = get_all_bams,
         highErr = rules.qc_analysis_notebook.output.error_df,
         flag = rules.downsample_toronto_done.output
     output:
@@ -20,13 +19,10 @@ rule create_bam_list_highErrorRemoved:
         import pandas as pd
         bad_samples = pd.read_table(input.highErr, header=None).iloc[:,0].tolist()
         with open(output[0], 'w') as f:
-            for bam in input.glue_bams:
+            for bam in input.bams:
                 sample = os.path.basename(bam).split('_merged')[0]
                 if sample not in bad_samples:
                     f.write('{0}\n'.format(bam))
-            for bam in input.tor_bams:
-                sample = os.path.basename(bam).split('_merged')[0]
-                f.write('{0}\n'.format(bam))
 
 rule create_bam_list_finalSamples_lowCovRemoved:
     """

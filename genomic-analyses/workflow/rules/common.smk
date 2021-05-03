@@ -20,10 +20,20 @@ def get_fastas_to_concat(wildcards):
 
 def get_toronto_bam(wildcards):
     """
-    Returns list with only those Toronto BAMs for samples to be included in GLUE
+    Returns Toronto BAM for samples to be included in GLUE
     """
-    bam = glob.glob('{0}/{1}_*.bam'.format(TOR_BAMS, wildcards.tor_sample))
+    all_bams = expand(rules.samtools_markdup.output.bam, sample = SAMPLES)
+    bam = [bam for bam in all_bams if os.path.basename(bam).startswith(wildcards.sample)]
     return bam
+
+def get_all_bams(wildcards):
+    """
+    Returns list with paths to 500 GLUE bams and 20 Downsampled Toronto Bams
+    """
+    glue_bams = expand(rules.samtools_markdup.output.bam, sample = SAMPLES)
+    glue_bams_noTor = [bam for bam in all_bams if not os.path.basename(bam).startswith('s_')]
+    tor_bams = expand(rules.downsample_toronto_bam.output, sample = TOR_SAMPLES)
+    return glue_bams_noTor + tor_bams
 
 def get_bed_to_subset(wildcards):
     """
