@@ -3,8 +3,8 @@ samples: ../../sequencing-prep/resources/low1_sampleSheet.txt
 chromosomes: ../resources/chromosome_file.txt
 
 results_prefix: ../results
-raw_read_prefix: /scratch-deleted-2021-mar-20/santang3/glue-low1
-temp_dir: /scratch-deleted-2021-mar-20/santang3/glue-low1/tmp
+raw_read_prefix: /home/santang3/scratch/glue/raw_reads
+temp_dir: /home/santang3/scratch/glue/tmp
 
 # Include 10 urban and rural samples from Toronto data
 toronto_data:
