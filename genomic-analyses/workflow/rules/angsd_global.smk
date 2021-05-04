@@ -1,15 +1,40 @@
 # Uses ANGSD to estimate SFS and genotype likelihoods across the genome using all samples
 # as input (i.e., a global dataset). Only really used to perform PCA of global samples. 
 
+rule create_samples_to_remove:
+    """
+    Writes file with sample names for those with high alignment error rates and another 
+    with samples with low coverage. Thresholds were assessed through exploratory analysis
+    of QC data. 
+    """
+    input:
+        flag = rules.multiqc.output,
+        qc_data = '{0}/multiqc/multiqc_data/multiqc_qualimap_bamqc_genome_results_qualimap_bamqc.txt'.format(QC_DIR)
+    output: 
+        error_df = '{0}/highErrorRate_toRemove.txt'.format(PROGRAM_RESOURCE_DIR),
+        lowCov_df = '{0}/lowCoverageSamples_toRemove.txt'.format(PROGRAM_RESOURCE_DIR)
+    run:
+        import pandas as pd
+        qc_data = pd.read_table(input.qc_data, sep = '\t')
+        qc_data['sample'] = qc_data['Sample'].str.extract('(\w+_\d+_\d+)')
+        cols = ['sample', 'mean_coverage', 'general_error_rate']
+        qc_data = qc_data[cols]
+        # Samples with high ealignment errors have error rates > 0.04
+        highError_samples = qc_data[qc_data['general_error_rate'] > 0.04]
+        highError_samples['sample'].to_csv(output.error_df, header = None, index = None)
+        # Samples with low coverage are those with mean coverage < 0.31X
+        lowCov_samples = qc_data[qc_data['mean_coverage'] < 0.31]
+        lowCov_samples['sample'].to_csv(output.lowCov_df, header = None, index = None)
+
 rule create_bam_list_highErrorRemoved:
     """
-    Create text file with paths to BAMs, excluding 5 samples with high alignment error ratesi
+    Create text file with paths to BAMs, excluding 5 samples with high alignment error rates
     (see qc_analysis_notebook file). These BAMs make up the "highErrorRemoved" sample set. 
     TODO: Should rename this to "full" sample set to match manuscript. 
     """
     input:
         bams = get_all_bams,
-        highErr = rules.qc_analysis_notebook.output.error_df,
+        highErr = rules.create_samples_to_remove.output.error_df,
         flag = rules.downsample_toronto_done.output
     output:
         '{0}/bam_lists/highErrorSamplesRemoved_bams.list'.format(PROGRAM_RESOURCE_DIR)
@@ -32,7 +57,7 @@ rule create_bam_list_finalSamples_lowCovRemoved:
     """
     input:
         allSamples = rules.create_bam_list_highErrorRemoved.output,
-        lowCov = rules.qc_analysis_notebook.output.low_cov_df
+        lowCov = rules.create_samples_to_remove.output.lowCov_df
     output:
         '{0}/bam_lists/finalSamples_lowCovRemoved_bams.list'.format(PROGRAM_RESOURCE_DIR)
     log: 'logs/create_bam_list/finalSamples_lowCovRemoved_bam_list.log'
