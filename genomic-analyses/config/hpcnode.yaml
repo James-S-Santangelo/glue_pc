@@ -6,11 +6,6 @@ results_prefix: ../results
 raw_read_prefix: /node1nfs/archive/data/trifolium
 temp_dir: /scratch/santang3/tmp 
 
-# Include 10 urban and rural samples from Toronto data
-toronto_data:
-  bams: /research/projects/trifolium/toronto_gwsd/results/bam/final 
-  samples: ../resources/toronto_samples_for_glue.txt
-
 files:
   reference_genome: /research/references/trifolium/repens/GCA_005869975.1_AgR_To_v5/GCA_005869975.1_AgR_To_v5_genomic.fna
   gff: /research/references/trifolium/repens/GCA_005869975.1_AgR_To_v5/annotation_file/TrR.v5.renamed_reformated.gtf.gz

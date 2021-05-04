@@ -22,11 +22,6 @@ CITIES = pd.read_table(config['samples'], sep = '\t')['city'].unique().tolist()
 HABITATS = pd.read_table(config['samples'], sep = '\t')['site'].unique().tolist()
 CHROMOSOMES = pd.read_table(config['chromosomes'], header=None).iloc[:,0].tolist()
 
-# Toronto samples to include in analyses
-# Currently incorporates their BAMs, not raw reads
-TOR_SAMPLES = pd.read_table(config['toronto_data']['samples'])['sample'].tolist()
-TOR_BAMS = config['toronto_data']['bams']
-
 # Reference genome and annotation
 REFERENCE_GENOME = ancient(config['files']['reference_genome'])
 GFF_FILE = ancient(config['files']['gff'])
@@ -67,8 +62,7 @@ JOINT_SFS_WILDCARDS_TOR_TEST = []
 for x in urban:
     for y in rural:
         JOINT_SFS_WILDCARDS_TOR_TEST.append(x + '_' + y)
-ALL_TOR_SAMPLES = glob_wildcards(TOR_BAMS + '/{sample}_merged_sorted_dupsMarked.bam').sample
-TOR_SAMPLES_PI_FST_TEST = [x for x in ALL_TOR_SAMPLES if x.split('_')[1] == '41' or x.split('_')[1] == '83']
+TOR_SAMPLES_PI_FST_TEST = [x for x in TOR_SAMPLES if x.split('_')[1] == '41' or x.split('_')[1] == '83']
 
 
 ##################
