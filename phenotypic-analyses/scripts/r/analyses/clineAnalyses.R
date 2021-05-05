@@ -56,3 +56,6 @@ propHCN_predicted <- ggeffects::ggeffect(glueClineModel_stdDist,
                                          terms = c('std_distance[all]'), 
                                          type = 're')
 
+dist0_pred <- propHCN_predicted %>% filter(x == 0) %>% pull(predicted)
+dist1_pred <- propHCN_predicted %>% filter(x == 1) %>% pull(predicted)
+pred_percent_change <- round((dist1_pred - dist0_pred) / dist0_pred, 2) * 100

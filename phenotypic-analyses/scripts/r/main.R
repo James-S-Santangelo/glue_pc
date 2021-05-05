@@ -152,8 +152,8 @@ print(glueClineModel_stdDist_anova)
 # Marginal and conditional R-squared for global cline model
 print(glueClineModel_stdDist_r_squared)
 
-# Estimated increase in odds that a plant is HCN+ per KM
-print(percent_oddInc_perKM)
+# Estimated percent change in HCN+ across transect. Averaged across cities and continents
+print(pred_percent_change)
 
 # Anova for random effect of effect of distance varying by city
 print(glueClineModel_stdDist_slopeRE_test)
