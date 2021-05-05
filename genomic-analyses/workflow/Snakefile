@@ -79,6 +79,24 @@ localrules: paths_to_raw_reads, create_tmp_dir, create_bam_list_finalSamples_low
 # Get custom python functions
 include: 'rules/common.smk'
 
+# Pipeline targets
+# Each step generates an empty flagfile as its final target
+rule all:
+   input:
+        # Trimming, mapping, and QC
+        #'{0}/multiqc/multiqc_report.html'.format(QC_DIR),
+        #'{0}/single_sample_sfs.done'.format(SS_SFS_DIR),
+        #'{0}/species_id.done'.format(SPECIES_ID_DIR),
+        # Downsample Toronto data
+        '{0}/downsample_toronto.done'.format(BAM_DIR),
+        # Angsd
+        '{0}/angsd.done'.format(ANGSD_DIR),
+        #'{0}/angsd_pairwise.done'.format(ANGSD_DIR),
+        # Population structure
+        #'{0}/population_structure.done'.format(POP_STRUC_DIR),
+        #'{0}/nSites_test/angsd_nSites_test.done'.format(ANGSD_DIR),
+        #'{0}/pi_fst_sample_size_test/pi_fst_sample_size_test.done'.format(ANGSD_DIR)
+
 rule paths_to_raw_reads:
     """
     Writes file with sample name and paths to forward and reverse read FASTQs
@@ -95,24 +113,6 @@ rule paths_to_raw_reads:
                 R1 = reads[0].absolute()
                 R2 = reads[1].absolute()
                 fout.write('{0}\t{1}\t{2}\n'.format(sample, R1, R2)) 
-
-# Pipeline targets
-# Each step generates an empty flagfile as its final target
-rule all:
-   input:
-        # Trimming, mapping, and QC
-        '{0}/multiqc/multiqc_report.html'.format(QC_DIR),
-        '{0}/single_sample_sfs.done'.format(SS_SFS_DIR),
-        '{0}/species_id.done'.format(SPECIES_ID_DIR),
-        # Downsample Toronto data
-        '{0}/downsample_toronto.done'.format(BAM_DIR),
-        # Angsd
-        '{0}/angsd.done'.format(ANGSD_DIR),
-        '{0}/angsd_pairwise.done'.format(ANGSD_DIR),
-        # Population structure
-        '{0}/population_structure.done'.format(POP_STRUC_DIR),
-        '{0}/nSites_test/angsd_nSites_test.done'.format(ANGSD_DIR),
-        '{0}/pi_fst_sample_size_test/pi_fst_sample_size_test.done'.format(ANGSD_DIR)
 
 # Create temporary directory used throughout pipeline
 rule create_tmp_dir:
