@@ -710,8 +710,9 @@ logistic_regression_stats <- function(df){
   
   betaLog <- round(summary(mod)$coefficients['std_distance', 'Estimate'], 3)
   pvalLog <- round(summary(mod)$coefficients['std_distance', 'Pr(>|z|)'], 3)
+  yint <- round(summary(mod)$coefficients['(Intercept)', 'Estimate'], 3)
   
-  df_out <- data.frame(city = city, betaLog = betaLog, pvalLog = pvalLog)
+  df_out <- data.frame(city = city, yint = yint, betaLog = betaLog, pvalLog = pvalLog)
   
   return(df_out)
 }
