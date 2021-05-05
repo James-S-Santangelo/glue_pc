@@ -51,18 +51,8 @@ glueClineModel_stdDist_slopeRE_test <- anova(glueClineModel_stdDist_intOnly, glu
 # LRT test between model with random slope and correlation, and intercept only
 glueClineModel_stdDist_slopeREwithCor_test <- anova(glueClineModel_stdDist_intOnly, glueClineModel_stdDist)
 
-## MODEL WITH RAW DISTANCE ##
-
-# Model with raw distance to change in odds ratio per KM
-glueClineModel_unsStdDist <- glmer(freqHCN ~ distance + continent + distance:continent + 
-                         (1 + distance|city),
-                         data = df_all_popMeans,
-                         weights = total_plants,
-                         family = 'binomial',
-                         control = glmerControl(optimizer="bobyqa", optCtrl = list(maxfun = 100000)))
-glueClineModel_unsStdDist_distEffect <- round(coef(summary(glueClineModel_unsStdDist))["distance", "Estimate"], 3)
-glueClineModel_unsStdDist_distOdds <- exp(glueClineModel_unsStdDist_distEffect)
-percent_oddInc_perKM <- round((glueClineModel_unsStdDist_distOdds - 1) * 100, 2)
-
-
+# Predicted proportion of HCN+ across transect from mixed-model
+propHCN_predicted <- ggeffects::ggeffect(glueClineModel_stdDist, 
+                                         terms = c('std_distance[all]'), 
+                                         type = 're')
 
