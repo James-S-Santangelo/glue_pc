@@ -85,12 +85,15 @@ rule angsd_depth:
         glo = '{0}/depth/{{sample_set}}/{{chrom}}/{{chrom}}_{{sample_set}}_allSites.depthGlobal'.format(ANGSD_DIR)
     log: 'logs/angsd_depth/{sample_set}_{chrom}_angsd_depth.log'
     conda: '../envs/angsd.yaml'
+    #container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     params:
         out = '{0}/depth/{{sample_set}}/{{chrom}}/{{chrom}}_{{sample_set}}_allSites'.format(ANGSD_DIR)
     resources:
         nodes = 1,
         ntasks = CORES_PER_NODE,
         time = '12:00:00'
+    wildcard_constraints:
+        chrom = 'CM019101.1'
     shell:
         """
         angsd -bam {input.bams} \
@@ -119,6 +122,7 @@ rule angsd_saf_likelihood_allSites:
         counts = '{0}/sfs/{{sample_set}}/allSites/{{chrom}}/{{chrom}}_{{sample_set}}_allSites.counts.gz'.format(ANGSD_DIR)
     log: 'logs/angsd_saf_likelihood_allSites/{sample_set}_{chrom}_allSites_angsd_saf.log'
     conda: '../envs/angsd.yaml'
+    #container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     params:
         out = '{0}/sfs/{{sample_set}}/allSites/{{chrom}}/{{chrom}}_{{sample_set}}_allSites'.format(ANGSD_DIR),
         max_dp = ANGSD_MAX_DP
@@ -161,6 +165,7 @@ rule angsd_gl_allSites:
         mafs = temp('{0}/gls/{{sample_set}}/allSites/{{chrom}}/{{chrom}}_{{sample_set}}_allSites_maf{{maf}}.mafs.gz'.format(ANGSD_DIR)),
     log: 'logs/angsd_gl_allSites/{chrom}_{sample_set}_allSites_maf{maf}_angsd_gl.log'
     conda: '../envs/angsd.yaml'
+    #container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     params:
         out = '{0}/gls/{{sample_set}}/allSites/{{chrom}}/{{chrom}}_{{sample_set}}_allSites_maf{{maf}}'.format(ANGSD_DIR),
         max_dp = ANGSD_MAX_DP
@@ -525,7 +530,7 @@ rule angsd_done:
     Generate empty flag file signalling successful completion of global SFS and GL estimation across all samples. 
     """
     input:
-        expand(rules.angsd_depth.output, chrom=CHROMOSOMES, sample_set=['highErrorRemoved','finalSamples_lowCovRemoved']),
+        expand(rules.angsd_depth.output, chrom='CM019101.1', sample_set=['highErrorRemoved','finalSamples_lowCovRemoved']),
         expand(rules.concat_angsd_stats.output, site=['allSites','0fold','4fold'], sample_set=['highErrorRemoved','finalSamples_lowCovRemoved']),
         expand(rules.sum_sfs.output, site=['allSites','0fold','4fold'], sample_set=['highErrorRemoved','finalSamples_lowCovRemoved']),
         expand(rules.concat_angsd_gl.output, sample_set=['highErrorRemoved','finalSamples_lowCovRemoved'], site=['allSites','0fold','4fold'], maf=['0.005','0.01','0.05']),
