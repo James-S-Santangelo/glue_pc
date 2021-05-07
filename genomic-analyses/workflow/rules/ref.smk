@@ -29,7 +29,7 @@ rule get_fourfold_zerofold:
         outpath = '{0}/4fold_0fold/'.format(PROGRAM_RESOURCE_DIR)
     resources:
         mem_mb = 4000,
-        time = '04:00:00'
+        time = '06:00:00'
     shell:
         """
         OUT_ABS=$( cd {params.outpath}; pwd )
