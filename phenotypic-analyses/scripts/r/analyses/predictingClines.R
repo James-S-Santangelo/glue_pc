@@ -119,13 +119,12 @@ elasticNet_model <- caret::train(
   tuneLength = 10
 )
 
-coef(elasticNet_model$finalModel, elasticNet_model$bestTune$lambda) %>% 
-  as.matrix() %>% 
-  as.data.frame() %>% 
-  rownames_to_column(var = 'predictor') %>% 
-  rename('beta' = '1')
-
-
+#' Estimate Elastic Net model on resampled model matrix
+#' 
+#' @param i Iteration index
+#' @param model_matrix Expanded model matrix with log odds and expanded, standardized predictors
+#' 
+#' @return Elastic Net model as glmnet object
 run_elastic_net_resampled <- function(i, model_matrix){
   set.seed(i)
   model_matrix_sub <- model_matrix[ sample(nrow(model_matrix), replace = TRUE), ]
@@ -141,12 +140,11 @@ run_elastic_net_resampled <- function(i, model_matrix){
   
 }
 
-num_boot <- 2
-registerDoParallel(cores = 2)
-ptm <- proc.time()
-elasticNet_list <- foreach(i=1:num_boot) %dopar% run_elastic_net_resampled(i, model_matrix)
-proc.time() - ptm
-
+#' Extract coefficients for all predictors in elastic net model
+#' 
+#' @param elasticNet_model Elastic Net model as glmnet object
+#' 
+#' @return Predictor coefficients as dataframe
 extract_coefs_elasticNet <- function(elasticNet_model){
   
   finalModel <- elasticNet_model$finalModel
@@ -157,9 +155,13 @@ extract_coefs_elasticNet <- function(elasticNet_model){
     as.data.frame()
   
   return(coefs)
-  
 }
 
+#' Extract results (e.g., Rsquared, alpha, lambda, etc.) for elastic net model
+#' 
+#' @param elasticNet_model Elastic Net model as glmnet object
+#' 
+#' @return Results as data frame
 extract_results_elasticNet <- function(elasticNet_model){
   
   # Dataframe with results (RMSE, Rsquared, etc.) for combinations of alpha and lambda
@@ -173,133 +175,27 @@ extract_results_elasticNet <- function(elasticNet_model){
   bestTune_results <- all_results[bestTune_index, ]
   
   return(bestTune_results)
-  
 }
 
+# Run 'num_boot' resampled elastic net models in parallel
+num_boot <- 1000
+registerDoParallel(cores = 50)
+elasticNet_list <- foreach(i=1:num_boot) %dopar% run_elastic_net_resampled(i, model_matrix)
+
+# Results and coefficients for observed data
 elasticNet_obs_result <- extract_results_elasticNet(elasticNet_model) %>% mutate(origin = 'obs')
 elasticNet_obs_coefs <- extract_coefs_elasticNet(elasticNet_model) %>% mutate(origin = 'obs')
 
+# Results and coefficients for bootstrapped data
 elasticNet_boot_result <- purrr::map_dfr(elasticNet_list, extract_results_elasticNet, .id = 'index') %>% 
   mutate(origin = 'boot')
 elasticNet_boot_coefs <- purrr::map_dfr(elasticNet_list, extract_coefs_elasticNet, .id = 'index') %>% 
   mutate(origin = 'boot')
 
+# Combine observed and bootstrapped elastic net models
 elasticNet_allResults <- bind_rows(elasticNet_obs_result, elasticNet_boot_result)
 elasticNet_allCoefs <- bind_rows(elasticNet_obs_coefs, elasticNet_boot_coefs)
 
+# Write results to disk
 write_csv(elasticNet_allResults, 'analysis/elasticNet_obs_boot_results.csv')
 write_csv(elasticNet_allCoefs, 'analysis/elasticNet_obs_boot_coefs.csv')
-
-
-
-
-registerDoParallel(cores = 4)
-ptm <- proc.time()
-elasticNet_list <- foreach(i=1:num_reps) %dopar% run_elastic_net(i, model_matrix)
-proc.time() - ptm
-
-
-
-purrr::map_dfr(elasticNet_list, extract_results_elasticNet, .id = 'index')
-
-
-
-coefs <- purrr::map_dfr(elasticNet_list, extract_coefs_elasticNet, .id = 'index')
-
-coefs %>% 
-  mutate_all(as.numeric) %>% 
-  dplyr::select_if(colSums(.) != 0)
-
-tuneLength <- 20
-for(i in 1:10) seeds[[i]]<- sample.int(n=1000, tuneLength)
-#for the last model
-for(i in 1:num_reps){
-  set.seed(i)
-  print(i)
-  elasticNet_model <- caret::train(
-    y = model_matrix[,1], # Log Odds
-    x = model_matrix[,-1], # All predictores
-    method = "glmnet",
-    metric = "RMSE",
-    trControl = trainControl("cv", number = 10),
-    tuneLength = tuneLength
-  )
-  coefs <- coef(elasticNet_model$finalModel, elasticNet_model$bestTune$lambda)
-  elasticNet_coefMat[i,] <- as.matrix(coefs)
-}
-all.equal(predict(elasticNet_model1, type = 'raw'), predict(elasticNet_model2, type = 'raw'))
-
-coef1 <- coef(elasticNet_model1$finalModel)
-coef2 <- coef(elasticNet_model2$finalModel)
-elasticNet_model1$bestTune
-
-
-
-
-
-# Extract only coefficients that are non-zero in at least one model
-elasticNet_coefMat_nonZero <- elasticNet_coefMat %>% 
-  as.tibble() %>% 
-  dplyr::select_if(colSums(.) != 0)
-
-# Take mean of coefficients across 100 models and count number of models in which 
-# it was non zero.
-elasticNet_coefMeans <- elasticNet_coefMat_nonZero %>% 
-  as.tibble() %>% 
-  pivot_longer(names(.), names_to = 'predictor', values_to = 'beta') %>% 
-  mutate(is_zero = ifelse(beta == 0, 0, 1)) %>% 
-  group_by(predictor) %>% 
-  summarise(mean_beta = mean(beta),
-            count_nonZero = sum(is_zero)) %>% 
-  arrange(desc(abs(mean_beta)))
-
-# Dataframe with only final predictors
-coeffs_noIntercept_names <- elasticNet_coefMat_nonZero %>% 
-  dplyr::select(-intercept) %>% 
-  colnames()
-
-finalModel_df <- predictors_withInteractions %>% 
-  as.tibble() %>%
-  dplyr::select(one_of(coeffs_noIntercept_names)) %>% 
-  as.matrix()
-
-# set.seed(42)
-# elasticNet_model <- caret::train(
-#   y = model_matrix[,1], # Log Odds
-#   x = model_matrix[,-1], # All predictores
-#   method = "glmnet",
-#   metric = "RMSE",
-#   trControl = trainControl("cv", number = 10, savePredictions = "all"),
-#   tuneLength = 25
-# )
-# 
-# # Full list of results
-# elasticNet_modelResults <- data.frame(elasticNet_model$results)
-# 
-# # Best tuning parameter
-# elasticNet_bestTune <- elasticNet_model$bestTune
-# bestAlpha <- elasticNet_bestTune$alpha
-# bestLambda <- elasticNet_bestTune$lambda
-# 
-# # Final model
-# EN_finalModel <- elasticNet_model$finalModel
-# 
-# # Extract nonzero coefficients
-# EN_final_modelCoefs <- coef(EN_finalModel, bestLambda)
-# predictors_nonZero <- which(EN_final_modelCoefs!=0)[2:length(which(EN_final_modelCoefs!=0))]-1
-# predictors_finalModel <- predictors_withInteractions[, predictors_nonZero]
-# 
-# # Create data frame for model. Add back in main effects that are not in model
-# model_df_elasticNet = as.data.frame(cbind(logOdds_mat, predictors_finalModel))
-# 
-# # Run final model 
-# predClines_elasticNet <- lm(betaLog ~ ., data = model_df_elasticNet)
-# 
-# # Diagnostics. A couple outliers
-# plot(predClines_elasticNet)
-# hist(residuals(predClines_elasticNet))
-# 
-# # Model summary
-# predClines_elasticNet_summary <- summary(predClines_elasticNet)
-# predClines_elasticNet_anova <- Anova(predClines_elasticNet, type = 3)
-
