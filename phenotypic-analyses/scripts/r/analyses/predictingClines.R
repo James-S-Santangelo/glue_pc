@@ -12,6 +12,7 @@ library(glmnet)
 library(caret)
 library(foreach)
 library(doParallel)
+source('scripts/r/misc/utilityFunctions.R')
 
 # Create dataframe with population-mean HCN and environmental variables for every city
 # Needs to be created using `read.csv()` for Pedro's code to work...
