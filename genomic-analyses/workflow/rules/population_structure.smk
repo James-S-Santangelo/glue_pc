@@ -33,7 +33,7 @@ rule pop_structure_done:
     Generate empty flag file signaling successful completion of PCAngsd
     """
     input:
-        expand(rules.pcangsd.output, site = '4fold', maf = '0.05', sample_set=['highErrorRemoved','finalSamples_lowCovRemoved'])
+        expand(rules.pcangsd.output, site = '4fold', maf = ['0.005', '0.01', '0.05'], sample_set=['highErrorRemoved','finalSamples_lowCovRemoved'])
     output:
         '{0}/population_structure.done'.format(POP_STRUC_DIR)
     shell:
