@@ -35,6 +35,7 @@ library(lmerTest)
 library(sfsmisc)
 library(broom)
 library(emmeans)
+library(ggeffects)
 library(interactions)
 library(sandwich)
 library(patchwork)
@@ -191,7 +192,7 @@ hist(residuals(modlog_popout))
 #####################################
 
 ## Step 5.1: Table with best fit cline model summary for each city
-source("scripts/r/figures-tables/generate_allCities_bestFitModel_clineSummary.R")
+source("scripts/r/figures-tables/generate_allCities_logisticReg_coefs.R")
 
 ## Step 5.2: Table with Means and Robust regression stats for all environmental variables in each city
 source("scripts/r/figures-tables/generate_enviroMeansSlopes.R")
@@ -219,11 +220,9 @@ print(mean_plants_per_pop)
 # Total number of plants
 print(num_plants)
 
-# Percent significant clines. First-order only
-print(percent_sig_clines_linOnly)
+# Percent significant clines. 
+print(percent_sig_clines_logReg)
 
-# Percent significant clines. Including quadratic fits
-print(percent_sig_clines_withQuad)
+# Percent significant clines by direction
+print(percent_sig_clines_logReg_byDirection)
 
-# Percent significant clines by direction. First-order only
-print(percent_sig_clines_byDirection)

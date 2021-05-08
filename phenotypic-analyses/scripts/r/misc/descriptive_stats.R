@@ -32,13 +32,7 @@ num_populations <- allPopMeans %>% nrow()
 # Total number of cities
 num_cities <- final_table %>% nrow()
 
-# Percent significant clines
-percent_sig_clines_linOnly <- final_table %>% 
-  group_by(sigRLM) %>% 
-  summarise(count = n(),
-            percent = (count / num_cities) * 100)
-
-# How does this change with quadratic clines?
+# Percent significant clines from indipendent logistic regressions
 percent_sig_clines_logReg <- linearClineTable_mod %>% 
   mutate(sig = case_when(pvalLog < 0.05 ~ 'Yes',
                          TRUE ~ 'No')) %>% 
@@ -46,21 +40,13 @@ percent_sig_clines_logReg <- linearClineTable_mod %>%
   summarise(count = n(),
             percent = (count / num_cities) * 100)
 
-# How does this change with quadratic clines?
+# Percent significant by direction
 percent_sig_clines_logReg_byDirection <- linearClineTable_mod %>% 
   mutate(sig = case_when(pvalLog < 0.05 ~ 'Yes',
                          TRUE ~ 'No'),
          direction = case_when(betaLog < 0 ~ 'Neg',
                                TRUE ~ 'Pos')) %>% 
   group_by(direction, sig) %>% 
-  summarise(count = n(),
-            percent = (count / num_cities) * 100)
-
-
-# Percent clines by direction. Linear RLM only
-percent_sig_clines_byDirection <- final_table %>% 
-  mutate(direction = ifelse(betaRLM_freqHCN < 0, 'Negative', 'Positive')) %>% 
-  group_by(direction, sigRLM) %>% 
   summarise(count = n(),
             percent = (count / num_cities) * 100)
 
