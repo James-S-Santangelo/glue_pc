@@ -6,14 +6,6 @@
 #### SETUP ####
 ###############
 
-# Need to load a few packages here for cluster execution
-library(tidyverse)
-library(glmnet)
-library(caret)
-library(foreach)
-library(doParallel)
-source('scripts/r/misc/utilityFunctions.R')
-
 # Create dataframe with population-mean HCN and environmental variables for every city
 # Needs to be created using `read.csv()` for Pedro's code to work...
 inpath <- "data/clean/popMeans_allCities_withEnviro/"
@@ -126,7 +118,7 @@ elasticNet_model <- caret::train(
 #' @param model_matrix Expanded model matrix with log odds and expanded, standardized predictors
 #' 
 #' @return Elastic Net model as glmnet object
-run_elastic_net_resampled <- function(i, model_matrix){
+run_elastic_net_resampled <- function(i){
   set.seed(i)
   model_matrix_sub <- model_matrix[ sample(nrow(model_matrix), replace = TRUE), ]
   elasticNet_model_res <- caret::train(
@@ -135,7 +127,8 @@ run_elastic_net_resampled <- function(i, model_matrix){
     method = "glmnet",
     metric = "RMSE",
     trControl = trainControl("repeatedcv", repeats = 5, number = 10),
-    tuneLength = 10
+    tuneLength = 10,
+    nthread = 2
   )
   return(elasticNet_model_res)
   
@@ -180,8 +173,9 @@ extract_results_elasticNet <- function(elasticNet_model){
 
 # Run 'num_boot' resampled elastic net models in parallel
 num_boot <- 1000
-registerDoParallel(cores = 50)
-elasticNet_list <- foreach(i=1:num_boot) %dopar% run_elastic_net_resampled(i, model_matrix)
+elasticNet_list <- pbmcapply::pbmclapply(1:num_boot, run_elastic_net_resampled, 
+                                        mc.cores = 24, mc.preschedule = TRUE,
+                                        mc.cleanup = TRUE)
 
 # Results and coefficients for observed data
 elasticNet_obs_result <- extract_results_elasticNet(elasticNet_model) %>% mutate(origin = 'obs')

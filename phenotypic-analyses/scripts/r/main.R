@@ -39,6 +39,7 @@ library(ggeffects)
 library(interactions)
 library(sandwich)
 library(patchwork)
+library(pbmcapply)
 source("scripts/r/misc/utilityFunctions.R")
 
 # Create directories
