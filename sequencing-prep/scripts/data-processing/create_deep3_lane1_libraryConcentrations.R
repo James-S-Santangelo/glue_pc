@@ -3,7 +3,10 @@
 # Author: James S. Santangelo
 
 # Read in data with library concentrations and other data
-prepped_library_df <- read_csv('data/raw/20210411_plantsToPrep_deep3_low2_firstLanePrepped.csv') %>% 
+# Note there are two sheets for this in the raw data. Only the one listed here should be used. 
+# Only the Qubit3_HS_reEst column is needed. Previous Qubit estimates were incorrect and had to
+# be re-done.
+prepped_library_df <- read_csv('data/raw/20210510_plantsToPrep_deep3_low2_firstLanePrepped_qubitReEst.csv') %>% 
   
   # Select relevant columns
   dplyr::select(continent, city, pop, individual, site, plantID, max_qubit, leftover, Bioruptor_label,
@@ -12,13 +15,17 @@ prepped_library_df <- read_csv('data/raw/20210411_plantsToPrep_deep3_low2_firstL
   # Rename columns
   rename('date_prepped' = 'Date prepped',
          'qubit1_hs' = 'Qubit1_HS (ng/ul)',
-         'qubit2_hs' = 'Qubit2_HS (ng/ul)') %>% 
+         'qubit2_hs' = 'Qubit2_HS (ng/ul)',
+         'qubit3_hs_reEst' = 'Qubit3_HS_reEst') %>% 
   
   # Include only lane 1
   filter(lane == 1) %>% 
   
   # Get max qubit for prepped libraries
-  mutate(max_library_qubit = pmax(qubit1_hs, qubit2_hs, na.rm = TRUE))
+  # In this case, this is only done for Albuquerque since previous pooling was successful
+  # For other cities, only the 'qubit3_hs_reEst' column is used. 
+  mutate(library_qubit = case_when(city == 'Albuquerque' ~ pmax(qubit1_hs, qubit2_hs, na.rm = TRUE),
+                                  TRUE ~ qubit3_hs_reEst))
 
 # Load in index sequences
 i5_indices <- read_csv('resources/illumina_sequencing/iTru5_forward-indices.csv') %>% 
@@ -47,3 +54,9 @@ outpath <- 'data/clean/deep3/'
 print(sprintf('DEEP3 with library concentrations saved to %s', outpath))
 write_csv(prepped_library_df_mod, paste0(outpath, 'deep3_lane1_libraryConcentrations.csv'),
           col_names = TRUE)  
+
+
+test <- prepped_library_df %>% filter(!(city == 'Albuquerque')) %>% 
+  mutate(previous_qubit = pmax(qubit1_hs, qubit2_hs, na.rm = TRUE))
+cor(test$previous_qubit, test$library_qubit)
+plot(test$previous_qubit, test$library_qubit)
