@@ -9,7 +9,8 @@ rule urban_rural_toronto_bam_lists:
     Samples either 1, 3, 5, or 7 individuals without replacement. Writes paths to raw BAMs (i.e., not downsampled)
     """
     input:
-        TOR_BAMS
+        bams = rules.downsample_toronto_bam.output,
+        flag = rules.downsample_toronto_done.output
     output:
         '{0}/bam_lists/toronto_pi_fst_test/{{group}}_{{habitat}}_{{ss}}ind_bams.list'.format(PROGRAM_RESOURCE_DIR)
     wildcard_constraints:
@@ -25,7 +26,7 @@ rule urban_rural_toronto_bam_lists:
             pop = '41'
         elif wildcards.habitat == 'rural':
             pop = '83'
-        bams = glob.glob(input[0] + '/s_{0}_*.bam'.format(pop))
+        bams = glob.glob(input.bams[0] + '/s_{0}_*.bam'.format(pop))
         bams_relate_remove = [x for x in bams if 's_83_11' not in x]
         subset_bams = random.sample(bams_relate_remove, int(wildcards.ss))
         with open(output[0], 'w') as fout:

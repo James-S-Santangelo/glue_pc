@@ -1,16 +1,13 @@
 # Python functions used throughout snakemake workflow
 
-def create_raw_read_dict(RAW_READ_DIR, SAMPLES):
+def get_raw_reads(wildcards):
     """
-    Uses Sample IDs and path to raw reads to create a dictionary with paths to 
-    raw read files.
+    Extract forward and reverse read FASTQ paths from file
     """
-    raw_read_dict = {}
-    for sample in SAMPLES:
-        R1 = glob.glob('{0}/{1}/{1}_*_1.fq.gz'.format(RAW_READ_DIR, sample))[0]
-        R2 = glob.glob('{0}/{1}/{1}_*_2.fq.gz'.format(RAW_READ_DIR, sample))[0]
-        raw_read_dict[sample] = {'R1': R1, 'R2': R2}
-    return raw_read_dict
+    raw_read_df = pd.read_table(rules.paths_to_raw_reads.output[0], sep='\t')
+    R1 = raw_read_df.loc[raw_read_df['sample'] == wildcards.sample, 'R1'].iloc[0]
+    R2 = raw_read_df.loc[raw_read_df['sample'] == wildcards.sample, 'R2'].iloc[0]
+    return { 'read1' : R1, 'read2' : R2 }
 
 def get_fastas_to_concat(wildcards):
     """
@@ -23,10 +20,20 @@ def get_fastas_to_concat(wildcards):
 
 def get_toronto_bam(wildcards):
     """
-    Returns list with only those Toronto BAMs for samples to be included in GLUE
+    Returns Toronto BAM for samples to be included in GLUE
     """
-    bam = glob.glob('{0}/{1}_*.bam'.format(TOR_BAMS, wildcards.tor_sample))
+    all_bams = expand(rules.samtools_markdup.output.bam, sample = SAMPLES)
+    bam = [bam for bam in all_bams if os.path.basename(bam).startswith(wildcards.sample)]
     return bam
+
+def get_all_bams(wildcards):
+    """
+    Returns list with paths to 500 GLUE bams and 20 Downsampled Toronto Bams
+    """
+    glue_bams = expand(rules.samtools_markdup.output.bam, sample = SAMPLES)
+    glue_bams_noTor = [bam for bam in glue_bams if not os.path.basename(bam).startswith('s_')]
+    tor_bams = expand(rules.downsample_toronto_bam.output, sample = TOR_SAMPLES)
+    return glue_bams_noTor + tor_bams
 
 def get_bed_to_subset(wildcards):
     """
