@@ -279,3 +279,10 @@ def get_saf_joint_sfs_pi_fst_test(wildcards):
         out = urban_saf + rural_saf
     return out
 
+def get_bamLists_toConcat(wildcards):
+    all_bam_lists = expand(rules.create_bam_list_byCity_byHabitat.output, city = wildcards.city, habitat = ['u', 'r'])
+    return all_bam_lists
+
+
+
+
