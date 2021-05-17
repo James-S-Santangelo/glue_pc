@@ -305,6 +305,11 @@ def get_population_saf_files_byCity(wildcards):
     saf2 = [x for x in all_saf_files if '_{0}_'.format(pop2) in os.path.basename(x)]
     return saf1 + saf2
 
+def get_urban_rural_bam_lists(wildcards):
+    urban = expand(rules.create_bam_list_byCity_byHabitat.output, city=wildcards.city, habitat='u')[0]
+    rural = expand(rules.create_bam_list_byCity_byHabitat.output, city=wildcards.city, habitat='r')[0]
+    return { 'urban_bams' : urban, 'rural_bams' : rural }
+
 def get_population_saf_and_sfs_files_byCity(wildcards):
     checkpoint_output = checkpoints.populations_byCity_byHabitat.get(**wildcards).output[0]
     pops = glob_wildcards(os.path.join(checkpoint_output, '{{city}}_{{popu}}_bams.list'.format(PROGRAM_RESOURCE_DIR))).popu
