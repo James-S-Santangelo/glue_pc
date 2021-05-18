@@ -7,12 +7,13 @@
 ###############
 
 # Create dataframe with population-mean HCN and environmental variables for every city
-# Needs to be created using `read.csv()` for Pedro's code to work...
+# Needs to be created using `read.csv()` for Pedro's code to work
 inpath <- "data/clean/popMeans_allCities_withEnviro/"
 csv.files <- list.files(path = inpath, pattern="*.csv")
 df_all_popMeans <- c()
 for (i in 1:length(csv.files)){
   data <- read.csv(paste0(inpath, csv.files[i])) %>% dplyr::select(city, 
+                                                                   continent,
                                                                    std_distance, 
                                                                    freqHCN,
                                                                    total_plants,
@@ -34,7 +35,7 @@ envMeans <- calculate_city_eviro_means(df_all_popMeans) %>%
   drop_na() %>% 
   rename_if(is.numeric, paste0, "_Mean")
 
-# Get change in log-odds of HCN from Robust regression
+# Get change in log-odds of HCN from binomial regression
 # These are extracted from the mixed model
 logOdds <- coef(glueClineModel_stdDist)$city %>%
   rownames_to_column(var = 'city') %>% 
@@ -95,13 +96,34 @@ predictors_withInteractions <- model.matrix( ~.^2, data = predictors) %>%
 model_matrix <- cbind(logOdds_mat, predictors_withInteractions)
 
 # Define number of reps of elastic net and initialize empty matrix to store coefficients
-# num_perms <- 4
-# num_reps <- 8
-# elasticNet_coefMat <- matrix(0, num_reps, ncol(predictors_withInteractions) + 1)
-# colnames(elasticNet_coefMat) <- c('intercept', colnames(predictors_withInteractions))
+num_reps <- 100
+elasticNet_coefMat <- matrix(0, num_reps, ncol(predictors_withInteractions) + 1)
+colnames(elasticNet_coefMat) <- c('intercept', colnames(predictors_withInteractions))
+
+# Original pass at getting average coefficients from 100 elastic net models
+# labmda and alpha selected through 10-fold CV
+for(i in 1:num_reps){
+  set.seed(i)
+  print(i)
+  elasticNet_model <- caret::train(
+    y = model_matrix[,1], # Log Odds
+    x = model_matrix[,-1], # All predictores
+    method = "glmnet",
+    metric = "RMSE",
+    trControl = trainControl("cv", number = 10),
+    tuneLength = 10
+  )
+  coefs <- as.matrix(coef(elasticNet_model$finalModel, elasticNet_model$bestTune$lambda))
+  elasticNet_coefMat[i, ] <- coefs
+}
+
+# Instead of re-running the 100 models, the coefficients from the original run can be loaded
+elasticNet_coefs_100models <- read_csv('analysis/elasticNet_coefMat.csv')
 
 # Run Elastic Net model with lambda and alpha chosen through repeated (N = 5) 10-fold CV
-# Store coefficients for all predictors in matrix after each run. 
+# Note: I ran this with a bunch of different random seeds but all models were identical
+# Might change if using a denser grid of alpha and lambda values. Only running single model 
+# for now. 
 set.seed(42)
 elasticNet_model <- caret::train(
   y = model_matrix[,1], # Log Odds
