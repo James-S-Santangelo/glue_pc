@@ -29,30 +29,6 @@ rule create_bam_list_byCity_byHabitat:
                 if sample in samples_city_habitat:
                     f.write('{0}'.format(bam))
 
-rule create_random_bam_list_byCity_byHabitat:
-    input:
-        unpack(get_urban_rural_bam_lists)
-    output:
-        urban = '{0}/bam_lists/by_city/{{city}}/randomized/{{city}}_randU_seed{{seed}}_bams.list'.format(PROGRAM_RESOURCE_DIR),
-        rural = '{0}/bam_lists/by_city/{{city}}/randomized/{{city}}_randR_seed{{seed}}_bams.list'.format(PROGRAM_RESOURCE_DIR)
-    run:
-        import random
-        urban_bams = list(open(input.urban_bams, 'r'))
-        rural_bams = list(open(input.rural_bams, 'r'))
-        urban_n = len(urban_bams)
-        rural_n = len(rural_bams)
-        all_bams = urban_bams + rural_bams
-
-        random.seed(int(wildcards.seed))
-        randU = random.sample(all_bams, urban_n)
-        randR = [bam for bam in all_bams if not bam in randU] 
-        with open(output.urban, 'w') as uout:
-            for bam in randU:
-                uout.write(bam)
-        with open(output.rural, 'w') as rout:
-            for bam in randR:
-                rout.write(bam)
-
 rule angsd_index_degenerate_allChroms:
     """
     Indexes ANGSD sites files containing genome-wide positions. Since only 4fold sites are going to be
@@ -65,6 +41,8 @@ rule angsd_index_degenerate_allChroms:
         idx = '{0}/angsd_sites/Trepens_{{site}}.sites.idx'.format(PROGRAM_RESOURCE_DIR)
     log: 'logs/angsd_index/allChroms_{site}_index.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    wildcard_constraints:
+        site='4fold'
     shell:
         """
         angsd sites index {input} 2> {log}
@@ -378,7 +356,7 @@ rule angsd_byCity_byHabitat_done:
         expand(rules.angsd_diversity_neutrality_stats_byCity_byHabitat.output, city=CITIES, habitat=HABITATS, site=['4fold']),
         expand(rules.angsd_gl_byCity_binary.output, city=CITIES, site='4fold', maf='0.05'),
         expand(rules.convert_freq_forNGSrelate.output, city=CITIES, site='4fold', maf='0.05'),
-        expand(rules.create_random_bam_list_byCity_byHabitat.output, city=CITIES, seed=BOOT_SEEDS)
+        expand(rules.angsd_diversity_neutrality_stats_byCity_byHabitat.output, city=CITIES, habitat=HABITATS, site=['4fold'])
     output:
         '{0}/angsd_byCity_byHabitat.done'.format(ANGSD_DIR)
     shell:

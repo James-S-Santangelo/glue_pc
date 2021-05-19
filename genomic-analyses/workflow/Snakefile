@@ -102,6 +102,7 @@ rule all:
         '{0}/angsd.done'.format(ANGSD_DIR),
         '{0}/angsd_byCity_byHabitat.done'.format(ANGSD_DIR),
         '{0}/angsd_byCity_byPopulation.done'.format(ANGSD_DIR),
+        '{0}/angsd_pairwise_permuted.done'.format(ANGSD_DIR),
         # Population structure
         '{0}/population_structure.done'.format(POP_STRUC_DIR),
 
@@ -138,8 +139,14 @@ include: 'rules/single_sample_sfs.smk'
 include: 'rules/qc.smk'
 include: 'rules/toronto_downsample.smk'
 include: 'rules/angsd_global.smk'
+<<<<<<< HEAD
 include: 'rules/angsd_byCity_byHabitat.smk'
 include: 'rules/angsd_byCity_byPopulation.smk'
+=======
+include: 'rules/angsd_pairwise_fst_pi.smk'
+include: 'rules/angsd_pairwise_fst_pi_perm.smk'
+include: 'rules/angsd_by_city.smk'
+>>>>>>> Adding rules to estimate permuted pi and Fst
 include: 'rules/population_structure.smk'
 
 # Rule to clean directory of all output files
