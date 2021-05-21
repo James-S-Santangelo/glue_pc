@@ -349,7 +349,7 @@ rule angsd_byCity_byHabitat_done:
     """
     input:
         expand(rules.angsd_fst_readable.output, city=CITIES, site=['4fold'], fst=['0', '1']),
-        expand(rules.angsd_diversity_neutrality_stats_byCity_byHabitat.output, city=CITIES, habitat=HABITATS, site=['4fold'])
+        expand(rules.angsd_diversity_neutrality_stats_byCity_byHabitat.output, city=CITIES, habitat=HABITATS, site=['4fold']),
         expand(rules.angsd_gl_byCity_binary.output, city=CITIES, site='4fold', maf='0.05'),
         expand(rules.convert_freq_forNGSrelate.output, city=CITIES, site='4fold', maf='0.05')
     output:
