@@ -95,7 +95,7 @@ rule all:
         '{0}/downsample_toronto.done'.format(BAM_DIR),
         # Angsd
         '{0}/angsd.done'.format(ANGSD_DIR),
-        '{0}/angsd_pairwise.done'.format(ANGSD_DIR),
+        '{0}/angsd_byCity_byHabitat.done'.format(ANGSD_DIR),
         '{0}/angsd_byCity.done'.format(ANGSD_DIR),
         # Population structure
         '{0}/population_structure.done'.format(POP_STRUC_DIR),
