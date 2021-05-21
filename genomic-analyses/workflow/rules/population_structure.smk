@@ -119,3 +119,13 @@ rule global_depth_pi_sfs_theta_notebook:
     conda: '../envs/notebooks.yaml'
     notebook:
         "../notebooks/global_depth_pi_sfs_theta.r.ipynb"
+
+rule relatedness_notebook:
+    input:
+        rules.pop_structure_done.output
+    output:
+        '{0}/ngsrelate/relatedness_analysis.done'.format(POP_STRUC_DIR)
+    conda: '../envs/notebooks.yaml'
+    notebook:
+        "../notebooks/relatedness_analysis.r.ipynb"
+
