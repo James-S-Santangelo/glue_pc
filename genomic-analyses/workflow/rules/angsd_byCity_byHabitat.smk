@@ -14,6 +14,8 @@ rule create_bam_list_byCity_byHabitat:
     output:
         '{0}/bam_lists/by_city/{{city}}/{{city}}_{{habitat}}_bams.list'.format(PROGRAM_RESOURCE_DIR)
     log: 'logs/create_bam_list/{city}_{habitat}.log'
+    wildcard_constraints:
+        habitat='u|r'
     run:
         import os
         import pandas as pd

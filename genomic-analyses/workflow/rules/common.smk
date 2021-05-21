@@ -283,6 +283,9 @@ def get_bamLists_toConcat(wildcards):
     all_bam_lists = expand(rules.create_bam_list_byCity_byHabitat.output, city = wildcards.city, habitat = ['u', 'r'])
     return all_bam_lists
 
-
-
+def aggregate_input(wildcards):
+    checkpoints.populations_byCity_byHabitat.get(city=wildcards.city, habitat=wildcards.habitat)
+    pops = glob_wildcards('{0}/bam_lists/by_city/{1}/by_pop/{2}/{1}_{2}_{{popu}}_bams.list'.format(PROGRAM_RESOURCE_DIR, wildcards.city, wildcards.habitat)).popu
+    return expand('{0}/bam_lists/by_city/{1}/by_pop/{2}/{1}_{2}_{{popu}}_bams.list'.format(PROGRAM_RESOURCE_DIR, wildcards.city, wildcards.habitat), popu=pops)
+    
 

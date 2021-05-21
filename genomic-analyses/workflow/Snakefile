@@ -15,11 +15,13 @@ min_version('5.26.1')
 # Defailt configfile. Can be changed at command-line (--configfile)
 configfile: '../config/hpcnode.yaml'
 
+SAMPLE_SHEET_DF = pd.read_table(config['samples'], sep='\t')
+
 # Sample and chromosome info
-SAMPLES = pd.read_table(config['samples'], sep='\t')['sample'].tolist()
+SAMPLES = SAMPLE_SHEET_DF['sample'].tolist()
 TOR_SAMPLES = [x for x in SAMPLES if x.startswith('s_')]
-CITIES = pd.read_table(config['samples'], sep = '\t')['city'].unique().tolist()
-HABITATS = pd.read_table(config['samples'], sep = '\t')['site'].unique().tolist()
+CITIES = SAMPLE_SHEET_DF['city'].unique().tolist()
+HABITATS = SAMPLE_SHEET_DF['site'].unique().tolist()
 CHROMOSOMES = pd.read_table(config['chromosomes'], header=None).iloc[:,0].tolist()
 
 # Reference genome and annotation
@@ -78,7 +80,7 @@ wildcard_constraints:
     chrom='|'.join([x for x in CHROMOSOMES])
 
 # Rules to be run locally on as single process
-localrules: paths_to_raw_reads, create_tmp_dir, create_bam_list_finalSamples_lowCovRemoved, create_samples_to_remove, create_bam_list_highErrorRemoved, create_bam_list_forSpeciesID, angsd_index_degenerate, concat_angsd_stats, concat_sfs, sum_sfs, convert_sites_for_angsd, split_angsd_sites_byChrom, files_for_angsd_site_subset, subset_angsd_gl, subset_angsd_maf, extract_sample_angsd, angsd_done, chloroplast_gene_fasta, index_chloroplast_gene_vcf, concat_fasta, download_nt_database, single_sample_sfs_done, pop_structure_done, clone_degeneracy, downsample_toronto_done, extract_angsd_allSites, angsd_index_allSites, angsd_index_degenerate, angsd_nSites_test_done, create_bam_list_byCity_byHabitat, angsd_fst_readable, angsd_byCity_byHabitat_done, index_toronto_bam, index_bam, urban_rural_toronto_bam_lists, pi_fst_sample_size_test_done, concat_habitat_bamLists_withinCities, convert_freq_forNGSrelate
+localrules: paths_to_raw_reads, create_tmp_dir, create_bam_list_finalSamples_lowCovRemoved, create_samples_to_remove, create_bam_list_highErrorRemoved, create_bam_list_forSpeciesID, angsd_index_degenerate, concat_angsd_stats, concat_sfs, sum_sfs, convert_sites_for_angsd, split_angsd_sites_byChrom, files_for_angsd_site_subset, subset_angsd_gl, subset_angsd_maf, extract_sample_angsd, angsd_done, chloroplast_gene_fasta, index_chloroplast_gene_vcf, concat_fasta, download_nt_database, single_sample_sfs_done, pop_structure_done, clone_degeneracy, downsample_toronto_done, extract_angsd_allSites, angsd_index_allSites, angsd_index_degenerate, create_bam_list_byCity_byHabitat, angsd_fst_readable, angsd_byCity_byHabitat_done, index_toronto_bam, index_bam, concat_habitat_bamLists_withinCities, convert_freq_forNGSrelate, create_bam_list_byCity_byPopulation
 
 # Get custom python functions
 include: 'rules/common.smk'
@@ -96,8 +98,9 @@ rule all:
         # Angsd
         '{0}/angsd.done'.format(ANGSD_DIR),
         '{0}/angsd_byCity_byHabitat.done'.format(ANGSD_DIR),
+        '{0}/angsd_byCity_byPopulation.done'.format(ANGSD_DIR),
         # Population structure
-        '{0}/population_structure.done'.format(POP_STRUC_DIR)
+        '{0}/population_structure.done'.format(POP_STRUC_DIR),
 
 rule paths_to_raw_reads:
     """
@@ -133,6 +136,7 @@ include: 'rules/qc.smk'
 include: 'rules/toronto_downsample.smk'
 include: 'rules/angsd_global.smk'
 include: 'rules/angsd_byCity_byHabitat.smk'
+include: 'rules/angsd_byCity_byPopulation.smk'
 include: 'rules/population_structure.smk'
 
 # Rule to clean directory of all output files
