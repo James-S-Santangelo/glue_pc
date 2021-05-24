@@ -11,9 +11,9 @@ checkpoint populations_byCity_byHabitat:
     variable number of files created. 
     """
     input:
-        rules.create_bam_list_byCity_byHabitat.output
+        rules.concat_habitat_bamLists_withinCities.output
     output:
-        directory('{0}/bam_lists/by_city/{{city}}/by_pop/{{habitat}}'.format(PROGRAM_RESOURCE_DIR))
+        directory('{0}/bam_lists/by_city/{{city}}/by_pop/'.format(PROGRAM_RESOURCE_DIR))
     run:
         import os
         import re
@@ -24,9 +24,9 @@ checkpoint populations_byCity_byHabitat:
         pops = []
         for line in bams:
             pop = str(re.findall('(\d+)(?=_\d+)', line)[0])
-            df_sub = df[(df['city'] == wildcards.city) & (df['site'] == wildcards.habitat) & (df['pop'].astype(str) == pop)]
+            df_sub = df[(df['city'] == wildcards.city) & (df['pop'].astype(str) == pop)]
             samples_city_habitat = df_sub['sample'].tolist()
-            bam_list_out = output[0] + '/{0}_{1}_{2}_bams.list'.format(wildcards.city, wildcards.habitat, pop)
+            bam_list_out = output[0] + '/{0}_{1}_bams.list'.format(wildcards.city, pop)
             with open(bam_list_out, 'w') as f:
                 for bam in bams:
                     sample = os.path.basename(bam).split('_merged')[0]
@@ -41,13 +41,13 @@ rule angsd_saf_likelihood_byCity_byPopulation:
     input:
         unpack(get_files_saf_estimation_byPopulation)
     output:
-        saf = temp('{0}/sfs/by_city/{{city}}/by_pop/{{city}}_{{habitat}}_{{popu}}_{{site}}.saf.gz'.format(ANGSD_DIR)),
-        saf_idx = temp('{0}/sfs/by_city/{{city}}/by_pop/{{city}}_{{habitat}}_{{popu}}_{{site}}.saf.idx'.format(ANGSD_DIR)),
-        saf_pos = temp('{0}/sfs/by_city/{{city}}/by_pop/{{city}}_{{habitat}}_{{popu}}_{{site}}.saf.pos.gz'.format(ANGSD_DIR))
-    log: 'logs/angsd_saf_likelihood_byCity_byPopulation/{city}_{habitat}_{popu}_{site}_saf.log'
+        saf = temp('{0}/sfs/by_city/{{city}}/by_pop/{{city}}_{{popu}}_{{site}}.saf.gz'.format(ANGSD_DIR)),
+        saf_idx = temp('{0}/sfs/by_city/{{city}}/by_pop/{{city}}_{{popu}}_{{site}}.saf.idx'.format(ANGSD_DIR)),
+        saf_pos = temp('{0}/sfs/by_city/{{city}}/by_pop/{{city}}_{{popu}}_{{site}}.saf.pos.gz'.format(ANGSD_DIR))
+    log: 'logs/angsd_saf_likelihood_byCity_byPopulation/{city}_{popu}_{site}_saf.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     params:
-        out = '{0}/sfs/by_city/{{city}}/by_pop/{{city}}_{{habitat}}_{{popu}}_{{site}}'.format(ANGSD_DIR)
+        out = '{0}/sfs/by_city/{{city}}/by_pop/{{city}}_{{popu}}_{{site}}'.format(ANGSD_DIR)
     threads: 6
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 4000,
@@ -79,7 +79,7 @@ rule aggregate:
     input: 
         aggregate_input
     output:
-        '{0}/sfs/by_city/{{city}}/by_pop/{{city}}_{{habitat}}_{{site}}.done'.format(ANGSD_DIR)
+        '{0}/sfs/by_city/{{city}}/by_pop/{{city}}_{{site}}.done'.format(ANGSD_DIR)
     shell:
         """
         echo {input} > {output}
@@ -91,7 +91,7 @@ rule angsd_byCity_byPopulation_done:
     within a city. 
     """
     input:
-        expand('{0}/sfs/by_city/{{city}}/by_pop/{{city}}_{{habitat}}_{{site}}.done'.format(ANGSD_DIR), city='Albuquerque', habitat=HABITATS, site='4fold')
+        expand('{0}/sfs/by_city/{{city}}/by_pop/{{city}}_{{site}}.done'.format(ANGSD_DIR), city='Albuquerque', site='4fold')
     output:
         '{0}/angsd_byCity_byPopulation.done'.format(ANGSD_DIR)
     shell:
