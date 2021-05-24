@@ -294,3 +294,32 @@ def aggregate_input_theta(wildcards):
     checkpoint_output = checkpoints.populations_byCity_byHabitat.get(**wildcards).output[0]
     pops = glob_wildcards(os.path.join(checkpoint_output, '{{city}}_{{popu}}_bams.list'.format(PROGRAM_RESOURCE_DIR))).popu
     return expand('{0}/summary_stats/thetas/by_city/{{city}}/by_pop/{{city}}_{{popu}}_{{site}}.thetas.idx.pestPG'.format(ANGSD_DIR), city=wildcards.city, popu=pops, site='4fold')
+
+def get_population_saf_files_byCity(wildcards):
+    checkpoint_output = checkpoints.populations_byCity_byHabitat.get(**wildcards).output[0]
+    pops = glob_wildcards(os.path.join(checkpoint_output, '{{city}}_{{popu}}_bams.list'.format(PROGRAM_RESOURCE_DIR))).popu
+    all_saf_files = expand(rules.angsd_saf_likelihood_byCity_byPopulation.output.saf_idx, city = wildcards.city, popu=pops, site='4fold')
+    pop1 = wildcards.pop_comb.split('_')[0]
+    pop2 = wildcards.pop_comb.split('_')[1]
+    saf1 = [x for x in all_saf_files if os.path.basename(x).split('_')[1] == pop1]
+    saf2 = [x for x in all_saf_files if os.path.basename(x).split('_')[1] == pop2]
+    return saf1 + saf2
+
+def get_population_saf_and_sfs_files_byCity(wildcards):
+    checkpoint_output = checkpoints.populations_byCity_byHabitat.get(**wildcards).output[0]
+    pops = glob_wildcards(os.path.join(checkpoint_output, '{{city}}_{{popu}}_bams.list'.format(PROGRAM_RESOURCE_DIR))).popu
+    all_saf_files = expand(rules.angsd_saf_likelihood_byCity_byPopulation.output.saf_idx, city = wildcards.city, popu=pops, site='4fold')
+    pop1 = wildcards.pop_comb.split('_')[0]
+    pop2 = wildcards.pop_comb.split('_')[1]
+    saf1 = [x for x in all_saf_files if os.path.basename(x).split('_')[1] == pop1]
+    saf2 = [x for x in all_saf_files if os.path.basename(x).split('_')[1] == pop2]
+    saf_files = saf1 + saf2
+    sfs = expand(rules.angsd_estimate_joint_sfs_populations.output, city = wildcards.city, site='4fold', pop_comb=wildcards.pop_comb)
+    return { 'saf_files' : saf_files, 'sfs' : sfs }
+
+def aggregate_input_fst(wildcards):
+    checkpoint_output = checkpoints.populations_byCity_byHabitat.get(**wildcards).output[0]
+    pops = glob_wildcards(os.path.join(checkpoint_output, '{{city}}_{{popu}}_bams.list'.format(PROGRAM_RESOURCE_DIR))).popu
+    pop_combinations = [c[0] + '_' + c[1] for c in list(itertools.combinations(pops, 2))]
+    return expand('{0}/summary_stats/fst/fst1/{{city}}/pairwise/{{city}}_{{site}}_{{pop_comb}}_readable.fst'.format(ANGSD_DIR), city=wildcards.city, pop_comb=pop_combinations, site='4fold')
+ 

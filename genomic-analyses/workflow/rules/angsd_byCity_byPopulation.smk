@@ -72,6 +72,10 @@ rule angsd_saf_likelihood_byCity_byPopulation:
             -bam {input.bams} 2> {log}
         """
 
+###############
+#### THETA ####
+###############
+
 rule angsd_estimate_sfs_byCity_byPopulation:
     """
     Estimate folded SFS separately for each population in each city (i.e., 1D SFS) using realSFS. 
@@ -79,7 +83,7 @@ rule angsd_estimate_sfs_byCity_byPopulation:
     input:
         rules.angsd_saf_likelihood_byCity_byPopulation.output.saf_idx
     output:
-        '{0}/sfs/by_city/{{city}}/{{city}}_{{popu}}_{{site}}.sfs'.format(ANGSD_DIR)
+        '{0}/sfs/by_city/{{city}}/by_pop/{{city}}_{{popu}}_{{site}}.sfs'.format(ANGSD_DIR)
     log: 'logs/angsd_estimate_sfs_byCity_byPopulation/{city}_{popu}_{site}_sfs.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     threads: 4
@@ -149,13 +153,95 @@ rule aggregate_theta:
         echo {input} > {output}
         """
 
+#############
+#### FST ####
+#############
+
+rule angsd_estimate_joint_sfs_populations:
+    """
+    Estimated folded, two-dimensional SFS for pairwise populations in each city using realSFS. Uses 4fold sites.
+    """
+    input:
+        get_population_saf_files_byCity
+    output:
+        '{0}/sfs/by_city/{{city}}/2dsfs_pop/{{city}}_{{site}}_{{pop_comb}}.2dsfs'.format(ANGSD_DIR)
+    log: 'logs/angsd_estimate_2dsfs_population/{city}_{site}_{pop_comb}.2dsfs.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    threads: 4
+    wildcard_constraints:
+        site='4fold'
+    resources:
+        mem_mb = lambda wildcards, attempt: attempt * 10000,
+        time = '01:00:00'
+    shell:
+        """
+        realSFS {input} -maxIter 2000 -seed 42 -fold 1 -P {threads} > {output} 2> {log}
+        """
+
+rule angsd_fst_index_pairwise:
+    """
+    Estimate per-site alphas (numerator) and betas (denominator) for pariwise population Fst and PBS estimation.  
+    """
+    input: 
+        unpack(get_population_saf_and_sfs_files_byCity)
+    output:
+        fst = '{0}/summary_stats/fst/fst1/{{city}}/pairwise/{{city}}_{{site}}_{{pop_comb}}.fst.gz'.format(ANGSD_DIR),
+        idx = '{0}/summary_stats/fst/fst1/{{city}}/pairwise/{{city}}_{{site}}_{{pop_comb}}.fst.idx'.format(ANGSD_DIR)
+    log: 'logs/angsd_fst_index_pairwise/{city}_{site}_{pop_comb}_index.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    threads: 4
+    wildcard_constraints:
+        site='4fold'
+    resources:
+        mem_mb = 4000,
+        time = '01:00:00'
+    params:
+        fstout = '{0}/summary_stats/fst/fst1/{{city}}/pairwise/{{city}}_{{site}}_{{pop_comb}}'.format(ANGSD_DIR)
+    shell:
+        """
+        realSFS fst index {input.saf_files} -sfs {input.sfs} -fold 1 -P {threads} -whichFst 1 -fstout {params.fstout} 2> {log} 
+        """
+
+rule angsd_fst_readable_pairwise:
+    """
+    Create readable Fst files. Required due to format of realSFS fst index output files. 
+    """
+    input:
+        rules.angsd_fst_index_pairwise.output.idx
+    output:
+        '{0}/summary_stats/fst/fst1/{{city}}/pairwise/{{city}}_{{site}}_{{pop_comb}}_readable.fst'.format(ANGSD_DIR)
+    log: 'logs/angsd_fst_readable_pairwise/{city}_{site}_{pop_comb}_readable.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    shell:
+        """
+        realSFS fst print {input} > {output} 2> {log}
+        """
+
+rule aggregate_fst:
+    """
+    Aggregate outputs from checkpoint
+    """
+    input: 
+        aggregate_input_fst
+    output:
+        '{0}/sfs/by_city/{{city}}/by_pop/{{city}}_{{site}}_fst.done'.format(ANGSD_DIR)
+    shell:
+        """
+        echo {input} > {output}
+        """
+
+##############
+#### POST ####
+##############
+
 rule angsd_byCity_byPopulation_done:
     """
     Generate empty flag file signalling successful completion on Pi and pairwise Fst estimation among populations
     within a city. 
     """
     input:
-        expand('{0}/sfs/by_city/{{city}}/by_pop/{{city}}_{{site}}_theta.done'.format(ANGSD_DIR), city='Albuquerque', site='4fold')
+        expand('{0}/sfs/by_city/{{city}}/by_pop/{{city}}_{{site}}_theta.done'.format(ANGSD_DIR), city='Albuquerque', site='4fold'),
+        expand('{0}/sfs/by_city/{{city}}/by_pop/{{city}}_{{site}}_fst.done'.format(ANGSD_DIR), city='Albuquerque', site='4fold')
     output:
         '{0}/angsd_byCity_byPopulation.done'.format(ANGSD_DIR)
     shell:
