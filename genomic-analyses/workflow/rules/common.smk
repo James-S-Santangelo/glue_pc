@@ -301,8 +301,8 @@ def get_population_saf_files_byCity(wildcards):
     all_saf_files = expand(rules.angsd_saf_likelihood_byCity_byPopulation.output.saf_idx, city = wildcards.city, popu=pops, site='4fold')
     pop1 = wildcards.pop_comb.split('_')[0]
     pop2 = wildcards.pop_comb.split('_')[1]
-    saf1 = [x for x in all_saf_files if os.path.basename(x).split('_')[1] == pop1]
-    saf2 = [x for x in all_saf_files if os.path.basename(x).split('_')[1] == pop2]
+    saf1 = [x for x in all_saf_files if '_{0}_'.format(pop1) in os.path.basename(x)]
+    saf2 = [x for x in all_saf_files if '_{0}_'.format(pop2) in os.path.basename(x)]
     return saf1 + saf2
 
 def get_population_saf_and_sfs_files_byCity(wildcards):
@@ -311,8 +311,8 @@ def get_population_saf_and_sfs_files_byCity(wildcards):
     all_saf_files = expand(rules.angsd_saf_likelihood_byCity_byPopulation.output.saf_idx, city = wildcards.city, popu=pops, site='4fold')
     pop1 = wildcards.pop_comb.split('_')[0]
     pop2 = wildcards.pop_comb.split('_')[1]
-    saf1 = [x for x in all_saf_files if os.path.basename(x).split('_')[1] == pop1]
-    saf2 = [x for x in all_saf_files if os.path.basename(x).split('_')[1] == pop2]
+    saf1 = [x for x in all_saf_files if '_{0}_'.format(pop1) in os.path.basename(x)]
+    saf2 = [x for x in all_saf_files if '_{0}_'.format(pop2) in os.path.basename(x)]
     saf_files = saf1 + saf2
     sfs = expand(rules.angsd_estimate_joint_sfs_populations.output, city = wildcards.city, site='4fold', pop_comb=wildcards.pop_comb)
     return { 'saf_files' : saf_files, 'sfs' : sfs }

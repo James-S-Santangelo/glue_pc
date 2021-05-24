@@ -204,7 +204,7 @@ rule angsd_fst_index_pairwise:
 
 rule angsd_fst_readable_pairwise:
     """
-    Create readable Fst files. Required due to format of realSFS fst index output files. 
+    Create readable Fst files for pairwise Fst estimation. Required due to format of realSFS fst index output files. 
     """
     input:
         rules.angsd_fst_index_pairwise.output.idx
@@ -240,8 +240,8 @@ rule angsd_byCity_byPopulation_done:
     within a city. 
     """
     input:
-        expand('{0}/sfs/by_city/{{city}}/by_pop/{{city}}_{{site}}_theta.done'.format(ANGSD_DIR), city='Albuquerque', site='4fold'),
-        expand('{0}/sfs/by_city/{{city}}/by_pop/{{city}}_{{site}}_fst.done'.format(ANGSD_DIR), city='Albuquerque', site='4fold')
+        expand('{0}/sfs/by_city/{{city}}/by_pop/{{city}}_{{site}}_theta.done'.format(ANGSD_DIR), city=CITIES, site='4fold'),
+        expand('{0}/sfs/by_city/{{city}}/by_pop/{{city}}_{{site}}_fst.done'.format(ANGSD_DIR), city=CITIES, site='4fold')
     output:
         '{0}/angsd_byCity_byPopulation.done'.format(ANGSD_DIR)
     shell:
