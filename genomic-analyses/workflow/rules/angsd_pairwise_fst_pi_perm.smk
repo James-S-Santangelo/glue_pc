@@ -84,7 +84,7 @@ rule angsd_estimate_permuted_joint_sfs_byCity:
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     threads: 4
     resources:
-        mem_mb = lambda wildcards, attempt: attempt * 10000,
+        mem_mb = lambda wildcards, attempt: attempt * 4000,
         time = '01:00:00'
     shell:
         """
@@ -144,7 +144,7 @@ rule angsd_estimate_permuted_sfs_byCity_byHabitat:
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     threads: 4
     resources:
-        mem_mb = lambda wildcards, attempt: attempt * 10000,
+        mem_mb = lambda wildcards, attempt: attempt * 4000,
         time = '01:00:00'
     shell:
         """
