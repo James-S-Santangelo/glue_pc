@@ -290,7 +290,7 @@ def get_files_saf_estimation_byPopulation(wildcards):
     ref = REFERENCE_GENOME
     return { 'bams' : bams, 'sites_idx' : sites_idx, 'sites' : sites, 'ref' : ref }
     
-def aggregate_input(wildcards):
+def aggregate_input_theta(wildcards):
     checkpoint_output = checkpoints.populations_byCity_byHabitat.get(**wildcards).output[0]
     pops = glob_wildcards(os.path.join(checkpoint_output, '{{city}}_{{popu}}_bams.list'.format(PROGRAM_RESOURCE_DIR))).popu
-    return expand('{0}/sfs/by_city/{{city}}/by_pop/{{city}}_{{popu}}_{{site}}.{{ext}}'.format(ANGSD_DIR), city=wildcards.city, popu=pops, ext=['saf.gz','saf.idx','saf.pos.gz'], site='4fold')
+    return expand('{0}/summary_stats/thetas/by_city/{{city}}/by_pop/{{city}}_{{popu}}_{{site}}.thetas.idx.pestPG'.format(ANGSD_DIR), city=wildcards.city, popu=pops, site='4fold')

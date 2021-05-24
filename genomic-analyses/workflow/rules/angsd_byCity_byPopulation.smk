@@ -72,14 +72,78 @@ rule angsd_saf_likelihood_byCity_byPopulation:
             -bam {input.bams} 2> {log}
         """
 
-rule aggregate:
+rule angsd_estimate_sfs_byCity_byPopulation:
+    """
+    Estimate folded SFS separately for each population in each city (i.e., 1D SFS) using realSFS. 
+    """
+    input:
+        rules.angsd_saf_likelihood_byCity_byPopulation.output.saf_idx
+    output:
+        '{0}/sfs/by_city/{{city}}/{{city}}_{{popu}}_{{site}}.sfs'.format(ANGSD_DIR)
+    log: 'logs/angsd_estimate_sfs_byCity_byPopulation/{city}_{popu}_{site}_sfs.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    threads: 4
+    resources:
+        mem_mb = lambda wildcards, attempt: attempt * 10000,
+        time = '01:00:00'
+    shell:
+        """
+        realSFS {input} -P {threads} -fold 1 -maxIter 2000 -seed 42 > {output} 2> {log}
+        """
+
+rule angsd_estimate_thetas_byCity_byPopulation:
+    """
+    Generate per-site thetas in each population for each city from 1DSFS
+    """
+    input:
+        saf_idx = rules.angsd_saf_likelihood_byCity_byPopulation.output.saf_idx,
+        sfs = rules.angsd_estimate_sfs_byCity_byPopulation.output
+    output:
+        idx = '{0}/summary_stats/thetas/by_city/{{city}}/by_pop/{{city}}_{{popu}}_{{site}}.thetas.idx'.format(ANGSD_DIR),
+        thet = '{0}/summary_stats/thetas/by_city/{{city}}/by_pop/{{city}}_{{popu}}_{{site}}.thetas.gz'.format(ANGSD_DIR)
+    log: 'logs/angsd_estimate_thetas_byCity_byPopulation/{city}_{popu}_{site}_thetas.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    threads: 4
+    params:
+        out = '{0}/summary_stats/thetas/by_city/{{city}}/by_pop/{{city}}_{{popu}}_{{site}}'.format(ANGSD_DIR)
+    resources:
+        mem_mb = lambda wildcards, attempt: attempt * 4000,
+        time = '01:00:00'
+    shell:
+        """
+        realSFS saf2theta {input.saf_idx} \
+            -P {threads} \
+            -fold 1 \
+            -sfs {input.sfs} \
+            -outname {params.out} 2> {log}
+        """
+
+rule angsd_diversity_neutrality_stats_byCity_byPopulation:
+    """
+    Estimate pi, Waterson's theta, Tajima's D, etc. in each population in each city.
+    """
+    input:
+        rules.angsd_estimate_thetas_byCity_byPopulation.output.idx
+    output:
+       '{0}/summary_stats/thetas/by_city/{{city}}/by_pop/{{city}}_{{popu}}_{{site}}.thetas.idx.pestPG'.format(ANGSD_DIR)
+    log: 'logs/angsd_diversity_neutrality_stats_byCity_byPopulation/{city}_{popu}_{site}_diversity_neutrality.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    resources:
+        mem_mb = lambda wildcards, attempt: attempt * 4000,
+        time = '01:00:00'
+    shell:
+        """
+        thetaStat do_stat {input} 2> {log}
+        """
+
+rule aggregate_theta:
     """
     Aggregate outputs from checkpoint
     """
     input: 
-        aggregate_input
+        aggregate_input_theta
     output:
-        '{0}/sfs/by_city/{{city}}/by_pop/{{city}}_{{site}}.done'.format(ANGSD_DIR)
+        '{0}/sfs/by_city/{{city}}/by_pop/{{city}}_{{site}}_theta.done'.format(ANGSD_DIR)
     shell:
         """
         echo {input} > {output}
@@ -91,7 +155,7 @@ rule angsd_byCity_byPopulation_done:
     within a city. 
     """
     input:
-        expand('{0}/sfs/by_city/{{city}}/by_pop/{{city}}_{{site}}.done'.format(ANGSD_DIR), city='Albuquerque', site='4fold')
+        expand('{0}/sfs/by_city/{{city}}/by_pop/{{city}}_{{site}}_theta.done'.format(ANGSD_DIR), city='Albuquerque', site='4fold')
     output:
         '{0}/angsd_byCity_byPopulation.done'.format(ANGSD_DIR)
     shell:
