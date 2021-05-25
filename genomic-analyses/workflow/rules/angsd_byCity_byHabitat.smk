@@ -29,36 +29,13 @@ rule create_bam_list_byCity_byHabitat:
                 if sample in samples_city_habitat:
                     f.write('{0}'.format(bam))
 
-rule angsd_index_degenerate_allChroms:
-    """
-    Indexes ANGSD sites files containing genome-wide positions. Since only 4fold sites are going to be
-    used here, we can generate the SAF file across all chromosomes simultaneously.
-    """
-    input:
-        rules.convert_sites_for_angsd.output
-    output:
-        binary = '{0}/angsd_sites/Trepens_{{site}}.sites.bin'.format(PROGRAM_RESOURCE_DIR),
-        idx = '{0}/angsd_sites/Trepens_{{site}}.sites.idx'.format(PROGRAM_RESOURCE_DIR)
-    log: 'logs/angsd_index/allChroms_{site}_index.log'
-    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
-    wildcard_constraints:
-        site='4fold'
-    shell:
-        """
-        angsd sites index {input} 2> {log}
-        """
-
 rule angsd_saf_likelihood_byCity_byHabitat:
     """
     Generate Site Allele Frequency (SAF) likelihood file for each habitat in each city using ANGSD. 
     Uses only 4fold sites.
     """
     input:
-        bams = rules.create_bam_list_byCity_byHabitat.output,
-        sites_idx = rules.angsd_index_degenerate_allChroms.output,
-        sites = rules.convert_sites_for_angsd.output, 
-        ref = REFERENCE_GENOME,
-        chroms = config['chromosomes']
+        unpack(get_files_for_saf_estimation_byHabitat)
     output:
         saf = temp('{0}/sfs/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}.saf.gz'.format(ANGSD_DIR)),
         saf_idx = temp('{0}/sfs/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}.saf.idx'.format(ANGSD_DIR)),
@@ -67,10 +44,10 @@ rule angsd_saf_likelihood_byCity_byHabitat:
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     params:
         out = '{0}/sfs/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}'.format(ANGSD_DIR)
-    threads: 10
+    threads: 6
     resources:
-        mem_mb = lambda wildcards, attempt: attempt * 8000,
-        time = '06:00:00'
+        mem_mb = lambda wildcards, attempt: attempt * 4000,
+        time = '01:00:00'
     wildcard_constraints:
         site='4fold'
     shell:
@@ -90,7 +67,7 @@ rule angsd_saf_likelihood_byCity_byHabitat:
             -minMapQ 30 \
             -doSaf 1 \
             -anc {input.ref} \
-            -rf {input.chroms} \
+            -r CM019101.1 \
             -bam {input.bams} 2> {log}
         """
 
@@ -234,6 +211,25 @@ rule concat_habitat_bamLists_withinCities:
     shell:
         """
         cat {input} > {output} 2> {log}
+        """
+
+rule angsd_index_degenerate_allChroms:
+    """
+    Indexes ANGSD sites files containing genome-wide positions. Since only 4fold sites are going to be
+    used here, we can generate the SAF file across all chromosomes simultaneously.
+    """
+    input:
+        rules.convert_sites_for_angsd.output
+    output:
+        binary = '{0}/angsd_sites/Trepens_{{site}}.sites.bin'.format(PROGRAM_RESOURCE_DIR),
+        idx = '{0}/angsd_sites/Trepens_{{site}}.sites.idx'.format(PROGRAM_RESOURCE_DIR)
+    log: 'logs/angsd_index/allChroms_{site}_index.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    wildcard_constraints:
+        site='4fold'
+    shell:
+        """
+        angsd sites index {input} 2> {log}
         """
 
 rule angsd_gl_byCity_binary:

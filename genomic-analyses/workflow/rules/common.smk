@@ -322,6 +322,13 @@ def get_population_saf_and_sfs_files_byCity(wildcards):
     sfs = expand(rules.angsd_estimate_joint_sfs_populations.output, city = wildcards.city, site='4fold', pop_comb=wildcards.pop_comb)
     return { 'saf_files' : saf_files, 'sfs' : sfs }
 
+def get_files_for_saf_estimation_byHabitat(wildcards):
+    sites_idx = expand(rules.angsd_index_degenerate.output.idx, chrom='CM019101.1', site='4fold')
+    sites = expand(rules.split_angsd_sites_byChrom.output, chrom='CM019101.1', site='4fold')
+    ref = REFERENCE_GENOME
+    bams = expand(rules.create_bam_list_byCity_byHabitat.output, city=wildcards.city, habitat=wildcards.habitat)
+    return { 'bams' : bams, 'sites_idx' : sites_idx , 'sites' : sites, 'ref' : ref }
+
 def get_files_for_permuted_saf_estimation(wildcards):
     sites_idx = expand(rules.angsd_index_degenerate.output.idx, chrom='CM019101.1', site='4fold')
     sites = expand(rules.split_angsd_sites_byChrom.output, chrom='CM019101.1', site='4fold')
