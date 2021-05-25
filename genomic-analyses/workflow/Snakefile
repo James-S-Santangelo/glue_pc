@@ -139,14 +139,9 @@ include: 'rules/single_sample_sfs.smk'
 include: 'rules/qc.smk'
 include: 'rules/toronto_downsample.smk'
 include: 'rules/angsd_global.smk'
-<<<<<<< HEAD
 include: 'rules/angsd_byCity_byHabitat.smk'
+include: 'rules/angsd_byCity_byHabitat_permute.smk'
 include: 'rules/angsd_byCity_byPopulation.smk'
-=======
-include: 'rules/angsd_pairwise_fst_pi.smk'
-include: 'rules/angsd_pairwise_fst_pi_perm.smk'
-include: 'rules/angsd_by_city.smk'
->>>>>>> Adding rules to estimate permuted pi and Fst
 include: 'rules/population_structure.smk'
 
 # Rule to clean directory of all output files
