@@ -196,7 +196,7 @@ rule angsd_permuted_diversity_neutrality_stats_byCity_byHabitat:
         thetaStat do_stat {input} 2> {log}
         """
 
-rule angsd_pairwise_permuted_done:
+rule angsd_byCity_byHabitat_permuted_done:
     """
     Generate empty flag file signalling successful completion of pairwise pi and Fst analysis
     """
@@ -204,7 +204,7 @@ rule angsd_pairwise_permuted_done:
         expand(rules.angsd_permuted_fst_readable.output, city=CITIES, site=['4fold'], seed=BOOT_SEEDS),
         expand(rules.angsd_permuted_diversity_neutrality_stats_byCity_byHabitat.output, city=CITIES, habitat=HABITATS, site=['4fold'], seed=BOOT_SEEDS)
     output:
-        '{0}/angsd_pairwise_permuted.done'.format(ANGSD_DIR)
+        '{0}/angsd_byCity_byHabitat_permuted.done'.format(ANGSD_DIR)
     shell:
         """
         touch {output}
