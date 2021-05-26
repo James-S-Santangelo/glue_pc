@@ -125,11 +125,12 @@ rule bamutil_validate:
 
 rule multiqc:
     """
-    Generate single HTML report with all QC info for all samples using multiQC
+    Generate single HTML report with all QC info for all samples using multiQC.
+    Inputs only enforce dependencies. MultiQC takes results folder as input (i.e., QC_DIR)
     """
     input:
-       fastqc_raw = expand('{0}/fastqc_raw_reads/{{sample}}_{{read}}_fastqc.zip'.format(QC_DIR), sample=SAMPLES, read=['1', '2']),
-       fastqc_trim = expand('{0}/fastqc_trimmed_reads/{{sample}}_trimmed_{{read}}_fastqc.zip'.format(QC_DIR), sample=SAMPLES, read=['1', '2']),
+       fastqc_raw = expand(rules.fastqc_raw_reads.output.zip1, sample=SAMPLES),
+       fastqc_trim = expand(rules.fastqc_raw_reads.output.zip1, sample=SAMPLES),
        fastp = expand(rules.fastp_trim.output.json, sample=SAMPLES),
        qualimap = expand(rules.qualimap_bam_qc.output, sample=SAMPLES),
        bamstats = expand(rules.bamtools_stats.output, sample=SAMPLES),

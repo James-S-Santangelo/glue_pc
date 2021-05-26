@@ -4,9 +4,12 @@ def get_raw_reads(wildcards):
     """
     Extract forward and reverse read FASTQ paths from file
     """
-    raw_read_df = pd.read_table(rules.paths_to_raw_reads.output[0], sep='\t')
-    R1 = raw_read_df.loc[raw_read_df['sample'] == wildcards.sample, 'R1'].iloc[0]
-    R2 = raw_read_df.loc[raw_read_df['sample'] == wildcards.sample, 'R2'].iloc[0]
+    if wildcards.sample.startswith('s_'):
+        R1 = glob.glob(TOR_RAW_READ_DIR + '/{0}/{0}_*_1.fq.gz'.format(wildcards.sample))[0]
+        R2 = glob.glob(TOR_RAW_READ_DIR + '/{0}/{0}_*_2.fq.gz'.format(wildcards.sample))[0]
+    else:
+        R1 = glob.glob(GLUE_RAW_READ_DIR + '/{0}/{0}_*_1.fq.gz'.format(wildcards.sample))[0]
+        R2 = glob.glob(GLUE_RAW_READ_DIR + '/{0}/{0}_*_2.fq.gz'.format(wildcards.sample))[0]
     return { 'read1' : R1, 'read2' : R2 }
 
 def get_fastas_to_concat(wildcards):

@@ -31,8 +31,9 @@ GFF_FILE = ancient(config['files']['gff'])
 
 # Paths for output files
 TMPDIR = config['temp_dir']
-RAW_READ_DIR = '{0}'.format(config['raw_read_prefix'])
-TRIMMED_READ_DIR = '{0}/trimmed_reads'.format(config['raw_read_prefix'])
+GLUE_RAW_READ_DIR = '{0}'.format(config['glue_raw_read_prefix'])
+TOR_RAW_READ_DIR = '{0}'.format(config['tor_raw_read_prefix'])
+TRIMMED_READ_DIR = '{0}/trimmed_reads'.format(config['results_prefix'])
 QC_DIR = '{0}/qc'.format(config['results_prefix'])
 SPECIES_ID_DIR = '{0}/species_id'.format(config['results_prefix'])
 BAM_DIR = '{0}/bam'.format(config['results_prefix'])
@@ -85,17 +86,14 @@ wildcard_constraints:
 # Rules to be run locally on as single process
 localrules: paths_to_raw_reads, create_tmp_dir, create_bam_list_finalSamples_lowCovRemoved, create_samples_to_remove, create_bam_list_highErrorRemoved, create_bam_list_forSpeciesID, angsd_index_degenerate, concat_angsd_stats, concat_sfs, sum_sfs, convert_sites_for_angsd, split_angsd_sites_byChrom, files_for_angsd_site_subset, subset_angsd_gl, subset_angsd_maf, extract_sample_angsd, angsd_done, chloroplast_gene_fasta, index_chloroplast_gene_vcf, concat_fasta, download_nt_database, single_sample_sfs_done, pop_structure_done, clone_degeneracy, downsample_toronto_done, extract_angsd_allSites, angsd_index_allSites, angsd_index_degenerate, create_bam_list_byCity_byHabitat, angsd_fst_readable, index_toronto_bam, index_bam, concat_habitat_bamLists_withinCities, convert_freq_forNGSrelate, create_random_bam_list_byCity_byHabitat, angsd_byCity_byHabitat_done, angsd_byCity_byHabitat_permuted_done, angsd_byCity_byPopulation_done 
 
-# Get custom python functions
-include: 'rules/common.smk'
-
 # Pipeline targets
 # Each step generates an empty flagfile as its final target
 rule all:
    input:
         # Trimming, mapping, and QC
         '{0}/multiqc/multiqc_report.html'.format(QC_DIR),
-        #'{0}/single_sample_sfs.done'.format(SS_SFS_DIR),
-        #'{0}/species_id.done'.format(SPECIES_ID_DIR),
+        '{0}/single_sample_sfs.done'.format(SS_SFS_DIR),
+        '{0}/species_id.done'.format(SPECIES_ID_DIR),
         # Downsample Toronto data
         '{0}/downsample_toronto.done'.format(BAM_DIR),
         # Angsd
@@ -106,23 +104,6 @@ rule all:
         # Population structure
         '{0}/population_structure.done'.format(POP_STRUC_DIR),
 
-rule paths_to_raw_reads:
-    """
-    Writes file with sample name and paths to forward and reverse read FASTQs
-    """
-    output:
-        '{0}/paths_to_raw_reads.txt'.format(PROGRAM_RESOURCE_DIR)
-    run:
-        with open(output[0], 'w') as fout:
-            fout.write('sample\tR1\tR2\n')
-            p = Path(RAW_READ_DIR)
-            print("Creating text file with path to raw reads")
-            for sample in tqdm(SAMPLES):
-                reads = [path for path in p.rglob('{0}_*_[1-2].fq.gz'.format(sample))]
-                R1 = reads[0].absolute()
-                R2 = reads[1].absolute()
-                fout.write('{0}\t{1}\t{2}\n'.format(sample, R1, R2)) 
-
 # Create temporary directory used throughout pipeline
 rule create_tmp_dir:
     """Create temporary directory for use by pipeline"""
@@ -131,6 +112,7 @@ rule create_tmp_dir:
 
 # Snakefiles with rules for particular pieces of the pipeline
 # See Snakefiles for details
+include: 'rules/common.smk'
 include: 'rules/ref.smk'
 include: 'rules/trimming.smk'
 include: 'rules/mapping.smk'
