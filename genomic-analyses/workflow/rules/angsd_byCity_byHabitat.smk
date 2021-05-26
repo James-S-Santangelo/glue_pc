@@ -360,7 +360,7 @@ rule angsd_byCity_byHabitat_done:
         touch {output}
         """
 
-rule pairwise_pi_fst_notebook:
+rule pi_fst_byCity_byHabitat_notebook:
     """
     Interactive exploration of pairwise urban-rural pi and Fst analysis. Generates Figure 4 panels
     in the main text. 
@@ -376,7 +376,6 @@ rule pairwise_pi_fst_notebook:
         '{0}/main_text/figure_4/figure4C_Fst_by_clines.pdf'.format(FIGURES_DIR),
         '{0}/main_text/figure_4/figure4D_HCNslope_by_Fst.pdf'.format(FIGURES_DIR),
         '{0}/supplemental/population_structure/figureSX_PCA_URcentroids.pdf'.format(FIGURES_DIR)
-
     conda: '../envs/notebooks.yaml'
     notebook:
-        "../notebooks/pairwise_pi_fst.r.ipynb"
+        "../notebooks/pi_fst_byCity_byHabitat.r.ipynb"
