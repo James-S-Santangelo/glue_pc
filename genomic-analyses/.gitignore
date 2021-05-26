@@ -4,7 +4,6 @@ data/
 *.json
 results*
 *log*/
-*.pdf
 __pycache__/
 .ipynb_checkpoints
 .Rproj.user
