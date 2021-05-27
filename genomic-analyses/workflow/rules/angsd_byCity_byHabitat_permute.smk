@@ -218,7 +218,7 @@ rule pi_fst_byCity_byHabitat_notebook:
         rules.angsd_byCity_byHabitat_done.output,
         rules.angsd_byCity_byHabitat_permuted_done.output
     output:
-        '{0}/pi_fst_byCity_byHabitat_notebook.done'
+        '{0}/pi_fst_byCity_byHabitat_notebook.done'.format(FIGURES_DIR)
     conda: '../envs/notebooks.yaml'
     notebook:
         "../notebooks/pi_fst_byCity_byHabitat.r.ipynb"
