@@ -13,3 +13,4 @@ dependencies:
   - r-emmeans=1.5.5_1
   - r-ggrepel=0.9.1
   - r-ggridges=0.5.3
+  - r-patchwork=1.1.1
