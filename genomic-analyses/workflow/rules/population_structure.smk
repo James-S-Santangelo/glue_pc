@@ -98,7 +98,7 @@ rule logfile_for_clumpak:
         import re
         with open(output[0], 'w') as fout:
             for lf in input:
-                # Get seed
+                # Get K
                 m1 = re.search('(?<=_K)(\d+)', lf)
                 seed = m1.group(1)
                 # Get likelihood
@@ -106,7 +106,30 @@ rule logfile_for_clumpak:
                 m2 = re.search('(?<=like=)(-?\d+.\d+)', line)
                 like = m2.group(1)
                 fout.write('{0}\t{1}\n'.format(seed, like))
-            
+
+rule clumpak_best_k_by_evanno:
+    """
+    Find optimal K value by city using Evanno method, as implemented in CLUMPAK
+    """
+    input:
+        rules.logfile_for_clumpak.output
+    output:
+        directory('{0}/bestKbyEvanno/{{city}}'.format(POP_STRUC_DIR))
+    log: 'logs/clumpak_best_k_by_evanno/{city}_evanno.log'
+    container: 'library://james-s-santangelo/clumpak/clumpak:1.1'
+    params:
+        outdir = lambda wildcards: '{0}/bestKbyEvanno/{1}'.format(POP_STRUC_DIR, wildcards.city)
+    resources:
+        mem_mb = 1000,
+        time = '01:00:00'
+    shell:
+        """
+        perl /opt/bin/BestKByEvanno.pl --id {wildcards.city}_out \
+            --d {params.outdir} \
+            --f {input} \
+            --inputtype lnprobbyk 2>&1 > {log}
+        """
+    
 
 rule pop_structure_done:
     """
@@ -115,7 +138,7 @@ rule pop_structure_done:
     input:
         expand(rules.pcangsd.output, site = '4fold', maf = ['0.005', '0.01', '0.05'], sample_set=['highErrorRemoved','finalSamples_lowCovRemoved']),
         expand(rules.ngsrelate.output, site = '4fold', maf = '0.05', city = CITIES),
-        expand(rules.logfile_for_clumpak.output, city=CITIES)
+        expand(rules.clumpak_best_k_by_evanno.output, city=CITIES)
     output:
         '{0}/population_structure.done'.format(POP_STRUC_DIR)
     shell:
