@@ -100,12 +100,12 @@ rule logfile_for_clumpak:
             for lf in input:
                 # Get K
                 m1 = re.search('(?<=_K)(\d+)', lf)
-                seed = m1.group(1)
+                k = m1.group(1)
                 # Get likelihood
                 line = open(lf, 'r').readlines()[-1]  # Likelihood always on last line
                 m2 = re.search('(?<=like=)(-?\d+.\d+)', line)
                 like = m2.group(1)
-                fout.write('{0}\t{1}\n'.format(seed, like))
+                fout.write('{0}\t{1}\n'.format(k, like))
 
 rule clumpak_best_k_by_evanno:
     """
