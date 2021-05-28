@@ -57,11 +57,16 @@ rule ngsrelate:
         """
 
 rule ngsadmix:
+    """
+    Estimate admixture proportions directly from genotype likelihoods.
+
+    """
     input:
         rules.angsd_gl_byCity_beagle.output.gls
     output:
-        '{0}/ngsadmix/{{city}}/K{{k}}/{{city}}_ngsadmix_K{{k}}_{{site}}_maf{{maf}}_seed{{seed}}.fopt.gz'.format(POP_STRUC_DIR),
-        '{0}/ngsadmix/{{city}}/K{{k}}/{{city}}_ngsadmix_K{{k}}_{{site}}_maf{{maf}}_seed{{seed}}.qopt'.format(POP_STRUC_DIR) 
+        fopt = '{0}/ngsadmix/{{city}}/K{{k}}/{{city}}_ngsadmix_K{{k}}_{{site}}_maf{{maf}}_seed{{seed}}.fopt.gz'.format(POP_STRUC_DIR),
+        qopt = '{0}/ngsadmix/{{city}}/K{{k}}/{{city}}_ngsadmix_K{{k}}_{{site}}_maf{{maf}}_seed{{seed}}.qopt'.format(POP_STRUC_DIR),
+        lf = '{0}/ngsadmix/{{city}}/K{{k}}/{{city}}_ngsadmix_K{{k}}_{{site}}_maf{{maf}}_seed{{seed}}.log'.format(POP_STRUC_DIR)
     log: 'logs/ngsadmix/{city}/K{k}/{city}_{site}_maf{maf}_K{k}_seed{seed}_ngsadmix.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     threads: 10
@@ -81,6 +86,28 @@ rule ngsadmix:
             -outfiles {params.out} 2> {log}
         """
 
+rule logfile_for_clumpak:
+    """
+    Create Inputfile for CLUMPAK containing Log likelihood values of NGSadmix runs for each K
+    """
+    input:
+        get_ngsadmix_logfiles_byCity
+    output:
+        '{0}/for_clumpak/{{city}}_ngsadmix_logfile_for_clumpak.txt'.format(PROGRAM_RESOURCE_DIR)
+    run:
+        import re
+        with open(output[0], 'w') as fout:
+            for lf in input:
+                # Get seed
+                m1 = re.search('(?<=_K)(\d+)', lf)
+                seed = m1.group(1)
+                # Get likelihood
+                line = open(lf, 'r').readlines()[-1]  # Likelihood always on last line
+                m2 = re.search('(?<=like=)(-?\d+.\d+)', line)
+                like = m2.group(1)
+                fout.write('{0}\t{1}\n'.format(seed, like))
+            
+
 rule pop_structure_done:
     """
     Generate empty flag file signaling successful completion of PCAngsd
@@ -88,7 +115,7 @@ rule pop_structure_done:
     input:
         expand(rules.pcangsd.output, site = '4fold', maf = ['0.005', '0.01', '0.05'], sample_set=['highErrorRemoved','finalSamples_lowCovRemoved']),
         expand(rules.ngsrelate.output, site = '4fold', maf = '0.05', city = CITIES),
-        expand(rules.ngsadmix.output, city = CITIES, k = NGSADMIX_K, seed=NGSADMIX_SEEDS, site = '4fold', maf = '0.05')
+        expand(rules.logfile_for_clumpak.output, city=CITIES)
     output:
         '{0}/population_structure.done'.format(POP_STRUC_DIR)
     shell:

@@ -348,4 +348,9 @@ def aggregate_input_fst(wildcards):
     pops = glob_wildcards(os.path.join(checkpoint_output, '{{city}}_{{popu}}_bams.list'.format(PROGRAM_RESOURCE_DIR))).popu
     pop_combinations = [c[0] + '_' + c[1] for c in list(itertools.combinations(pops, 2))]
     return expand('{0}/summary_stats/fst/fst1/{{city}}/pairwise/{{city}}_{{site}}_{{pop_comb}}_readable.fst'.format(ANGSD_DIR), city=wildcards.city, pop_comb=pop_combinations, site='4fold')
- 
+
+def get_ngsadmix_logfiles_byCity(wildcards):
+    """
+    Get NGSadmix logfiles for each city. Used to generate input file for CLUMPAK
+    """
+    return expand(rules.ngsadmix.output.lf, city=wildcards.city, k=NGSADMIX_K, seed=NGSADMIX_SEEDS, site='4fold', maf='0.05')
