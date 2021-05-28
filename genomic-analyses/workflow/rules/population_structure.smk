@@ -119,6 +119,8 @@ rule clumpak_best_k_by_evanno:
     container: 'library://james-s-santangelo/clumpak/clumpak:1.1'
     params:
         outdir = lambda wildcards: '{0}/bestKbyEvanno/{1}'.format(POP_STRUC_DIR, wildcards.city)
+    wildcard_constraints:
+        city='|'.join(CITIES)
     resources:
         mem_mb = 1000,
         time = '01:00:00'
@@ -129,8 +131,23 @@ rule clumpak_best_k_by_evanno:
             --f {input} \
             --inputtype lnprobbyk 2>&1 > {log}
         """
-    
 
+rule bestK_byCity:
+    input:
+        rules.clumpak_best_k_by_evanno.output
+    output:
+        '{0}/bestKbyEvanno/bestK_files/{{city}}_evanno_bestK.txt'.format(POP_STRUC_DIR)
+    run:
+        import re
+        with open (output[0], 'w') as fout:
+            lines = open(input[0] + '/output.log', 'r').readlines()
+            for l in lines:
+                if 'Optimal K by Evanno' in l:
+                    m = re.search('(?<=: )(\d+)', l)
+                    k = m.group(1)
+                    fout.write('city\tbest_k\n'.format(wildcards.city))  # Header
+                    fout.write('{0}\t{1}\n'.format(wildcards.city, k))
+                
 rule pop_structure_done:
     """
     Generate empty flag file signaling successful completion of PCAngsd
@@ -138,13 +155,22 @@ rule pop_structure_done:
     input:
         expand(rules.pcangsd.output, site = '4fold', maf = ['0.005', '0.01', '0.05'], sample_set=['highErrorRemoved','finalSamples_lowCovRemoved']),
         expand(rules.ngsrelate.output, site = '4fold', maf = '0.05', city = CITIES),
-        expand(rules.clumpak_best_k_by_evanno.output, city=CITIES)
+        expand(rules.bestK_byCity.output, city=CITIES)
     output:
         '{0}/population_structure.done'.format(POP_STRUC_DIR)
     shell:
         """
         touch {output}
         """
+
+rule admixture_notebook:
+    input:
+        rules.pop_structure_done.output
+    output:
+        '{0}/admixture_notebook.done'.format(POP_STRUC_DIR)
+    conda: '../envs/notebooks.yaml'
+    notebook:
+        "../notebooks/admixture.r.ipynb"
 
 rule global_depth_pi_sfs_theta_notebook:
     """
