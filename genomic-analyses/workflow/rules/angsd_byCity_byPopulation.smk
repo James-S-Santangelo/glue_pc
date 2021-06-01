@@ -249,3 +249,11 @@ rule angsd_byCity_byPopulation_done:
         touch {output}
         """
 
+rule angsd_byCity_byPopulation_notebook:
+    input:
+        rules.angsd_byCity_byPopulation_done.output
+    output:
+        '{0}/angsd_byCity_byPopulation_notebook.done'.format(POP_STRUC_DIR)
+    conda: '../envs/notebooks.yaml'
+    notebook:
+        "../notebooks/angsd_byCity_byPopulation.r.ipynb"
