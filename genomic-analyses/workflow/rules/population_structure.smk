@@ -113,6 +113,7 @@ rule pcangsd_byCity:
             -minMaf {wildcards.maf} \
             -threads {threads} \
             -admix \
+            -admix_seed 42 \
             > {log}
         """
 
