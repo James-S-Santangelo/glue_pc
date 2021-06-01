@@ -86,6 +86,36 @@ rule ngsadmix:
             -outfiles {params.out} 2> {log}
         """
 
+rule pcangsd_byCity:
+    """
+    Perform PCA by city using genome-wide 4fold dengenerate sites and estimate admixture proportions
+    """
+    input:
+        rules.angsd_gl_byCity_beagle.output.gls
+    output:
+        cov = '{0}/pcangsd/by_city/{{city}}/{{city}}_{{site}}_maf{{maf}}_pcangsd.cov'.format(POP_STRUC_DIR),
+        adm = '{0}/pcangsd/by_city/{{city}}/{{city}}_{{site}}_maf{{maf}}_pcangsd.admix.Q.npy'.format(POP_STRUC_DIR)
+    log: 'logs/pcangsd_byCity/{city}_{site}_maf{maf}_pcangsd.log'
+    container: 'library://james-s-santangelo/pcangsd/pcangsd:0.99'
+    threads: 6
+    params:
+        out = '{0}/pcangsd/by_city/{{city}}/{{city}}_{{site}}_maf{{maf}}_pcangsd'.format(POP_STRUC_DIR)
+    wildcard_constraints:
+        site = '4fold'
+    resources:
+        mem_mb = lambda wildcards, attempt: attempt * 8000,
+        time = '02:00:00'
+    shell:
+        """
+        python3 /opt/pcangsd-v.0.99/pcangsd.py \
+            -beagle {input} \
+            -o {params.out} \
+            -minMaf {wildcards.maf} \
+            -threads {threads} \
+            -admix \
+            > {log}
+        """
+
 rule logfile_for_clumpak:
     """
     Create Inputfile for CLUMPAK containing Log likelihood values of NGSadmix runs for each K
@@ -155,6 +185,7 @@ rule pop_structure_done:
     input:
         expand(rules.pcangsd.output, site = '4fold', maf = ['0.005', '0.01', '0.05'], sample_set=['highErrorRemoved','finalSamples_lowCovRemoved']),
         expand(rules.ngsrelate.output, site = '4fold', maf = '0.05', city = CITIES),
+        expand(rules.pcangsd_byCity.output, site = '4fold', maf = '0.05', city = CITIES),
         expand(rules.bestK_byCity.output, city=CITIES)
     output:
         '{0}/population_structure.done'.format(POP_STRUC_DIR)
