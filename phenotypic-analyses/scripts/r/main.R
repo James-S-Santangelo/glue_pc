@@ -157,7 +157,7 @@ print(glueClineModel_stdDist_r_squared)
 # Estimated percent change in HCN+ across transect. Averaged across cities and continents
 print(pred_percent_change)
 
-# Anova for random effect of effect of distance varying by city
+# LRT for random effect of effect of distance varying by city
 print(glueClineModel_stdDist_slopeRE_test)
 
 ## Step 4.3: Predicting clines from environment

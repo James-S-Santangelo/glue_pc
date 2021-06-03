@@ -6,14 +6,20 @@
 #### SETUP ####
 ###############
 
+# Need to load a few packages here for cluster execution
+library(tidyverse)
+library(glmnet)
+library(caret)
+library(foreach)
+source('scripts/r/misc/utilityFunctions.R')
+
 # Create dataframe with population-mean HCN and environmental variables for every city
-# Needs to be created using `read.csv()` for Pedro's code to work
+# Needs to be created using `read.csv()` for Pedro's code to work...
 inpath <- "data/clean/popMeans_allCities_withEnviro/"
 csv.files <- list.files(path = inpath, pattern="*.csv")
 df_all_popMeans <- c()
 for (i in 1:length(csv.files)){
   data <- read.csv(paste0(inpath, csv.files[i])) %>% dplyr::select(city, 
-                                                                   continent,
                                                                    std_distance, 
                                                                    freqHCN,
                                                                    total_plants,
@@ -55,26 +61,9 @@ logOdds_mat <- df_slopes_enviro %>% dplyr::select(betaLog) %>% as.matrix()
 envSlopes_mat <- df_slopes_enviro %>% dplyr::select(contains('_Slope')) %>% as.matrix()
 envMeans_mat <- df_slopes_enviro %>% dplyr::select(contains('_Mean')) %>% as.matrix()
 
-####################################################
-#### CORRELATION AMONG ENVIRONMENTAL PREDICTORS ####
-####################################################
-
-# Create correlation matrix
-envSlopes_corr <- generate_correlation_df(envSlopes_mat)
-envMeans_corr <- generate_correlation_df(envMeans_mat)
-
-# Create the plots
-pairs(envMeans_mat, 
-      lower.panel = panel.cor,
-      upper.panel = upper.panel)
-
-pairs(envSlopes_mat, 
-      lower.panel = panel.cor,
-      upper.panel = upper.panel)
-
-################################################
-#### ENVIRONMENTAL PREDICTORS OF HCN CLINES ####
-################################################
+#####################
+#### ELASTIC NET ####
+#####################
 
 # Create scaled predictor model matrix, including 2-way interactions
 # Include only interactions between slopes of 2 environmental variables,
@@ -97,42 +86,6 @@ model_matrix <- cbind(logOdds_mat, predictors_withInteractions)
 
 # Define number of reps of elastic net and initialize empty matrix to store coefficients
 num_reps <- 100
-elasticNet_coefMat <- matrix(0, num_reps, ncol(predictors_withInteractions) + 1)
-colnames(elasticNet_coefMat) <- c('intercept', colnames(predictors_withInteractions))
-
-# Original pass at getting average coefficients from 100 elastic net models
-# labmda and alpha selected through 10-fold CV
-for(i in 1:num_reps){
-  set.seed(i)
-  print(i)
-  elasticNet_model <- caret::train(
-    y = model_matrix[,1], # Log Odds
-    x = model_matrix[,-1], # All predictores
-    method = "glmnet",
-    metric = "RMSE",
-    trControl = trainControl("cv", number = 10),
-    tuneLength = 10
-  )
-  coefs <- as.matrix(coef(elasticNet_model$finalModel, elasticNet_model$bestTune$lambda))
-  elasticNet_coefMat[i, ] <- coefs
-}
-
-# Instead of re-running the 100 models, the coefficients from the original run can be loaded
-elasticNet_coefs_100models <- read_csv('analysis/elasticNet_coefMat.csv')
-
-# Run Elastic Net model with lambda and alpha chosen through repeated (N = 5) 10-fold CV
-# Note: I ran this with a bunch of different random seeds but all models were identical
-# Might change if using a denser grid of alpha and lambda values. Only running single model 
-# for now. 
-set.seed(42)
-elasticNet_model <- caret::train(
-  y = model_matrix[,1], # Log Odds
-  x = model_matrix[,-1], # All predictores
-  method = "glmnet",
-  metric = "RMSE",
-  trControl = trainControl("repeatedcv", repeats = 5, number = 10),
-  tuneLength = 10
-)
 
 #' Estimate Elastic Net model on resampled model matrix
 #' 
@@ -140,17 +93,15 @@ elasticNet_model <- caret::train(
 #' @param model_matrix Expanded model matrix with log odds and expanded, standardized predictors
 #' 
 #' @return Elastic Net model as glmnet object
-run_elastic_net_resampled <- function(i){
+run_elastic_net_resampled <- function(i, model_matrix){
   set.seed(i)
-  model_matrix_sub <- model_matrix[ sample(nrow(model_matrix), replace = TRUE), ]
   elasticNet_model_res <- caret::train(
-    y = model_matrix_sub[,1], # Log Odds
-    x = model_matrix_sub[,-1], # All predictores
+    y = model_matrix[,1], # Log Odds
+    x = model_matrix[,-1], # All predictores
     method = "glmnet",
     metric = "RMSE",
-    trControl = trainControl("repeatedcv", repeats = 5, number = 10),
-    tuneLength = 10,
-    nthread = 2
+    trControl = trainControl("cv", number = 10),
+    tuneLength = 10
   )
   return(elasticNet_model_res)
   
@@ -193,26 +144,13 @@ extract_results_elasticNet <- function(elasticNet_model){
   return(bestTune_results)
 }
 
-# Run 'num_boot' resampled elastic net models in parallel
-num_boot <- 1000
-elasticNet_list <- pbmcapply::pbmclapply(1:num_boot, run_elastic_net_resampled, 
-                                        mc.cores = 24, mc.preschedule = TRUE,
-                                        mc.cleanup = TRUE)
+# Run 'num_reps' elastic net models in parallel for coefficient averaging
+registerDoParallel(cores = 24)
+elasticNet_list <- foreach(i=1:num_reps, .verbose = TRUE) %dopar% run_elastic_net_resampled(i, model_matrix)
 
 # Results and coefficients for observed data
-elasticNet_obs_result <- extract_results_elasticNet(elasticNet_model) %>% mutate(origin = 'obs')
-elasticNet_obs_coefs <- extract_coefs_elasticNet(elasticNet_model) %>% mutate(origin = 'obs')
+elasticNet_obs_result <- purrr::map_dfr(elasticNet_list, extract_results_elasticNet, .id = 'index')
+elasticNet_obs_coefs <- purrr::map_dfr(elasticNet_list, extract_coefs_elasticNet, .id = 'index')
 
-# Results and coefficients for bootstrapped data
-elasticNet_boot_result <- purrr::map_dfr(elasticNet_list, extract_results_elasticNet, .id = 'index') %>% 
-  mutate(origin = 'boot')
-elasticNet_boot_coefs <- purrr::map_dfr(elasticNet_list, extract_coefs_elasticNet, .id = 'index') %>% 
-  mutate(origin = 'boot')
-
-# Combine observed and bootstrapped elastic net models
-elasticNet_allResults <- bind_rows(elasticNet_obs_result, elasticNet_boot_result)
-elasticNet_allCoefs <- bind_rows(elasticNet_obs_coefs, elasticNet_boot_coefs)
-
-# Write results to disk
-write_csv(elasticNet_allResults, 'analysis/elasticNet_obs_boot_results.csv')
-write_csv(elasticNet_allCoefs, 'analysis/elasticNet_obs_boot_coefs.csv')
+write_csv(elasticNet_obs_coefs, 'analysis/elasticNet_obs_coefs.csv')
+write_csv(elasticNet_obs_result, 'analysis/elasticNet_obs_result.csv')
