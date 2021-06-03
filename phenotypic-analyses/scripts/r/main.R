@@ -39,7 +39,8 @@ library(ggeffects)
 library(interactions)
 library(sandwich)
 library(patchwork)
-library(pbmcapply)
+library(foreach)
+library(doParallel)
 source("scripts/r/misc/utilityFunctions.R")
 
 # Create directories

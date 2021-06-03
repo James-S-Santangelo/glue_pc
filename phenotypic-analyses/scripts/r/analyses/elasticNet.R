@@ -10,7 +10,7 @@
 library(tidyverse)
 library(glmnet)
 library(caret)
-library(pbmcapply)
+library(foreach)
 source('scripts/r/misc/utilityFunctions.R')
 
 # Create dataframe with population-mean HCN and environmental variables for every city
@@ -90,7 +90,7 @@ model_matrix <- cbind(logOdds_mat, predictors_withInteractions)
 #' @param model_matrix Expanded model matrix with log odds and expanded, standardized predictors
 #' 
 #' @return Elastic Net model as glmnet object
-run_elastic_net <- function(i, model_matrix){
+run_elastic_net_resampled <- function(i, model_matrix){
   set.seed(i)
   elasticNet_model_res <- caret::train(
     y = model_matrix[,1], # Log Odds
@@ -142,10 +142,13 @@ extract_results_elasticNet <- function(elasticNet_model){
 }
 
 # Run 'num_reps' elastic net models in parallel for coefficient averaging
+registerDoParallel(cores = 24)
 num_reps <- 100
-elasticNet_list <- pbmcapply::pbmclapply(1:num_reps, run_elastic_net, 
-                                         mc.cores = 24, mc.preschedule = TRUE,
-                                         mc.cleanup = TRUE)
+elasticNet_list <- foreach(i=1:num_reps, 
+                           .verbose = TRUE, 
+                           .packages = c('glmnet', 'caret'), 
+                           .export = c('model_matrix')) %dopar% 
+  run_elastic_net_resampled(i, model_matrix)
 
 # Results and coefficients for observed data
 elasticNet_obs_result <- purrr::map_dfr(elasticNet_list, extract_results_elasticNet, .id = 'index')
