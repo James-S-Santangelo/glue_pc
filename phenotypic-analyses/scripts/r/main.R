@@ -164,23 +164,22 @@ print(glueClineModel_stdDist_slopeRE_test)
 ## Step 4.3: Predicting clines from environment
 # What environmental variables drive convergent evolution to cities on a global scale?
 
-source("scripts/r/analyses/predictingClines.R")
+# Setup for elastic net execution (i.e., defining model matrix)
+source("scripts/r/analyses/predictingClines_elasticNet_setup.R")
 
-# Look at residual plots
-# Everything looks good
-# Maybe look into Shanghai outlier
-plot(predClines_elasticNet)
-hist(residuals(predClines_elasticNet))
+# Execute Elastic Net. This runs 100 Elastic Net models with 100 different random seeds
+# Coefficients were avereaged across the 100 independent runs
+# This was executed on a cluster with 24 cores. Feel free to Uncomment and change number of cores for 
+# local execution. However, we provide the output of this script as CSV files, which are loaded
+# by the elasticNet summary script
+num_cores <- 24
+# source("scripts/r/analyses/predictingClines_elasticNet_execution.R")
 
-# Summary of final Elastiv Net model predicting HCN clines from environmetal data
-# Alpha and Lambda tuning parameters for Elastic Net. Alpha = 1 = Full LASSO
-print(elasticNet_bestTune)  
+# Summarise output of elastic net model selection and averaging procedure
+source("scripts/r/analyses/predictingClines_elasticNet_summary.R")
 
-# Summary of Elastic Net model with all Main Effects added back in
-print(predClines_elasticNet_summary)
-
-# Anova of Elastic Net with Main effects back in
-print(predClines_elasticNet_anova)
+# Print Elastic Net coefficient summary
+print(elasticNet_coefSummary)
 
 # Step 4.4: Predict clines from city characteristics
 source('scripts/r/analyses/cityCharacteristics.R')
