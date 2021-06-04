@@ -154,8 +154,7 @@ elasticNet_list <- foreach(i=1:num_reps,
 elasticNet_obs_result <- purrr::map_dfr(elasticNet_list, extract_results_elasticNet, .id = 'index')
 elasticNet_obs_coefs <- purrr::map_dfr(elasticNet_list, extract_coefs_elasticNet, .id = 'index')
 
-#write_csv(elasticNet_obs_coefs, 'analysis/supplementary-tables/elasticNet_obs_coefs.csv')
-#write_csv(elasticNet_obs_result, 'analysis/supplementary-tables/elasticNet_obs_result.csv')
-write_csv(elasticNet_obs_coefs, 'analysis/supplementary-tables/elasticNet_obs_coefs2.csv')
-write_csv(elasticNet_obs_result, 'analysis/supplementary-tables/elasticNet_obs_result2.csv')
+write_csv(elasticNet_obs_coefs, 'analysis/supplementary-tables/elasticNet_obs_coefs.csv')
+write_csv(elasticNet_obs_result, 'analysis/supplementary-tables/elasticNet_obs_result.csv')
+
 
