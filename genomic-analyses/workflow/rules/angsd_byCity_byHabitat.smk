@@ -10,7 +10,7 @@ rule create_bam_list_byCity_byHabitat:
     sample set. Generates two bam lists per city (i.e., one per habitat -- urban vs. rural)
     """
     input:
-        rules.create_bam_list_finalSamples_lowCovRemoved.output
+        rules.create_bam_list_highErrorRemoved.output
     output:
         '{0}/bam_lists/by_city/{{city}}/{{city}}_{{habitat}}_bams.list'.format(PROGRAM_RESOURCE_DIR)
     log: 'logs/create_bam_list/{city}_{habitat}.log'
