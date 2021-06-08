@@ -52,16 +52,12 @@ rule angsd_saf_likelihood_byCity_byHabitat:
         site='4fold'
     shell:
         """
-        NUM_IND=$( wc -l < {input.bams} );
-        MIN_IND=$(( NUM_IND*50/100 ));
-        if [[ $MIN_IND -eq 0 ]]; then MIN_IND=1; fi;
         angsd -GL 1 \
             -out {params.out} \
             -nThreads {threads} \
             -doMajorMinor 4 \
             -baq 2 \
             -ref {input.ref} \
-            -minInd $MIN_IND \
             -sites {input.sites} \
             -minQ 20 \
             -minMapQ 30 \
