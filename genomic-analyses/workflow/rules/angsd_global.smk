@@ -1,16 +1,40 @@
 # Uses ANGSD to estimate SFS and genotype likelihoods across the genome using all samples
 # as input (i.e., a global dataset). Only really used to perform PCA of global samples. 
 
+rule create_samples_to_remove:
+    """
+    Writes file with sample names for those with high alignment error rates and another 
+    with samples with low coverage. Thresholds were assessed through exploratory analysis
+    of QC data. 
+    """
+    input:
+        flag = rules.multiqc.output,
+        qc_data = '{0}/multiqc/multiqc_data/multiqc_qualimap_bamqc_genome_results_qualimap_bamqc.txt'.format(QC_DIR)
+    output: 
+        error_df = '{0}/highErrorRate_toRemove.txt'.format(PROGRAM_RESOURCE_DIR),
+        lowCov_df = '{0}/lowCoverageSamples_toRemove.txt'.format(PROGRAM_RESOURCE_DIR)
+    run:
+        import pandas as pd
+        qc_data = pd.read_table(input.qc_data, sep = '\t')
+        qc_data['sample'] = qc_data['Sample'].str.extract('(\w+_\d+_\d+)')
+        cols = ['sample', 'mean_coverage', 'general_error_rate']
+        qc_data = qc_data[cols]
+        # Samples with high ealignment errors have error rates > 0.04
+        highError_samples = qc_data[qc_data['general_error_rate'] > 0.04]
+        highError_samples['sample'].to_csv(output.error_df, header = None, index = None)
+        # Samples with low coverage are those with mean coverage < 0.31X
+        lowCov_samples = qc_data[qc_data['mean_coverage'] < 0.31]
+        lowCov_samples['sample'].to_csv(output.lowCov_df, header = None, index = None)
+
 rule create_bam_list_highErrorRemoved:
     """
-    Create text file with paths to BAMs, excluding 5 samples with high alignment error ratesi
+    Create text file with paths to BAMs, excluding 5 samples with high alignment error rates
     (see qc_analysis_notebook file). These BAMs make up the "highErrorRemoved" sample set. 
     TODO: Should rename this to "full" sample set to match manuscript. 
     """
     input:
-        glue_bams = expand(rules.samtools_markdup.output.bam, sample=SAMPLES),
-        tor_bams = expand(rules.downsample_toronto_bam.output, tor_sample=TOR_SAMPLES),
-        highErr = rules.qc_analysis_notebook.output.error_df,
+        bams = get_all_bams,
+        highErr = rules.create_samples_to_remove.output.error_df,
         flag = rules.downsample_toronto_done.output
     output:
         '{0}/bam_lists/highErrorSamplesRemoved_bams.list'.format(PROGRAM_RESOURCE_DIR)
@@ -20,13 +44,10 @@ rule create_bam_list_highErrorRemoved:
         import pandas as pd
         bad_samples = pd.read_table(input.highErr, header=None).iloc[:,0].tolist()
         with open(output[0], 'w') as f:
-            for bam in input.glue_bams:
+            for bam in input.bams:
                 sample = os.path.basename(bam).split('_merged')[0]
                 if sample not in bad_samples:
                     f.write('{0}\n'.format(bam))
-            for bam in input.tor_bams:
-                sample = os.path.basename(bam).split('_merged')[0]
-                f.write('{0}\n'.format(bam))
 
 rule create_bam_list_finalSamples_lowCovRemoved:
     """
@@ -36,7 +57,7 @@ rule create_bam_list_finalSamples_lowCovRemoved:
     """
     input:
         allSamples = rules.create_bam_list_highErrorRemoved.output,
-        lowCov = rules.qc_analysis_notebook.output.low_cov_df
+        lowCov = rules.create_samples_to_remove.output.lowCov_df
     output:
         '{0}/bam_lists/finalSamples_lowCovRemoved_bams.list'.format(PROGRAM_RESOURCE_DIR)
     log: 'logs/create_bam_list/finalSamples_lowCovRemoved_bam_list.log'
@@ -64,12 +85,15 @@ rule angsd_depth:
         glo = '{0}/depth/{{sample_set}}/{{chrom}}/{{chrom}}_{{sample_set}}_allSites.depthGlobal'.format(ANGSD_DIR)
     log: 'logs/angsd_depth/{sample_set}_{chrom}_angsd_depth.log'
     conda: '../envs/angsd.yaml'
+    #container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     params:
         out = '{0}/depth/{{sample_set}}/{{chrom}}/{{chrom}}_{{sample_set}}_allSites'.format(ANGSD_DIR)
     resources:
         nodes = 1,
         ntasks = CORES_PER_NODE,
         time = '12:00:00'
+    wildcard_constraints:
+        chrom = 'CM019101.1'
     shell:
         """
         angsd -bam {input.bams} \
@@ -98,6 +122,7 @@ rule angsd_saf_likelihood_allSites:
         counts = '{0}/sfs/{{sample_set}}/allSites/{{chrom}}/{{chrom}}_{{sample_set}}_allSites.counts.gz'.format(ANGSD_DIR)
     log: 'logs/angsd_saf_likelihood_allSites/{sample_set}_{chrom}_allSites_angsd_saf.log'
     conda: '../envs/angsd.yaml'
+    #container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     params:
         out = '{0}/sfs/{{sample_set}}/allSites/{{chrom}}/{{chrom}}_{{sample_set}}_allSites'.format(ANGSD_DIR),
         max_dp = ANGSD_MAX_DP
@@ -140,6 +165,7 @@ rule angsd_gl_allSites:
         mafs = temp('{0}/gls/{{sample_set}}/allSites/{{chrom}}/{{chrom}}_{{sample_set}}_allSites_maf{{maf}}.mafs.gz'.format(ANGSD_DIR)),
     log: 'logs/angsd_gl_allSites/{chrom}_{sample_set}_allSites_maf{maf}_angsd_gl.log'
     conda: '../envs/angsd.yaml'
+    #container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     params:
         out = '{0}/gls/{{sample_set}}/allSites/{{chrom}}/{{chrom}}_{{sample_set}}_allSites_maf{{maf}}'.format(ANGSD_DIR),
         max_dp = ANGSD_MAX_DP
@@ -504,7 +530,7 @@ rule angsd_done:
     Generate empty flag file signalling successful completion of global SFS and GL estimation across all samples. 
     """
     input:
-        expand(rules.angsd_depth.output, chrom=CHROMOSOMES, sample_set=['highErrorRemoved','finalSamples_lowCovRemoved']),
+        expand(rules.angsd_depth.output, chrom='CM019101.1', sample_set=['highErrorRemoved','finalSamples_lowCovRemoved']),
         expand(rules.concat_angsd_stats.output, site=['allSites','0fold','4fold'], sample_set=['highErrorRemoved','finalSamples_lowCovRemoved']),
         expand(rules.sum_sfs.output, site=['allSites','0fold','4fold'], sample_set=['highErrorRemoved','finalSamples_lowCovRemoved']),
         expand(rules.concat_angsd_gl.output, sample_set=['highErrorRemoved','finalSamples_lowCovRemoved'], site=['allSites','0fold','4fold'], maf=['0.005','0.01','0.05']),

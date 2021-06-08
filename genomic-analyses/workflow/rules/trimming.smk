@@ -7,8 +7,7 @@ rule fastp_trim:
     JSON files with QC info from trimming.
     """
     input:
-        read1 = lambda wildcards: raw_read_dict[wildcards.sample]['R1'],
-        read2 = lambda wildcards: raw_read_dict[wildcards.sample]['R2']
+        unpack(get_raw_reads)
     output:
         r1_trim = temp('{0}/{{sample}}/{{sample}}_trimmed_1.fq.gz'.format(TRIMMED_READ_DIR)),
         r2_trim = temp('{0}/{{sample}}/{{sample}}_trimmed_2.fq.gz'.format(TRIMMED_READ_DIR)),

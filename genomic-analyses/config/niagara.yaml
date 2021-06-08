@@ -2,14 +2,12 @@
 samples: ../../sequencing-prep/resources/low1_sampleSheet.txt
 chromosomes: ../resources/chromosome_file.txt
 
+# Multiple paths to raw reads is a hotfix until reads are on Genbank
+# Can be both the same if reads in in same directory (e.g., Compute Canada) 
 results_prefix: ../results
-raw_read_prefix: /scratch/santang3/data 
+glue_raw_read_prefix: /scratch/santang3/data 
+tor_raw_read_prefix: /scratch/santang3/data 
 temp_dir: /scratch/santang3/tmp 
-
-# Include 10 urban and rural samples from Toronto data
-toronto_data:
-  bams: /scratch-deleted-2021-mar-20/santang3/toronto_gwsd/snakemake/results/bam/final
-  samples: ../resources/toronto_samples_for_glue.txt
 
 files:
   reference_genome: /scratch/n/nessrobe/santang3/clover-ref/ref_genome/GCA_005869975.1_AgR_To_v5_genomic.fna

@@ -6,9 +6,8 @@ rule fastqc_raw_reads:
     convention. Renaming eliminates extraneous info in raw read filenames.
     """
     input:
-        tmp = rules.create_tmp_dir.output,
-        read1 = lambda wildcards: raw_read_dict[wildcards.sample]['R1'],
-        read2 = lambda wildcards: raw_read_dict[wildcards.sample]['R2']
+        unpack(get_raw_reads),
+        tmp = rules.create_tmp_dir.output
     output:
         html1 = '{0}/fastqc_raw_reads/{{sample}}_1_fastqc.html'.format(QC_DIR),
         html2 = '{0}/fastqc_raw_reads/{{sample}}_2_fastqc.html'.format(QC_DIR),
@@ -67,7 +66,7 @@ rule qualimap_bam_qc:
     conda: '../envs/qc.yaml'
     threads: 8
     resources:
-        mem_mb = lambda wildcards, threads, input, attempt: attempt * 4000,
+        mem_mb = lambda wildcards, threads, input, attempt: attempt * 5000,
         time = lambda wildcards, attempt: str(attempt * 1) + ":00:00"
     shell:
         """
@@ -126,16 +125,16 @@ rule bamutil_validate:
 
 rule multiqc:
     """
-    Generate single HTML report with all QC info for all samples using multiQC
+    Generate single HTML report with all QC info for all samples using multiQC.
+    Inputs only enforce dependencies. MultiQC takes results folder as input (i.e., QC_DIR)
     """
     input:
-       fastqc_raw = expand('{0}/fastqc_raw_reads/{{sample}}_{{read}}_fastqc.zip'.format(QC_DIR), sample=SAMPLES, read=['1', '2']),
-       fastqc_trim = expand('{0}/fastqc_trimmed_reads/{{sample}}_trimmed_{{read}}_fastqc.zip'.format(QC_DIR), sample=SAMPLES, read=['1', '2']),
+       fastqc_raw = expand(rules.fastqc_raw_reads.output.zip1, sample=SAMPLES),
+       fastqc_trim = expand(rules.fastqc_raw_reads.output.zip1, sample=SAMPLES),
        fastp = expand(rules.fastp_trim.output.json, sample=SAMPLES),
        qualimap = expand(rules.qualimap_bam_qc.output, sample=SAMPLES),
        bamstats = expand(rules.bamtools_stats.output, sample=SAMPLES),
-       bamutil = expand(rules.bamutil_validate.output, sample=SAMPLES),
-       qc_results = '{0}'.format(QC_DIR)
+       bamutil = expand(rules.bamutil_validate.output, sample=SAMPLES)
     output:
         '{0}/multiqc/multiqc_report.html'.format(QC_DIR)
     conda: '../envs/qc.yaml'
@@ -150,7 +149,7 @@ rule multiqc:
             --force \
             --outdir {0}/multiqc \
             --config ../config/multiqc_config.yaml \
-            {{input.qc_results}} 2> {{log}}
+            {0} 2> {{log}}
         """.format(QC_DIR)
 
 rule qc_analysis_notebook:

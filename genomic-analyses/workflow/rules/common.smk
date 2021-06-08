@@ -1,16 +1,16 @@
 # Python functions used throughout snakemake workflow
 
-def create_raw_read_dict(RAW_READ_DIR, SAMPLES):
+def get_raw_reads(wildcards):
     """
-    Uses Sample IDs and path to raw reads to create a dictionary with paths to 
-    raw read files.
+    Extract forward and reverse read FASTQ paths from file
     """
-    raw_read_dict = {}
-    for sample in SAMPLES:
-        R1 = glob.glob('{0}/{1}/{1}_*_1.fq.gz'.format(RAW_READ_DIR, sample))[0]
-        R2 = glob.glob('{0}/{1}/{1}_*_2.fq.gz'.format(RAW_READ_DIR, sample))[0]
-        raw_read_dict[sample] = {'R1': R1, 'R2': R2}
-    return raw_read_dict
+    if wildcards.sample.startswith('s_'):
+        R1 = glob.glob(TOR_RAW_READ_DIR + '/{0}/{0}_*_1.fq.gz'.format(wildcards.sample))[0]
+        R2 = glob.glob(TOR_RAW_READ_DIR + '/{0}/{0}_*_2.fq.gz'.format(wildcards.sample))[0]
+    else:
+        R1 = glob.glob(GLUE_RAW_READ_DIR + '/{0}/{0}_*_1.fq.gz'.format(wildcards.sample))[0]
+        R2 = glob.glob(GLUE_RAW_READ_DIR + '/{0}/{0}_*_2.fq.gz'.format(wildcards.sample))[0]
+    return { 'read1' : R1, 'read2' : R2 }
 
 def get_fastas_to_concat(wildcards):
     """
@@ -23,10 +23,20 @@ def get_fastas_to_concat(wildcards):
 
 def get_toronto_bam(wildcards):
     """
-    Returns list with only those Toronto BAMs for samples to be included in GLUE
+    Returns Toronto BAM for samples to be included in GLUE
     """
-    bam = glob.glob('{0}/{1}_*.bam'.format(TOR_BAMS, wildcards.tor_sample))
+    all_bams = expand(rules.samtools_markdup.output.bam, sample = SAMPLES)
+    bam = [bam for bam in all_bams if os.path.basename(bam).startswith(wildcards.sample)]
     return bam
+
+def get_all_bams(wildcards):
+    """
+    Returns list with paths to 500 GLUE bams and 20 Downsampled Toronto Bams
+    """
+    glue_bams = expand(rules.samtools_markdup.output.bam, sample = SAMPLES)
+    glue_bams_noTor = [bam for bam in glue_bams if not os.path.basename(bam).startswith('s_')]
+    tor_bams = expand(rules.downsample_toronto_bam.output, sample = TOR_SAMPLES)
+    return glue_bams_noTor + tor_bams
 
 def get_bed_to_subset(wildcards):
     """
@@ -235,40 +245,112 @@ def get_habitat_saf_files_byCity(wildcards):
     city_saf_files = [x for x in all_saf_files if wildcards.city in x and wildcards.site in x]
     return city_saf_files
 
-def get_toronto_bam_pi_fst_test(wildcards):
+def get_bamLists_toConcat(wildcards):
     """
-    Returns BAM for Toronto sample to be included in sample size test
+    Collect text files with paths to urban and rural bams by city
     """
-    bam = glob.glob('{0}/{1}_*.bam'.format(TOR_BAMS, wildcards.tor_test_sample))
-    return bam
+    all_bam_lists = expand(rules.create_bam_list_byCity_byHabitat.output, city = wildcards.city, habitat = ['u', 'r'])
+    return all_bam_lists
 
-def toronto_pi_fst_test_saf_input(wildcards):
+def get_files_saf_estimation_byPopulation(wildcards):
     """
-    Returns dictionary with correct bam list and ANGSD sites files, depending on value of "group" wildcard.
+    Collect files required to estimate SAF likelihoods by population in each city. Population ID extracted
+    from files created by Checkpoint.
     """
-    if wildcards.group == 'highCov':
-        bams = rules.urban_rural_toronto_bam_lists.output
-    elif wildcards.group == 'lowCov':
-        bams = rules.urban_rural_toronto_downsampled_bam_lists.output
-    sites = expand(rules.split_angsd_sites_byChrom.output, chrom=CHROMOSOMES, site=['0fold', '4fold'])
-    sites = [x for x in sites if 'CM019101.1' in x and '4fold' in x]
-    sites_idx = expand(rules.angsd_index_degenerate.output.idx, chrom=CHROMOSOMES, site=['0fold', '4fold'])
-    sites_idx = [x for x in sites if 'CM019101.1' in x and '4fold' in x]
-    return {'bams' : bams, 'sites' : sites, 'sites_idx' : sites_idx}
+    bams = '{0}/bam_lists/by_city/{{city}}/by_pop/{{city}}_{{popu}}_bams.list'.format(PROGRAM_RESOURCE_DIR)
+    sites_idx = expand(rules.angsd_index_degenerate.output.idx, chrom='CM019101.1', site='4fold')
+    sites = expand(rules.split_angsd_sites_byChrom.output, chrom='CM019101.1', site='4fold') 
+    ref = REFERENCE_GENOME
+    return { 'bams' : bams, 'sites_idx' : sites_idx, 'sites' : sites, 'ref' : ref }
+    
+def aggregate_input_theta(wildcards):
+    """
+    Collect population ID ('popu') wildcard values from checkpoint.
+    Collects output for estimation of thetas
+    """
+    checkpoint_output = checkpoints.populations_byCity_byHabitat.get(**wildcards).output[0]
+    pops = glob_wildcards(os.path.join(checkpoint_output, '{{city}}_{{popu}}_bams.list'.format(PROGRAM_RESOURCE_DIR))).popu
+    return expand('{0}/summary_stats/thetas/by_city/{{city}}/by_pop/{{city}}_{{popu}}_{{site}}.thetas.idx.pestPG'.format(ANGSD_DIR), city=wildcards.city, popu=pops, site='4fold')
 
-def get_saf_joint_sfs_pi_fst_test(wildcards):
+def get_population_saf_files_byCity(wildcards):
     """
-    Returns list with two SAF files depending on combinations of the "group" and "joint_sfs_ss" wildcards
+    Get SAF files for two populations for which to estimate joint SFS.
     """
-    if wildcards.group == 'highCov':
-        out = expand(rules.angsd_saf_likelihood_toronto_pi_fst_test.output.saf_idx, group = 'highCov', habitat = ['urban', 'rural'], ss = '7')
-    elif wildcards.group == 'lowCov':
-        all_safs = expand(rules.angsd_saf_likelihood_toronto_pi_fst_test.output.saf_idx, group = 'lowCov', habitat = ['urban', 'rural'], ss = SS_PI_FST_TEST)
-        sample_sizes = wildcards.joint_sfs_ss
-        urban_ss = int(sample_sizes.split('_')[0][1])
-        rural_ss = int(sample_sizes.split('_')[1][1])
-        urban_saf = expand(rules.angsd_saf_likelihood_toronto_pi_fst_test.output.saf_idx, group = 'lowCov', habitat = 'urban', ss = urban_ss)
-        rural_saf = expand(rules.angsd_saf_likelihood_toronto_pi_fst_test.output.saf_idx, group = 'lowCov', habitat = 'rural', ss = rural_ss)
-        out = urban_saf + rural_saf
-    return out
+    checkpoint_output = checkpoints.populations_byCity_byHabitat.get(**wildcards).output[0]
+    pops = glob_wildcards(os.path.join(checkpoint_output, '{{city}}_{{popu}}_bams.list'.format(PROGRAM_RESOURCE_DIR))).popu
+    all_saf_files = expand(rules.angsd_saf_likelihood_byCity_byPopulation.output.saf_idx, city = wildcards.city, popu=pops, site='4fold')
+    pop1 = wildcards.pop_comb.split('_')[0]
+    pop2 = wildcards.pop_comb.split('_')[1]
+    saf1 = [x for x in all_saf_files if '_{0}_'.format(pop1) in os.path.basename(x)]
+    saf2 = [x for x in all_saf_files if '_{0}_'.format(pop2) in os.path.basename(x)]
+    return saf1 + saf2
 
+def get_urban_rural_bam_lists(wildcards):
+    """
+    Collect files with paths to urban and rural bams by City. Return as dictionary. 
+    """
+    urban = expand(rules.create_bam_list_byCity_byHabitat.output, city=wildcards.city, habitat='u')[0]
+    rural = expand(rules.create_bam_list_byCity_byHabitat.output, city=wildcards.city, habitat='r')[0]
+    return { 'urban_bams' : urban, 'rural_bams' : rural }
+
+def get_population_saf_and_sfs_files_byCity(wildcards):
+    """
+    Get SAF and SFS files for two populations for which Fst should be estimated. 
+    """
+    checkpoint_output = checkpoints.populations_byCity_byHabitat.get(**wildcards).output[0]
+    pops = glob_wildcards(os.path.join(checkpoint_output, '{{city}}_{{popu}}_bams.list'.format(PROGRAM_RESOURCE_DIR))).popu
+    all_saf_files = expand(rules.angsd_saf_likelihood_byCity_byPopulation.output.saf_idx, city = wildcards.city, popu=pops, site='4fold')
+    pop1 = wildcards.pop_comb.split('_')[0]
+    pop2 = wildcards.pop_comb.split('_')[1]
+    saf1 = [x for x in all_saf_files if '_{0}_'.format(pop1) in os.path.basename(x)]
+    saf2 = [x for x in all_saf_files if '_{0}_'.format(pop2) in os.path.basename(x)]
+    saf_files = saf1 + saf2
+    sfs = expand(rules.angsd_estimate_joint_sfs_populations.output, city = wildcards.city, site='4fold', pop_comb=wildcards.pop_comb)
+    return { 'saf_files' : saf_files, 'sfs' : sfs }
+
+def get_files_for_saf_estimation_byHabitat(wildcards):
+    """
+    Get files to estimate SAF likelihhods for urban and rural habitats by city.
+    """
+    sites_idx = expand(rules.angsd_index_degenerate.output.idx, chrom='CM019101.1', site='4fold')
+    sites = expand(rules.split_angsd_sites_byChrom.output, chrom='CM019101.1', site='4fold')
+    ref = REFERENCE_GENOME
+    bams = expand(rules.create_bam_list_byCity_byHabitat.output, city=wildcards.city, habitat=wildcards.habitat)
+    return { 'bams' : bams, 'sites_idx' : sites_idx , 'sites' : sites, 'ref' : ref }
+
+def get_files_for_permuted_saf_estimation(wildcards):
+    """
+    Get files to estimate SAF likelihoods for permuted versions of "urban" and "rural" populations
+    """
+    sites_idx = expand(rules.angsd_index_degenerate.output.idx, chrom='CM019101.1', site='4fold')
+    sites = expand(rules.split_angsd_sites_byChrom.output, chrom='CM019101.1', site='4fold')
+    ref = REFERENCE_GENOME
+    if wildcards.habitat == 'u':
+        bams = expand(rules.create_random_bam_list_byCity_byHabitat.output.urban, city=wildcards.city, seed=wildcards.seed)
+    elif wildcards.habitat == 'r':
+        bams = expand(rules.create_random_bam_list_byCity_byHabitat.output.rural, city=wildcards.city, seed=wildcards.seed)
+    return { 'bams' : bams, 'sites_idx' : sites_idx , 'sites' : sites, 'ref' : ref }
+
+def get_habitat_saf_files_byCity_permuted(wildcards):
+    """
+    Returns list with 4fold urban and rural SAF files by city
+    """
+    all_saf_files = expand(rules.angsd_permuted_saf_likelihood_byCity_byHabitat.output.saf_idx, city=CITIES, habitat=HABITATS, site=['4fold'], seed=wildcards.seed)
+    city_saf_files = [x for x in all_saf_files if wildcards.city in x and wildcards.site in x]
+    return city_saf_files
+
+def aggregate_input_fst(wildcards):
+    """
+    Collect population ID ('popu') wildcard values from checkpoint.
+    Collects output for estimation of fst
+    """
+    checkpoint_output = checkpoints.populations_byCity_byHabitat.get(**wildcards).output[0]
+    pops = glob_wildcards(os.path.join(checkpoint_output, '{{city}}_{{popu}}_bams.list'.format(PROGRAM_RESOURCE_DIR))).popu
+    pop_combinations = [c[0] + '_' + c[1] for c in list(itertools.combinations(pops, 2))]
+    return expand('{0}/summary_stats/fst/fst1/{{city}}/pairwise/{{city}}_{{site}}_{{pop_comb}}_readable.fst'.format(ANGSD_DIR), city=wildcards.city, pop_comb=pop_combinations, site='4fold')
+
+def get_ngsadmix_logfiles_byCity(wildcards):
+    """
+    Get NGSadmix logfiles for each city. Used to generate input file for CLUMPAK
+    """
+    return expand(rules.ngsadmix.output.lf, city=wildcards.city, k=NGSADMIX_K, seed=NGSADMIX_SEEDS, site='4fold', maf='0.05')

@@ -1,6 +1,6 @@
 # Configuration file for launching tasks on Compute Canada
 
-jobs: 900  
+jobs: 500  
 local-cores: 1
 
 jobscript: "slurm-jobscript.sh"
@@ -8,7 +8,7 @@ cluster: "slurm-submit.py"
 #cluster-status: "slurm-status.py"
 
 #default-resources: [mem_mb=4000, time="01:00:00"]
-# restart-times: 3
+restart-times: 3
 max-jobs-per-second: 1
 max-status-checks-per-second: 1
 latency-wait: 60
@@ -16,7 +16,7 @@ rerun-incomplete: True
 printshellcmds: True
 use-conda: True
 use-singularity: True
-singularity-args: "--bind /scratch --bind /scratch-deleted-2021-mar-20 --bind /home --bind /project"
+singularity-args: "--bind /scratch --bind /home --bind /project"
 keep-going: True
 notemp: True
 conda-frontend: "mamba"
