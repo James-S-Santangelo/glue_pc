@@ -67,7 +67,7 @@ rule angsd_gl_byCity_binary:
     shell:
         """
         NUM_IND=$( wc -l < {input.bams} );
-        MIN_IND=$(( NUM_IND / 2 ));
+        MIN_IND=$(( NUM_IND * 60/100 ));
         angsd -GL 1 \
             -out {params.out} \
             -nThreads {threads} \
@@ -114,7 +114,7 @@ rule angsd_gl_byCity_beagle:
     shell:
         """
         NUM_IND=$( wc -l < {input.bams} );
-        MIN_IND=$(( NUM_IND / 2 ));
+        MIN_IND=$(( NUM_IND * 60/100 ));
         angsd -GL 1 \
             -out {params.out} \
             -nThreads {threads} \
