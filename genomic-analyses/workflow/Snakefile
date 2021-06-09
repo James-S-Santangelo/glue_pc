@@ -41,6 +41,7 @@ PROGRAM_RESOURCE_DIR = '{0}/program_resources'.format(config['results_prefix'])
 ANGSD_DIR = '{0}/angsd'.format(config['results_prefix'])
 POP_STRUC_DIR = '{0}/population_structure'.format(config['results_prefix'])
 SS_SFS_DIR = '{0}/single_sample_sfs'.format(config['results_prefix'])
+HCN_LOCI_DIR = '{0}/hcn_genotyping'.format(config['results_prefix'])
 FIGURES_DIR = '{0}/figures'.format(config['results_prefix'])
 
 ## Fixed parameters
@@ -92,6 +93,8 @@ rule all:
         '{0}/angsd_byCity_byPopulation.done'.format(ANGSD_DIR),
         # Population structure
         '{0}/population_structure.done'.format(POP_STRUC_DIR),
+        # HCN loci frequencies
+        '{0}/hcn_loci_freq_done'.format(HCN_LOCI_DIR)
 
 # Create temporary directory used throughout pipeline
 rule create_tmp_dir:
@@ -114,6 +117,7 @@ include: 'rules/angsd_byCity_byHabitat.smk'
 include: 'rules/angsd_byCity_byHabitat_permute.smk'
 include: 'rules/angsd_byCity_byPopulation.smk'
 include: 'rules/population_structure.smk'
+include: 'rules/hcn_loci_freqs.smk'
 
 # Rule to clean directory of all output files
 rule clean:
