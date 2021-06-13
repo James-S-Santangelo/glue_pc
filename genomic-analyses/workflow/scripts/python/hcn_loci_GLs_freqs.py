@@ -165,7 +165,7 @@ with open(snakemake.log[0], 'w') as f:
         df["l_AA_norm"] = df.l_AA / sum([df.l_aa,  df.l_Aa, df.l_AA]) 
         
         # Write genotype likelihoods to disk
-        df.to_csv(snakemake.output.likes, sep = '\t', index_label = False) 
+        df.to_csv(snakemake.output.likes, sep = '\t', index_label = 'sample') 
        
         # Calculate allele frequencies from genotpe likelihoods
         with open(snakemake.output.freqs, 'w') as freqs_out:
