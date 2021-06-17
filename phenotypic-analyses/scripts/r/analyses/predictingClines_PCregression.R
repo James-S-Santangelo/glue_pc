@@ -31,7 +31,7 @@ pca_enviroMeans_eig_PC2_varEx <- round(pca_enviroMeans_percent_var[2], 1)  # Per
 
 # Calculate contribution of each environmental variable to PC2
 # https://stackoverflow.com/questions/50177409/how-to-calculate-species-contribution-percentages-for-vegan-rda-cca-objects
-pca_enviroMeans_contrib <- round(100*scores(pca_enviroMeans, display = "species", scaling = 0)[,2]^2, 3)
+pca_enviroMeans_contrib <- round(100*scores(pca_enviroMeans, display = "species", scaling = 0)[,1]^2, 3)
 
 # Extract RDA1 and PC1 species scores and bind contributions
 pca_enviroMeans_vars  <- scores(pca_enviroMeans, display = 'species', choices = c(1, 2), scaling = 2) %>% 
@@ -63,10 +63,12 @@ pca_enviroMeans_variableContrib <- ggplot() +
   guides(color = guide_colourbar(barwidth = 10, barheight = 0.5))
 pca_enviroMeans_variableContrib
 
+screeplot(pca_enviroMeans, bstick = TRUE)
+
 # Extract raw scores for PC regression
 pca_enviroMeans_rawCityScores <- pca_enviroMeans$CA$u %>% 
   as.data.frame() %>% 
-  bind_cols(., df_slopes_enviro %>% dplyr::select(city, betaLog)) %>% 
+  dplyr::select(PC1, PC2) %>% 
   rename_at(vars(starts_with('PC')), function(x) paste0(x, '_Mean'))
 
 
@@ -86,7 +88,7 @@ pca_enviroSlopes_eig_PC2_varEx <- round(pca_enviroSlopes_percent_var[2], 1)  # P
 
 # Calculate contribution of each environmental variable to PC2
 # https://stackoverflow.com/questions/50177409/how-to-calculate-species-contribution-percentages-for-vegan-rda-cca-objects
-pca_enviroSlopes_contrib <- round(100*scores(pca_enviroSlopes, display = "species", scaling = 0)[,2]^2, 3)
+pca_enviroSlopes_contrib <- round(100*scores(pca_enviroSlopes, display = "species", scaling = 0)[,1]^2, 3)
 
 # Extract RDA1 and PC1 species scores and bind contributions
 pca_enviroSlopes_vars  <- scores(pca_enviroSlopes, display = 'species', choices = c(1, 2), scaling = 2) %>% 
@@ -118,22 +120,41 @@ pca_enviroSlopes_variableContrib <- ggplot() +
   guides(color = guide_colourbar(barwidth = 10, barheight = 0.5))
 pca_enviroSlopes_variableContrib
 
-screeplot(pca_enviroSlopes)
+screeplot(pca_enviroSlopes, bstick = TRUE)
 
 # Extract raw scores for PC regression
 pca_enviroSlopes_rawCityScores <- pca_enviroSlopes$CA$u %>% 
   as.data.frame() %>% 
-  bind_cols(., df_slopes_enviro %>% dplyr::select(city, betaLog)) %>% 
-  rename_at(vars(starts_with('PC')), function(x) paste0(x, '_Slope'))
+  dplyr::select(PC1, PC2, PC3) %>% 
+  rename_at(vars(starts_with('PC')), function(x) paste0(x, '_Slopes'))
 
 #######################
 #### PC REGRESSION ####
 #######################
 
 # Combine PC scores from PCA on Means and Slopes of environmental variables
-pca_enviroMeansSlopes_allScores <- left_join(pca_enviroMeans_rawCityScores,
-                                             pca_enviroSlopes_rawCityScores,
-                                             by = c('city', 'betaLog')) %>% 
-  dplyr::select(city, betaLog, everything())
+pca_enviroMeansSlopes_allScores <- bind_cols(pca_enviroMeans_rawCityScores,
+                                             pca_enviroSlopes_rawCityScores)
 
-                                             
+# Create model matrix including interactions of interest
+pc_regression_predictors_withInteractions <- model.matrix( ~.^2, data = pca_enviroMeansSlopes_allScores) %>% 
+  as.data.frame() %>% 
+  dplyr::select(-'(Intercept)') %>% 
+  
+  # Format interactions
+  dplyr::select(-contains(':'),  # Remove all interaction
+                ends_with('_Slopes'))
+
+# Create global model
+pc_reg_mod <- lm(logOdds_mat ~ ., data = pc_regression_predictors_withInteractions)
+
+# Model selection and averaging using `dredge`
+options(na.action = "na.fail")
+pc_reg_dredge <- dredge(pc_reg_mod, rank = 'AICc', evaluate = TRUE, extra = c("R^2", "adjR^2"))
+options(na.action = "na.omit")
+
+pc_reg_allModels <- as.data.frame(pc_reg_dredge)
+pc_reg_topModels <- get.models(pc_reg_dredge, subset = delta < 2)
+pc_reg_modelAvg <- model.avg(pc_reg_topModels)
+summary(pc_reg_modelAvg)
+summary(pc_reg_topModels[[1]])

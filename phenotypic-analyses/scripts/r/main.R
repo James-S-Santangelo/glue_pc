@@ -41,6 +41,7 @@ library(sandwich)
 library(patchwork)
 library(foreach)
 library(doParallel)
+library(MuMIn)
 source("scripts/r/misc/utilityFunctions.R")
 
 # Create directories
