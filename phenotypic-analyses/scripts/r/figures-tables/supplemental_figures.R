@@ -196,3 +196,12 @@ pca_enviroSlopes_variableContrib <- ggplot() +
   guides(color = guide_colourbar(barwidth = 10, barheight = 0.5))
 pca_enviroSlopes_variableContrib
 
+# Combine figures
+figureSX <- pca_enviroMeans_variableContrib + pca_enviroSlopes_variableContrib +
+  plot_annotation(tag_levels = 'A') &
+  theme(plot.tag.position = c(0.1, 0.95),
+        plot.tag = element_text(size = 20))
+figureSX
+
+ggsave(filename = "analysis/figures/supplemental/figSX_enviroPCAs_loadings.pdf", plot = figureSX, 
+       device = "pdf", width = 16, height = 7, units = "in", dpi = 600, useDingbats = FALSE)
