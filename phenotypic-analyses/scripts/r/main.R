@@ -195,7 +195,7 @@ print(pc_reg_modelAvg_summary)
 print(pc_reg_topModel_rsquared)
 
 # Step 4.4: Predict clines from city characteristics
-source('scripts/r/analyses/cityCharacteristics.R')
+source('scripts/r/analyses/predictingClines_cityCharacteristics.R')
 
 print(finalModel_cityStats)
 plot(modlog_popout)
