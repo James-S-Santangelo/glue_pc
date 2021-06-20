@@ -182,6 +182,18 @@ source("scripts/r/analyses/predictingClines_elasticNet_summary.R")
 # Print Elastic Net coefficient summary
 print(elasticNet_coefSummary)
 
+# Perform PC regression using environmental data
+# Takes a few minutes to run due to `dredge()` model selection and averaging
+source('scripts/r/analyses/predictingClines_PCregression.R')
+
+# Summaries of environmental variable PCAs
+print(pca_enviroMeans_summary)
+print(pca_enviroSlopes_summary)
+
+# Print model averaged coefficeints and R-squared of top model
+print(pc_reg_modelAvg_summary)
+print(pc_reg_topModel_rsquared)
+
 # Step 4.4: Predict clines from city characteristics
 source('scripts/r/analyses/cityCharacteristics.R')
 
