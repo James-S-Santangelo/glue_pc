@@ -18,7 +18,6 @@ rule create_random_bam_list_byCity_byHabitat:
         urban_n = len(urban_bams)
         rural_n = len(rural_bams)
         all_bams = urban_bams + rural_bams
-
         random.seed(int(wildcards.seed))
         randU = random.sample(all_bams, urban_n)
         randR = [bam for bam in all_bams if not bam in randU] 
@@ -52,16 +51,12 @@ rule angsd_permuted_saf_likelihood_byCity_byHabitat:
         site='4fold'
     shell:
         """
-        NUM_IND=$( wc -l < {input.bams} );
-        MIN_IND=$(( NUM_IND*50/100 ));
-        if [[ $MIN_IND -eq 0 ]]; then MIN_IND=1; fi;
         angsd -GL 1 \
             -out {params.out} \
             -nThreads {threads} \
             -doMajorMinor 4 \
             -baq 2 \
             -ref {input.ref} \
-            -minInd $MIN_IND \
             -sites {input.sites} \
             -minQ 20 \
             -minMapQ 30 \

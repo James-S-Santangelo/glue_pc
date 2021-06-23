@@ -1,8 +1,12 @@
-# Perform Principal Components Analysis from genotype likelihoods using PCAngsd
+# Population structure analyses. 
+
+################
+#### GLOBAL ####
+################
 
 rule pcangsd:
     """
-    Perform PCA using genome-wide 4fold dengenerate sites. PCA is performed o both sample sets for comparison.  
+    Perform PCA using genome-wide 4fold dengenerate sites using all samples from all cities. PCA is performed on both sample sets for comparison.  
     """
     input:
         rules.concat_angsd_gl.output
@@ -27,6 +31,10 @@ rule pcangsd:
             -threads {threads} \
             > {log}
         """
+
+#####################
+#### RELATEDNESS ####
+####################
 
 rule ngsrelate:
     """
@@ -55,6 +63,10 @@ rule ngsrelate:
             -p {threads} \
             -n $N 2> {log}
         """
+
+###################
+#### ADMIXTURE ####
+###################
 
 rule ngsadmix:
     """
