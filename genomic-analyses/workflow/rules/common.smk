@@ -354,3 +354,24 @@ def get_ngsadmix_logfiles_byCity(wildcards):
     Get NGSadmix logfiles for each city. Used to generate input file for CLUMPAK
     """
     return expand(rules.ngsadmix.output.lf, city=wildcards.city, k=NGSADMIX_K, seed=NGSADMIX_SEEDS, site='4fold', maf='0.05')
+
+def get_files_for_saf_estimation_snps_hcn_chroms(wildcards):
+    """
+    Get files to estimate SAF likelihhods for urban and rural habitats by city.
+    """
+    if wildcards.gene == 'li':
+        sites_idx = expand(rules.angsd_index_degenerate.output.idx, chrom='CM019108.1', site='4fold')
+        sites = expand(rules.split_angsd_sites_byChrom.output, chrom='CM019108.1', site='4fold')
+    elif wildcards.gene == 'ac':
+        sites_idx = expand(rules.angsd_index_degenerate.output.idx, chrom='CM019103.1', site='4fold')
+        sites = expand(rules.split_angsd_sites_byChrom.output, chrom='CM019103.1', site='4fold')
+    ref = REFERENCE_GENOME
+    bams = expand(rules.create_bam_list_byCity_byHabitat.output, city=wildcards.city, habitat=wildcards.habitat)
+    return { 'bams' : bams, 'sites_idx' : sites_idx , 'sites' : sites, 'ref' : ref }
+
+def get_habitat_saf_files_byCity_hcn_chroms(wildcards):
+    """
+    Returns list with 4fold urban and rural SAF files by city
+    """
+    saf_files = expand(rules.angsd_saf_likelihood_snps_hcn_chroms.output.saf_idx, city=wildcards.city, habitat=HABITATS, site=['4fold'], gene=wildcards.gene)
+    return saf_files
