@@ -3,23 +3,20 @@
 # Author: James S. Santangelo
 
 # Read in data with library concentrations and other data
-prepped_library_df <- read_csv('data/raw/20210620_plantsToPrep_deep3_low2_secondLanePrepped.csv') %>% 
+# Note this differ slightly from the one initially created since
+# some LOW2 cities samples were manually removed to make room for 
+# an additional 10 plants of know cyanotype. 
+prepped_library_df <- read_csv('data/raw/20210623_plantsToPrep_deep3_low2_secondLanePrepped.csv') %>% 
   
   # Select relevant columns
   dplyr::select(continent, city, pop, individual, site, plantID, max_qubit, leftover, Bioruptor_label,
-         lane, i5, i7, 'Date prepped', Notes, contains('HS')) %>% 
+         lane, i5, i7, 'Date prepped', Notes, Qubit_toUse) %>% 
   
   # Rename columns
-  rename('date_prepped' = 'Date prepped',
-         'qubit1_hs' = 'Qubit1_HS (ng/ul)',
-         'qubit2_hs' = 'Qubit2_HS (ng/ul)',
-         'qubit3_hs_reEst' = 'Qubit3_HS_reEst') %>% 
+  rename('date_prepped' = 'Date prepped') %>% 
   
-  # Include only lane 1
-  filter(lane == 2) %>% 
-  
-  # Get max qubit for prepped libraries
-  mutate(library_qubit = pmax(qubit1_hs, qubit2_hs, qubit3_hs_reEst, na.rm = TRUE))
+  # Include only lane 2
+  filter(lane == 2)
 
 # Load in index sequences
 i5_indices <- read_csv('resources/illumina_sequencing/iTru5_forward-indices.csv') %>% 
