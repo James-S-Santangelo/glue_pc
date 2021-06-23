@@ -57,9 +57,9 @@ source('scripts/data-processing/create_plantsToPrep_deep3.R')
 # Run script to concatenate and add sequencing lanes to DEEP3 and LOW2
 source('scripts/data-processing/concat_deep3_low2_addLanes.R')
 
-####################################################
+#####################################################
 #### STEP 5a: DEEP3 LANE1 library concentrations ####
-####################################################
+#####################################################
 
 # Add Illumina indices and clean post-PCR library concentrations
 # for the first lane of DEEP3 sequencing
@@ -71,3 +71,18 @@ source('scripts/data-processing/create_deep3_lane1_libraryConcentrations.R')
 
 # Create sample sheet with habitat info for downstream genomics analyses
 source('scripts/data-processing/create_deep3_lane1_sampleSheet.R')
+
+#####################################################
+#### STEP 6a: DEEP3 LANE2 library concentrations ####
+#####################################################
+
+# Add Illumina indices and clean post-PCR library concentrations
+# for the first lane of DEEP3 sequencing
+source('scripts/data-processing/create_deep3_lane2_libraryConcentrations.R')
+
+############################################
+#### STEP 6b: DEEP3, LANE2 sample sheet ####
+############################################
+
+# Create sample sheet with habitat info for downstream genomics analyses
+source('scripts/data-processing/create_deep3_lane2_sampleSheet.R')
