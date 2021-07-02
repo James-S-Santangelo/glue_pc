@@ -375,12 +375,12 @@ logOdds_by_winterNDVI <- ggplot(model_matrix_df, aes(x = winterNDVI_Mean, y = be
   geom_smooth(method = 'lm', se = TRUE, color = 'black', size = 1.5) +
   xlab('Mean winter NDVI') + ylab('Slope of HCN cline') +
   scale_y_continuous(breaks = seq(from = -1, to = 5, by = 2)) +
+  coord_cartesian(xlim = c(-1.7, 2), ylim = c(-1.2, 6)) +
   ng1
 logOdds_by_winterNDVI
 
 ggsave(filename = "analysis/figures/manuscript-panels/figure-6/figure6A_logOdds_by_winterNDVI.pdf", 
        plot = logOdds_by_winterNDVI, device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
-
 
 ### Figure 6A inset
 
