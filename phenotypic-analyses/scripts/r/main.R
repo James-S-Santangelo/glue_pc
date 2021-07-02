@@ -162,6 +162,11 @@ print(pred_percent_change)
 # LRT for random effect of effect of distance varying by city
 print(glueClineModel_stdDist_slopeRE_test)
 
+# Supplementary analysis using GMIS as predictor instead of Distance. Qualitatively similar
+print(glueClineModel_stdGmis_anova)
+print(glueClineModel_stdGmis_r_squared)
+print(glueClineModel_stdGmis_slopeRE_test)
+
 ## Step 4.3: Predicting clines from environment
 # What environmental variables drive convergent evolution to cities on a global scale?
 
