@@ -59,3 +59,36 @@ propHCN_predicted <- ggeffects::ggeffect(glueClineModel_stdDist,
 dist0_pred <- propHCN_predicted %>% filter(x == 0) %>% pull(predicted)
 dist1_pred <- propHCN_predicted %>% filter(x == 1) %>% pull(predicted)
 pred_percent_change <- round((dist1_pred - dist0_pred) / dist0_pred, 2) * 100
+
+###################################################
+#### SUPPLEMENTARY ANALYSES: GMIS AS PREDICTOR ####
+###################################################
+
+# Re-run same analysis as above but using standardized GMIS as a predictor instead of 
+# standardized distance
+
+# Create dataframe with standardized GMIS as column
+df_all_popMeans_stdGMIS <- df_all_popMeans %>% 
+  group_split(city) %>% 
+  map_dfr(., std_var_zero_one, var = 'GMIS_Mean')
+
+# Random-slope model allowing effect of GMIS to vary in each city
+# Estimates correlation between random intercept and slope
+glueClineModel_gmis <- glmer(freqHCN ~ std_GMIS_Mean + continent + std_GMIS_Mean:continent + 
+                               (1 + std_GMIS_Mean |city),
+                             data = df_all_popMeans_stdGMIS,
+                             weights = total_plants,
+                             family = 'binomial',
+                             control = glmerControl(optimizer="bobyqa", optCtrl = list(maxfun = 100000)))
+glueClineModel_stdGmis_summary <- summary(glueClineModel_gmis)
+glueClineModel_stdGmis_anova <- Anova(glueClineModel_gmis, type = 3)
+glueClineModel_stdGmis_r_squared <- MuMIn::r.squaredGLMM(glueClineModel_gmis)
+
+# LRT test to see if estimating correlation improves fit
+glueClineModel_stdGmis_noCor <- update(glueClineModel_gmis, . ~ . -(1 + std_GMIS_Mean|city) + (1 | city) + (0 + std_GMIS_Mean | city))
+glueClineModel_stdGmis_corRE_test <- anova(glueClineModel_stdGmis_noCor, glueClineModel_gmis)
+
+# LRT test to see if random slope model better fit than intercept-only model
+glueClineModel_stdGmis_intOnly <- update(glueClineModel_stdGmis_noCor, . ~ . -(0 + std_GMIS_Mean | city))
+glueClineModel_stdGmis_slopeRE_test <- anova(glueClineModel_stdGmis_intOnly, glueClineModel_stdGmis_noCor)
+
