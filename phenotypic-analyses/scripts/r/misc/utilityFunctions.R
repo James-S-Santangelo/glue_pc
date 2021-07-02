@@ -726,7 +726,7 @@ logistic_regression_stats <- function(df, predictor){
   city <- df %>% distinct(city) %>% pull()
   pred <- df %>% pull(predictor)
   resp <- df %>% pull(freqHCN)
-  print(pred)
+  
   # Perform logistic regression
   mod <- glm(resp ~ pred, weights = total_plants, data = df, family = 'binomial')
   

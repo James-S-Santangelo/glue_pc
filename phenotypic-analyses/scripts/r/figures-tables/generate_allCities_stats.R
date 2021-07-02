@@ -8,7 +8,9 @@ exclude <- c("Swansea", "Bucaramanga", "Santa_Marta")
 
 # Get city centres
 inpath <- 'data/clean/popMeans_allCities_withEnviro/'
-allPopMeans <- do.call(rbind, create_df_list(inpath))
+allPopMeans <- create_df_list(inpath) %>% 
+  map(., std_var_zero_one, var = 'GMIS_Mean') %>% 
+  do.call(rbind, .)
 city_centres <- read_csv("data/clean/latLong_cityCenters_clean.csv")
 
 # Get city stats
@@ -20,10 +22,10 @@ city_stats <- read_csv("data/raw/city_data/City_characteristics.csv") %>%
   filter(!(city %in% exclude))
 
 # Cline summary
-cline_summary <- allPopMeans %>% 
-  group_split(city) %>% 
-  purrr::map_dfr(., logistic_regression_stats) %>% 
-  mutate(sigLog = ifelse(pvalLog < 0.05, "Yes", "No"))
+cline_summary <- read_csv('analysis/supplementary-tables/allCities_logisticReg_coefs.csv') %>% 
+  dplyr::select(-continent) %>% 
+  mutate(sigLog_Dist = ifelse(pvalLog_Dist < 0.05, "Yes", "No"),
+         sigLog_GMIS = ifelse(pvalLog_GMIS < 0.05, "Yes", "No"))
 
 # Number of pops and plants. Enviro variables and HCN
 more_city_vars <- allPopMeans %>% 
@@ -74,8 +76,8 @@ final_table <- cline_summary %>%
   left_join(., collectors, by = "city") %>% 
   dplyr::select(continent, Country, city, latitude_city, longitude_city,
                 area, pop_size, density, city_age, no_cities, num_populations, 
-                total_num_plants, transect_length, betaLog, 
-                sigLog, meanHCN, sampled_by) %>% 
+                total_num_plants, transect_length, betaLog_Dist, betaLog_GMIS, 
+                sigLog_Dist, sigLog_GMIS, meanHCN, sampled_by) %>% 
   mutate_if(is.numeric, round, 3)
 
 write_csv(final_table, path = "analysis/supplementary-tables/allCities_stats.csv")
