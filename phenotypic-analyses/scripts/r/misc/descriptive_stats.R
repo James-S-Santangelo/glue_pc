@@ -32,21 +32,28 @@ num_populations <- allPopMeans %>% nrow()
 # Total number of cities
 num_cities <- final_table %>% nrow()
 
-# Percent significant clines from indipendent logistic regressions
+# Percent significant clines from indipendent logistic regressions and by Distance or GMIS as predictor
 percent_sig_clines_logReg <- linearClineTable_mod %>% 
+  dplyr::select(city, pvalLog_Dist, pvalLog_GMIS) %>% 
+  pivot_longer(cols = c('pvalLog_Dist', 'pvalLog_GMIS'), names_to = 'group', values_to = 'pvalLog') %>% 
   mutate(sig = case_when(pvalLog < 0.05 ~ 'Yes',
                          TRUE ~ 'No')) %>% 
-  group_by(sig) %>% 
+  group_by(sig, group) %>% 
   summarise(count = n(),
             percent = (count / num_cities) * 100)
 
-# Percent significant by direction
+# Percent significant by direction and by Distance or GMIS as predictor
 percent_sig_clines_logReg_byDirection <- linearClineTable_mod %>% 
+  dplyr::select(city, pvalLog_Dist, pvalLog_GMIS, betaLog_Dist, betaLog_GMIS) %>% 
+  pivot_longer(cols = c('pvalLog_Dist', 'pvalLog_GMIS'), names_to = 'group_sig', values_to = 'pvalLog') %>% 
+  pivot_longer(cols = c('betaLog_Dist', 'betaLog_GMIS'), names_to = 'group_dir', values_to = 'betaLog') %>% 
   mutate(sig = case_when(pvalLog < 0.05 ~ 'Yes',
                          TRUE ~ 'No'),
          direction = case_when(betaLog < 0 ~ 'Neg',
                                TRUE ~ 'Pos')) %>% 
-  group_by(direction, sig) %>% 
+  group_by(group_sig, group_dir, direction, sig) %>% 
   summarise(count = n(),
-            percent = (count / num_cities) * 100)
+            percent = (count / num_cities) * 100) %>% 
+  filter((group_sig  == 'pvalLog_Dist' & group_dir == 'betaLog_Dist') |
+          (group_sig  == 'pvalLog_GMIS' & group_dir == 'betaLog_GMIS'))
 
