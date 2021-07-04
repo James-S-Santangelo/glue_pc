@@ -13,3 +13,11 @@ deep3_lane2_sampleSheet <- read_csv('data/clean/deep3/deep3_lane2_dilutions.csv'
 outpath <- 'resources/'
 print(sprintf('DEEP3, LANE1 sample sheet save to %s', outpath))
 write_delim(deep3_lane2_sampleSheet, paste0(outpath, 'deep3_lane2_sampleSheet.txt'), delim = '\t')
+
+# Amount of data required by city
+output_gb <- 800
+num_samples <- nrow(deep3_lane2_sampleSheet)
+deep3_lane2_sampleSheet %>% 
+  group_by(city) %>% 
+  summarise(count = n()) %>% 
+  mutate(data_amount = (output_gb / num_samples) * count)
