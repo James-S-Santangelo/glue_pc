@@ -5,23 +5,23 @@
 # facilitate filling out the Sample Information Form for the sequencing centre. 
 
 # Load in data and add native vs. introduced range
+isdup <- function (x) duplicated (x)
 deep3_lane1_sampleSheet <- read_csv('data/clean/deep3/deep3_lane1_dilutions.csv') %>% 
   
-  # Remove samples that were not included in the end
-  # Low concentration samples from Antwerp
-  filter(!(city == 'Antwerp' & is.na(library_volume_uL))) %>% 
-  # Low concentration samples from Armidale
-  filter(!(city == 'Armidale' & is.na(library_volume_uL))) %>% 
-  # Remove 2 libraries with no remaining DNA
-  filter(!(Bioruptor_label %in% c('ARM-71','ARM-72'))) %>% 
   dplyr::select(continent, city, pop, individual, site, plantID, lane, i5_primer_index_seq, i7_primer_index_seq) %>% 
   filter(lane == 1) %>% 
   rename('sample' = 'plantID') %>% 
+  
+  # Add "_dup" suffix to duplicated samples (second in pair only).
+  # This was done manually when creating the SIF. Only 2 duplicate samples
+  mutate(is_dup = isdup(sample),
+         sample = ifelse(is_dup, paste0(sample, '_dup'), sample)) %>% 
+  dplyr::select(-is_dup) %>% 
   mutate(range = case_when(continent == 'EU' ~ 'Native',
                            city == 'Tehran' ~ 'Native',
                            TRUE ~ 'Introduced'))
   
-
 outpath <- 'resources/'
 print(sprintf('DEEP3, LANE1 sample sheet save to %s', outpath))
 write_delim(deep3_lane1_sampleSheet, paste0(outpath, 'deep3_lane1_sampleSheet.txt'), delim = '\t')
+
