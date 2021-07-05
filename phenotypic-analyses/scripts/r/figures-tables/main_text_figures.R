@@ -375,7 +375,7 @@ logOdds_by_winterNDVI <- ggplot(model_matrix_df, aes(x = winterNDVI_Mean, y = be
   geom_smooth(method = 'lm', se = TRUE, color = 'black', size = 1.5) +
   xlab('Mean winter NDVI') + ylab('Slope of HCN cline') +
   scale_y_continuous(breaks = seq(from = -1, to = 5, by = 2)) +
-  coord_cartesian(xlim = c(-1.7, 2), ylim = c(-1.2, 6)) +
+  coord_cartesian(xlim = c(-1.7, 2), ylim = c(-1.4, 6)) +
   ng1
 logOdds_by_winterNDVI
 
@@ -411,8 +411,8 @@ mean <- round(mean(model_matrix_df$summerNDVI_Mean), 1)
 low <- round(mean(model_matrix_df$summerNDVI_Mean) - sd(model_matrix_df$summerNDVI_Mean), 1)
 
 # Get dataframe with predicted lines from model for effects  
-range(model_matrix_df$summerNDVI_Mean) # Used to parameterize x-axis range in list below. 
-val_list <- list(annualPET_Slope = seq(from = -2.7, to = 1.9, by = 0.1), summerNDVI_Mean = c(low, mean, high))
+range(model_matrix_df$annualPET_Slope) # Used to parameterize x-axis range in list below. 
+val_list <- list(annualPET_Slope = seq(from = -7.5, to = 3, by = 0.1), summerNDVI_Mean = c(low, mean, high))
 pred_df <- emmip(mod, summerNDVI_Mean~annualPET_Slope, at = val_list, CIs=TRUE, plotit=FALSE)
 
 # Color palette
@@ -429,7 +429,9 @@ plot <- pred_df %>%
   ylab("Predicted HCN slope") + xlab("Slope of annual PET") +
   scale_color_manual(values = rev(cols), name = "Mean summer NDVI", labels = c("low (-1 sd)","high (+1 sd)")) +
   scale_fill_manual(values = rev(cols), name = "Mean summer NDVI", labels = c("low (-1 sd)","high (+1 sd)")) +
-  scale_y_continuous(breaks = seq(from = -0.4, to = 2, by = 0.4)) +
+  # coord_cartesian(xlim = c(-3, 2)) +
+  scale_y_continuous(breaks = seq(from = -2, to = 4, by = 2)) +
+  scale_x_continuous(breaks = seq(from = -7.5, to = 3, by = 1.5)) +
   ng1 + theme(legend.position = 'right')
 plot
 
@@ -449,8 +451,8 @@ mean <- round(mean(model_matrix_df$GMIS_Mean), 1)
 low <- round(mean(model_matrix_df$GMIS_Mean) - sd(model_matrix_df$GMIS_Mean), 1)
 
 # Get dataframe with predicted lines from model for effects  
-range(model_matrix_df$GMIS_Mean) # Used to parameterize x-axis range in list below. 
-val_list <- list(annualPET_Slope = seq(from = -2.1, to = 3.5, by = 0.1), GMIS_Mean = c(low, mean, high))
+range(model_matrix_df$annualPET_Slope) # Used to parameterize x-axis range in list below. 
+val_list <- list(annualPET_Slope = seq(from = -7.5, to = 3, by = 0.1), GMIS_Mean = c(low, mean, high))
 pred_df <- emmip(mod, GMIS_Mean~annualPET_Slope, at = val_list, CIs=TRUE, plotit=FALSE)
 
 pred_df$fGMIS_Mean <- factor(pred_df$GMIS_Mean)
@@ -462,7 +464,8 @@ plot <- pred_df %>%
   ylab("Predicted HCN slope") + xlab("Slope of annual PET") +
   scale_color_manual(values = rev(cols), name = "Mean GMIS", labels = c("low (-1 sd)","high (+1 sd)")) +
   scale_fill_manual(values = rev(cols), name = "Mean GMIS", labels = c("low (-1 sd)","high (+1 sd)")) +
-  scale_y_continuous(breaks = seq(from = -0.4, to = 2, by = 0.4)) +
+  scale_y_continuous(breaks = seq(from = -3, to = 3, by = 1.5)) +
+  scale_x_continuous(breaks = seq(from = -7.5, to = 3, by = 1.5)) +
   ng1 + theme(legend.position = 'right')
 plot
 
@@ -482,8 +485,8 @@ mean <- round(mean(model_matrix_df$annualAI_Mean), 1)
 low <- round(mean(model_matrix_df$annualAI_Mean) - sd(model_matrix_df$annualAI_Mean), 1)
 
 # Get dataframe with predicted lines from model for effects  
-range(model_matrix_df$annualAI_Mean) # Used to parameterize x-axis range in list below. 
-val_list <- list(summerNDVI_Slope = seq(from = -2.5, to = 4, by = 0.1), annualAI_Mean = c(low, mean, high))
+range(model_matrix_df$summerNDVI_Slope) # Used to parameterize x-axis range in list below. 
+val_list <- list(summerNDVI_Slope = seq(from = -2.5, to = 3, by = 0.1), annualAI_Mean = c(low, mean, high))
 pred_df <- emmip(mod, annualAI_Mean~summerNDVI_Slope, at = val_list, CIs=TRUE, plotit=FALSE)
 
 pred_df$fannualAI_Mean <- factor(pred_df$annualAI_Mean)
@@ -501,3 +504,4 @@ plot
 
 ggsave(filename = "analysis/figures/manuscript-panels/figure-6/figure6D_betaLog_by_AImean_sNDVImean.pdf", 
        plot = plot, device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
+
