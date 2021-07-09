@@ -92,3 +92,42 @@ glueClineModel_stdGmis_corRE_test <- anova(glueClineModel_stdGmis_noCor, glueCli
 glueClineModel_stdGmis_intOnly <- update(glueClineModel_stdGmis_noCor, . ~ . -(0 + std_GMIS_Mean | city))
 glueClineModel_stdGmis_slopeRE_test <- anova(glueClineModel_stdGmis_intOnly, glueClineModel_stdGmis_noCor)
 
+##################################################
+#### SUPPLEMENTARY ANALYSES: HII AS PREDICTOR ####
+##################################################
+
+# Re-run same analysis as above but using standardized Human Influence Index as a predictor instead of 
+# standardized distance
+
+# Create dataframe with HII values for all cities
+hii_inpath <- 'data/raw/environmental_data/hii/'
+hii_df <- create_df_list(hii_inpath) %>%
+  do.call(rbind, .) %>% 
+  dplyr::select(city, population, hii)
+
+# Join HII values to population-mean dataframes and standardize
+df_all_popMeans_stdHII <- df_all_popMeans %>% 
+  left_join(., hii_df, by = c("city", "population")) %>% 
+  group_split(city) %>% 
+  map(., std_var_zero_one, var = 'hii') %>% 
+  do.call(rbind, .)
+
+# Random-slope model allowing effect of HII to vary in each city
+# Estimates correlation between random intercept and slope
+glueClineModel_hii <- glmer(freqHCN ~ std_hii + continent + std_hii:continent + 
+                               (1 + std_hii |city),
+                             data = df_all_popMeans_stdHII,
+                             weights = total_plants,
+                             family = 'binomial',
+                             control = glmerControl(optimizer="bobyqa", optCtrl = list(maxfun = 100000)))
+glueClineModel_stdhii_summary <- summary(glueClineModel_hii)
+glueClineModel_stdhii_anova <- Anova(glueClineModel_hii, type = 3)
+glueClineModel_stdhii_r_squared <- MuMIn::r.squaredGLMM(glueClineModel_hii)
+
+# LRT test to see if estimating correlation improves fit
+glueClineModel_stdhii_noCor <- update(glueClineModel_hii, . ~ . -(1 + std_hii|city) + (1 | city) + (0 + std_hii | city))
+glueClineModel_stdhii_corRE_test <- anova(glueClineModel_stdhii_noCor, glueClineModel_hii)
+
+# LRT test to see if random slope model better fit than intercept-only model
+glueClineModel_stdhii_intOnly <- update(glueClineModel_stdhii_noCor, . ~ . -(0 + std_hii | city))
+glueClineModel_stdhii_slopeRE_test <- anova(glueClineModel_stdhii_intOnly, glueClineModel_stdhii_noCor)
