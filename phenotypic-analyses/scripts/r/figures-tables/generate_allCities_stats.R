@@ -25,7 +25,8 @@ city_stats <- read_csv("data/raw/city_data/City_characteristics.csv") %>%
 cline_summary <- read_csv('analysis/supplementary-tables/allCities_logisticReg_coefs.csv') %>% 
   dplyr::select(-continent) %>% 
   mutate(sigLog_Dist = ifelse(pvalLog_Dist < 0.05, "Yes", "No"),
-         sigLog_GMIS = ifelse(pvalLog_GMIS < 0.05, "Yes", "No"))
+         sigLog_GMIS = ifelse(pvalLog_GMIS < 0.05, "Yes", "No"),
+         sigLog_hii = ifelse(pvalLog_hii < 0.05, "Yes", "No"))
 
 # Number of pops and plants. Enviro variables and HCN
 more_city_vars <- allPopMeans %>% 
@@ -77,7 +78,8 @@ final_table <- cline_summary %>%
   dplyr::select(continent, Country, city, latitude_city, longitude_city,
                 area, pop_size, density, city_age, no_cities, num_populations, 
                 total_num_plants, transect_length, betaLog_Dist, betaLog_GMIS, 
-                sigLog_Dist, sigLog_GMIS, meanHCN, sampled_by) %>% 
+                betaLog_hii, sigLog_Dist, sigLog_GMIS, sigLog_hii, 
+                meanHCN, sampled_by) %>% 
   mutate_if(is.numeric, round, 3)
 
 write_csv(final_table, path = "analysis/supplementary-tables/allCities_stats.csv")
