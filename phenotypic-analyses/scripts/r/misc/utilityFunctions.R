@@ -182,42 +182,6 @@ coords2continent = function(points){
   #indices$ISO3 # returns the ISO3 code 
 }
 
-#' Extracts population-specific Human Influence Index (HII) from raster
-#' 
-#' V2 of HII available from https://sedac.ciesin.columbia.edu/data/set/wildareas-v2-human-influence-index-geographic
-#' 
-#' @param df Dataframe with population latitude and longitude coordinates
-#' @param raster_path Character string containing full path to Raster file
-#' 
-#' @return dataframe with `hii` as column
-extract_hii <- function(df, raster_path){
-  
-  # Get city name
-  city <- df %>% pull(city) %>% unique()
-  
-  # Add fake coordinates for missing data
-  df <- df %>% 
-    mutate(population_longitude = ifelse(is.na(population_longitude), -999, population_longitude),
-           population_latitude = ifelse(is.na(population_latitude), -999, population_latitude))
-  
-  # Load in raster for country
-  raster <- raster::raster(raster_path)
-  
-  # Create spatial point dataframe from latitude and longitude
-  spdf <- SpatialPointsDataFrame(coords = df %>% 
-                                   dplyr::select(population_longitude, population_latitude), 
-                                 proj4string = raster@crs, 
-                                 data = df)
-  
-  # Extract GMIS data for population
-  hii_data <- raster::extract(x = raster, y = spdf, method = 'simple')
-  
-  # Add column with HII values
-  df_out <- df %>% 
-    mutate(hii = hii_data,
-           hii = ifelse(hii == 255, NA, hii))
-}
-
 #' Filters raw environmental data into clean data for later merging
 #'     with clean population-mean datasets
 #'     
