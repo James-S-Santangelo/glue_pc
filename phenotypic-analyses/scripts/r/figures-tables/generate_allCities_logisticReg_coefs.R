@@ -25,9 +25,18 @@ log_reg_stats_gmis <- df_list %>%
           predictor = 'std_GMIS_Mean') %>% 
   rename_at(vars(-city),function(x) paste0(x,"_GMIS"))
 
+# Get stats from logistic regression by city using standardized HII as a predictor
+log_reg_stats_hii <- df_all_popMeans_stdHII %>% 
+  filter(!(city == 'Elmira')) %>% 
+  group_split(city) %>% 
+  map_dfr(., logistic_regression_stats, 
+          predictor = 'std_hii') %>% 
+  rename_at(vars(-city),function(x) paste0(x,"_hii"))
+
 # Merge logistic regression stats
 linearClineTable_mod <- log_reg_stats_distance %>% 
   left_join(., log_reg_stats_gmis, by = 'city') %>% 
+  left_join(., log_reg_stats_hii, by = 'city') %>% 
   left_join(., continents, by = 'city')
 
 # Write cline model summary to disk

@@ -103,7 +103,8 @@ glueClineModel_stdGmis_slopeRE_test <- anova(glueClineModel_stdGmis_intOnly, glu
 hii_inpath <- 'data/raw/environmental_data/hii/'
 hii_df <- create_df_list(hii_inpath) %>%
   do.call(rbind, .) %>% 
-  dplyr::select(city, population, hii)
+  dplyr::select(city, population, hii) %>% 
+  mutate(city = fct_recode(city, 'Newhaven' = 'New_Haven'))
 
 # Join HII values to population-mean dataframes and standardize
 df_all_popMeans_stdHII <- df_all_popMeans %>% 
