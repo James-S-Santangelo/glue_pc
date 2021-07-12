@@ -40,6 +40,12 @@ glueClineModel_stdDist_summary <- summary(glueClineModel_stdDist)
 glueClineModel_stdDist_anova <- Anova(glueClineModel_stdDist, type = 3)
 glueClineModel_stdDist_r_squared <- MuMIn::r.squaredGLMM(glueClineModel_stdDist)
 
+# Model with no random effects
+glueClineModel_stdDist_noRE <- glm(freqHCN ~ std_distance + continent + std_distance:continent,
+                              data = df_all_popMeans,
+                              weights = total_plants,
+                              family = 'binomial')
+
 # LRT test to see if estimating correlation improves fit
 glueClineModel_stdDist_noCor <- update(glueClineModel_stdDist, . ~ . -(1 + std_distance|city) + (1 | city) + (0 + std_distance | city))
 glueClineModel_stdDist_corRE_test <- anova(glueClineModel_stdDist_noCor, glueClineModel_stdDist)
@@ -48,8 +54,8 @@ glueClineModel_stdDist_corRE_test <- anova(glueClineModel_stdDist_noCor, glueCli
 glueClineModel_stdDist_intOnly <- update(glueClineModel_stdDist_noCor, . ~ . -(0 + std_distance | city))
 glueClineModel_stdDist_slopeRE_test <- anova(glueClineModel_stdDist_intOnly, glueClineModel_stdDist_noCor)
 
-# LRT test between model with random slope and correlation, and intercept only
-glueClineModel_stdDist_slopeREwithCor_test <- anova(glueClineModel_stdDist_intOnly, glueClineModel_stdDist)
+# LRT to see if estimating random intercepts improves fit
+glueClineModel_stdDist_randInt_test <- anova(glueClineModel_stdDist_intOnly, glueClineModel_stdDist_noRE)
 
 # Predicted proportion of HCN+ across transect from mixed-model
 propHCN_predicted <- ggeffects::ggeffect(glueClineModel_stdDist, 
@@ -84,6 +90,12 @@ glueClineModel_stdGmis_summary <- summary(glueClineModel_gmis)
 glueClineModel_stdGmis_anova <- Anova(glueClineModel_gmis, type = 3)
 glueClineModel_stdGmis_r_squared <- MuMIn::r.squaredGLMM(glueClineModel_gmis)
 
+# Model with no random effects
+glueClineModel_gmis_noRE <- glm(freqHCN ~ std_GMIS_Mean + continent + std_GMIS_Mean:continent,
+                             data = df_all_popMeans_stdGMIS,
+                             weights = total_plants,
+                             family = 'binomial')
+
 # LRT test to see if estimating correlation improves fit
 glueClineModel_stdGmis_noCor <- update(glueClineModel_gmis, . ~ . -(1 + std_GMIS_Mean|city) + (1 | city) + (0 + std_GMIS_Mean | city))
 glueClineModel_stdGmis_corRE_test <- anova(glueClineModel_stdGmis_noCor, glueClineModel_gmis)
@@ -91,6 +103,9 @@ glueClineModel_stdGmis_corRE_test <- anova(glueClineModel_stdGmis_noCor, glueCli
 # LRT test to see if random slope model better fit than intercept-only model
 glueClineModel_stdGmis_intOnly <- update(glueClineModel_stdGmis_noCor, . ~ . -(0 + std_GMIS_Mean | city))
 glueClineModel_stdGmis_slopeRE_test <- anova(glueClineModel_stdGmis_intOnly, glueClineModel_stdGmis_noCor)
+
+# LRT to see if estimating random intercepts improves fit
+glueClineModel_stdGmis_randInt_test <- anova(glueClineModel_stdGmis_intOnly, glueClineModel_gmis_noRE)
 
 ##################################################
 #### SUPPLEMENTARY ANALYSES: HII AS PREDICTOR ####
@@ -125,6 +140,12 @@ glueClineModel_stdhii_summary <- summary(glueClineModel_hii)
 glueClineModel_stdhii_anova <- Anova(glueClineModel_hii, type = 3)
 glueClineModel_stdhii_r_squared <- MuMIn::r.squaredGLMM(glueClineModel_hii)
 
+# Model with no random effects
+glueClineModel_hii_noRE <- glm(freqHCN ~ std_hii + continent + std_hii:continent,
+                            data = df_all_popMeans_stdHII,
+                            weights = total_plants,
+                            family = 'binomial')
+
 # LRT test to see if estimating correlation improves fit
 glueClineModel_stdhii_noCor <- update(glueClineModel_hii, . ~ . -(1 + std_hii|city) + (1 | city) + (0 + std_hii | city))
 glueClineModel_stdhii_corRE_test <- anova(glueClineModel_stdhii_noCor, glueClineModel_hii)
@@ -132,3 +153,6 @@ glueClineModel_stdhii_corRE_test <- anova(glueClineModel_stdhii_noCor, glueCline
 # LRT test to see if random slope model better fit than intercept-only model
 glueClineModel_stdhii_intOnly <- update(glueClineModel_stdhii_noCor, . ~ . -(0 + std_hii | city))
 glueClineModel_stdhii_slopeRE_test <- anova(glueClineModel_stdhii_intOnly, glueClineModel_stdhii_noCor)
+
+# LRT to see if estimating random intercepts improves fit
+glueClineModel_stdhii_randInt_test <- anova(glueClineModel_stdhii_intOnly, glueClineModel_hii_noRE)
