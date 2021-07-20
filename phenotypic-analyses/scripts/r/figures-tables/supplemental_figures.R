@@ -52,26 +52,28 @@ plot_envar_vs_dist <- function(df_all_popMeans, response){
                              significant == "Yes" & direction == "Negative" ~ "Significantly negative",
                              TRUE ~ "Not significant")) %>% 
     group_by(city) %>% 
-    mutate(scaled = scale(!!sym(response),
-                          center = min(!!sym(response)),
-                          scale = max(!!sym(response)) - min(!!sym(response))))
+    # mutate(scaled = scale(!!sym(response),
+    #                       center = min(!!sym(response)),
+    #                       scale = max(!!sym(response)) - min(!!sym(response))))
+    mutate(scaled = scale(!!sym(response)))
   
   # Create plot
   plot <- df %>%
     ggplot(., aes(x = std_distance, y = scaled)) +
-    geom_line(stat = "smooth", method=function(formula,data,weights=weight) rlm(formula,
+    geom_line(stat = "smooth", formula = y ~ x,
+              method=function(formula,data,weights=weight) rlm(formula,
                                                                  data,
                                                                  weights=weight,
                                                                  maxit=200),
-                aes(color = color, alpha = color, group = city),
-                size = 0.75, se = FALSE) +
-    geom_line(stat = "smooth", method="lm", colour = "black", size = 2.5) +
+              aes(color = color, alpha = color, group = city),
+              size = 0.75, se = FALSE) +
+    geom_line(stat = "smooth", formula = y ~ x, method="lm", colour = "black", size = 2.5) +
     xlab("Standardized distance") + ylab(ylab) +
     scale_colour_manual(values = pal, limits = c('Not significant', 'Significantly negative', 'Significantly positive')) +
     scale_alpha_manual(values = c(0.5, 0.5, 0.5), limits = c('Not significant', 'Significantly negative', 'Significantly positive')) +
-    scale_y_continuous(breaks = seq(from = -0.4, to = 1.2, by = 0.2)) +
+    scale_y_continuous(breaks = seq(from = -3, to = 3, by = 1)) +
     scale_x_continuous(breaks = seq(from = 0, to = 1.1, by = 0.25)) +
-    coord_cartesian(ylim = c(-0.4, 1.2), xlim = c(0, 1), clip = 'off') +
+    coord_cartesian(ylim = c(-3.05, 3.05), xlim = c(0, 1), clip = 'off') +
     ng1 + guides(alpha = guide_legend(override.aes = list(alpha = 1)))
 
   return(plot)
@@ -103,7 +105,7 @@ figureSX <- (a | b | c) / (d | e | f) / (h | g | i) +
 figureSX
 
 ggsave(filename = "analysis/figures/supplemental/figSX_enVar_vs_distance.pdf", plot = figureSX, 
-       device = "pdf", width = 16, height = 14, units = "in", dpi = 600, useDingbats = FALSE) 
+       device = "pdf", width = 16, height = 15, units = "in", dpi = 600, useDingbats = FALSE) 
   
 ###################
 #### FIGURE SX ####
