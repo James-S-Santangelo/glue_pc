@@ -1,0 +1,41 @@
+city,population,population_latitude,population_longitude,total_plants,numCyanogenic,freqHCN,latitude_city,longitude_city,Country,continent,distance,max_dist,std_distance,hii
+Amsterdam,Atjehgouw1,52.435001,5.015338,20,4,0.2,52.373169,4.89066,Netherlands,Europe,10.9,10.972,0.9934,34
+Amsterdam,Atjehgouw2,52.437132999999996,5.013423,20,1,0.05,52.373169,4.89066,Netherlands,Europe,10.9518,10.972,0.9982,34
+Amsterdam,Atjehgouw3,52.438437,5.011965,20,3,0.15,52.373169,4.89066,Netherlands,Europe,10.972,10.972,1,34
+Amsterdam,Baanakkerpark,52.397239,4.947181,20,0,0,52.373169,4.89066,Netherlands,Europe,4.6774,10.972,0.4263,81
+Amsterdam,Broek in Waterland,52.433863,4.999307,20,3,0.15,52.373169,4.89066,Netherlands,Europe,9.9936,10.972,0.9108,34
+Amsterdam,Broekergouw/Middenweg,52.428825,4.9874410000000005,10,8,0.8,52.373169,4.89066,Netherlands,Europe,9.0228,10.972,0.8223,39
+Amsterdam,Broekergouw1,52.410537,4.968426,15,12,0.8,52.373169,4.89066,Netherlands,Europe,6.7165,10.972,0.6121,59
+Amsterdam,Broekergouw10,52.425544,4.989985,17,3,0.176,52.373169,4.89066,Netherlands,Europe,8.9067,10.972,0.8118,39
+Amsterdam,Broekergouw2,52.412986,4.972029,20,2,0.1,52.373169,4.89066,Netherlands,Europe,7.0773,10.972,0.645,59
+Amsterdam,Broekergouw3,52.415323,4.976897,20,7,0.35,52.373169,4.89066,Netherlands,Europe,7.4974,10.972,0.6833,59
+Amsterdam,Broekergouw4,52.416622,4.979426999999999,20,5,0.25,52.373169,4.89066,Netherlands,Europe,7.7216,10.972,0.7038,59
+Amsterdam,Broekergouw5,52.417613,4.983176,20,6,0.3,52.373169,4.89066,Netherlands,Europe,7.9893,10.972,0.7282,59
+Amsterdam,Broekergouw6,52.419243,4.98698,20,0,0,52.373169,4.89066,Netherlands,Europe,8.3041,10.972,0.7568,39
+Amsterdam,Broekergouw7,52.420388,4.990113,20,8,0.4,52.373169,4.89066,Netherlands,Europe,8.55,10.972,0.7793,39
+Amsterdam,Broekergouw8,52.422443,4.990880000000001,20,2,0.1,52.373169,4.89066,Netherlands,Europe,8.7325,10.972,0.7959,39
+Amsterdam,Broekergouw9,52.424403999999996,4.991186,20,7,0.35,52.373169,4.89066,Netherlands,Europe,8.8867,10.972,0.8099,39
+Amsterdam,Frederiksplein,52.360757,4.899087000000001,20,1,0.05,52.373169,4.89066,Netherlands,Europe,1.494,10.972,0.1362,93
+Amsterdam,Hermitage,52.365549,4.903933,20,5,0.25,52.373169,4.89066,Netherlands,Europe,1.2369,10.972,0.1127,93
+Amsterdam,Het Laagt (Plan van Gool),52.394775,4.937672,20,1,0.05,52.373169,4.89066,Netherlands,Europe,3.994,10.972,0.364,81
+Amsterdam,Hortus,52.366454,4.90637,12,1,0.083,52.373169,4.89066,Netherlands,Europe,1.302,10.972,0.1187,93
+Amsterdam,Jisperveldstraat,52.400113,4.952466,11,1,0.091,52.373169,4.89066,Netherlands,Europe,5.1546,10.972,0.4698,59
+Amsterdam,Kattenburg,52.375240000000005,4.914497,20,0,0,52.373169,4.89066,Netherlands,Europe,1.6345,10.972,0.149,78
+Amsterdam,Lamenhofstraat,52.387919000000004,4.924976999999999,20,4,0.2,52.373169,4.89066,Netherlands,Europe,2.8488,10.972,0.2596,81
+Amsterdam,Leidseplein,52.363128,4.880632,20,6,0.3,52.373169,4.89066,Netherlands,Europe,1.3077,10.972,0.1192,93
+Amsterdam,Meeuwenplein,52.382197,4.9105300000000005,20,2,0.1,52.373169,4.89066,Netherlands,Europe,1.6813,10.972,0.1532,93
+Amsterdam,Molengouw,52.432218999999996,5.006563,20,5,0.25,52.373169,4.89066,Netherlands,Europe,10.244,10.972,0.9336,34
+Amsterdam,Nieuwe Gouw,52.405945,4.963312999999999,20,5,0.25,52.373169,4.89066,Netherlands,Europe,6.1311,10.972,0.5588,59
+Amsterdam,Op camping Vliegenbos,52.390912,4.932819,18,2,0.111,52.373169,4.89066,Netherlands,Europe,3.4757,10.972,0.3168,81
+Amsterdam,Park Camping (midden),52.390121,4.928551000000001,20,0,0,52.373169,4.89066,Netherlands,Europe,3.1886,10.972,0.2906,81
+Amsterdam,Park Meeuwenlaan (kop),52.38993,4.92569,19,2,0.105,52.373169,4.89066,Netherlands,Europe,3.021,10.972,0.2753,81
+Amsterdam,Plantage Parklaan,52.368145,4.90878,12,5,0.417,52.373169,4.89066,Netherlands,Europe,1.3511,10.972,0.1231,78
+Amsterdam,Sarphatipark,52.355017,4.896751999999999,12,1,0.083,52.373169,4.89066,Netherlands,Europe,2.0604,10.972,0.1878,93
+Amsterdam,Scheepvaartmuseum,52.372278,4.916428,15,0,0,52.373169,4.89066,Netherlands,Europe,1.7521,10.972,0.1597,78
+Amsterdam,Sportpark de Weeren,52.400541,4.9575569999999995,18,6,0.333,52.373169,4.89066,Netherlands,Europe,5.4658,10.972,0.4982,59
+Amsterdam,Trambaan Broek in Waterland,52.43464300000001,5.001365,20,4,0.2,52.373169,4.89066,Netherlands,Europe,10.1552,10.972,0.9256,34
+Amsterdam,Werengauw,52.395740999999994,4.942175,15,1,0.067,52.373169,4.89066,Netherlands,Europe,4.3039,10.972,0.3923,81
+Amsterdam,Weteringschans,52.358754,4.891475,12,4,0.333,52.373169,4.89066,Netherlands,Europe,1.6038,10.972,0.1462,93
+Amsterdam,Zunderdorp,52.409244,4.965058,20,4,0.2,52.373169,4.89066,Netherlands,Europe,6.4482,10.972,0.5877,59
+Amsterdam,Zunderdorpergouw,52.403844,4.960637,18,7,0.389,52.373169,4.89066,Netherlands,Europe,5.8468,10.972,0.5329,59
+Amsterdam,Zwanenplein,52.386938,4.918367,20,2,0.1,52.373169,4.89066,Netherlands,Europe,2.4251,10.972,0.221,93

@@ -39,6 +39,26 @@ haversine <- function(long1, lat1, long2, lat2) {
   return(d) # Distance in km
 }
 
+#' Standardizes variable between 0 and 1. 
+#'
+#' @param df Dataframe containing variable to be standardized as column
+#' @param var Variable to standardize as character string
+#' 
+#' @return Dataframe with standardized variable. Name prefixed with 'std_'
+std_var_zero_one <- function(df, var){
+  
+  varname <- paste0('std_', var)
+  
+  df_out <- df %>% 
+    mutate(max = max(!!sym(var), na.rm = TRUE),
+           min = min(!!sym(var), na.rm = TRUE),
+           # min_dist = min(distance),
+           var_out = ((!!sym(var) - min)/ (max - min)),
+           !!varname := round(var_out, 4)) %>% 
+    dplyr::select(-min, -max, -var_out)
+  
+  return(df_out)
+}
 
 #' Generates biplot of with response variable against predictor variable
 #'     Writes biplot to disk in outpath.
@@ -161,7 +181,6 @@ coords2continent = function(points){
   #indices$ADMIN  #returns country name
   #indices$ISO3 # returns the ISO3 code 
 }
-
 
 #' Filters raw environmental data into clean data for later merging
 #'     with clean population-mean datasets
@@ -701,15 +720,17 @@ rlmStats <- function(df, response){
 #' @param df Population-mean HCN frequency dataset for city
 #' 
 #' @return Dataframe with summary of model output
-logistic_regression_stats <- function(df){
+logistic_regression_stats <- function(df, predictor){
   
   city <- df %>% distinct(city) %>% pull()
-
-  # Perform logistic regression
-  mod <- glm(freqHCN ~ std_distance, weights = total_plants, data = df, family = 'binomial')
+  pred <- df %>% pull(predictor)
+  resp <- df %>% pull(freqHCN)
   
-  betaLog <- round(summary(mod)$coefficients['std_distance', 'Estimate'], 3)
-  pvalLog <- round(summary(mod)$coefficients['std_distance', 'Pr(>|z|)'], 3)
+  # Perform logistic regression
+  mod <- glm(resp ~ pred, weights = total_plants, data = df, family = 'binomial')
+  
+  betaLog <- round(summary(mod)$coefficients['pred', 'Estimate'], 3)
+  pvalLog <- round(summary(mod)$coefficients['pred', 'Pr(>|z|)'], 3)
   yint <- round(summary(mod)$coefficients['(Intercept)', 'Estimate'], 3)
   
   df_out <- data.frame(city = city, yint = yint, betaLog = betaLog, pvalLog = pvalLog)

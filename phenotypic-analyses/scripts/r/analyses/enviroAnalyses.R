@@ -16,6 +16,7 @@ for (i in 1:length(csv.files)){
   data <- read.csv(paste0(inpath, csv.files[i])) %>% dplyr::select(city, 
                                                                    std_distance, 
                                                                    freqHCN, 
+                                                                   total_plants,
                                                                    population_latitude,
                                                                    population_longitude,
                                                                    matches("*Mean$"))

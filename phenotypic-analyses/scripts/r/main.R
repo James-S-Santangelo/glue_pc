@@ -89,13 +89,24 @@ source("scripts/r/data-processing/generatePopMeans.R")
 # This step used a series of custom Python scripts to interface with ArcMap (v. 10.6.1)
 # and extract environmental data from Landsat 7/8 images and publicly curated databases
 # (e.g., CGIAR) for each population sampled by collaborators. Scripts are not shown here.
-# These scripts were written by Alex Tong. The exception is Impervious surface (GMIS), which 
-# we extract using the script below. This requires GMIS raster datasets in a local directory (see script). 
+# These scripts were written by Alex Tong. 
+
+# There are two exceptions: Impervious surface (GMIS) and Human Influence Index (HII), which are  
+# extracted using the scripts below. We provide the raw data from these analyses to prevent users 
+# from having to download the rasters unless they really want to. 
+
+# This requires GMIS raster datasets in a local directory (see script). 
 # Datasets can be downloaded from https://sedac.ciesin.columbia.edu/data/set/ulandsat-gmis-v1/data-download.
 # Accessed April 9, 2021
 
-# Uncomment to execute. Takes about an hour.
+# The HII raster can be obtained from https://sedac.ciesin.columbia.edu/data/set/wildareas-v2-human-influence-index-geographic
+# Accessed June 25, 2021
+
+# GMIS. Uncomment to execute. Takes about an hour.
 # source('scripts/data-extraction/gmis_extraction.R')
+
+# HII. Uncomment to execute. Only takes a courple minutes
+# source('scripts/data-extraction/hii_extraction.
 
 ######################################
 #### STEP 3: MORE DATA PROCESSING ####
@@ -161,6 +172,16 @@ print(pred_percent_change)
 
 # LRT for random effect of effect of distance varying by city
 print(glueClineModel_stdDist_slopeRE_test)
+
+# Supplementary analysis using GMIS as predictor instead of Distance. Qualitatively similar
+print(glueClineModel_stdGmis_anova)
+print(glueClineModel_stdGmis_r_squared)
+print(glueClineModel_stdGmis_slopeRE_test)
+
+# Supplementary analysis using HII as predictor instead of Distance. Qualitatively similar
+print(glueClineModel_stdhii_anova)
+print(glueClineModel_stdhii_r_squared)
+print(glueClineModel_stdhii_slopeRE_test)
 
 ## Step 4.3: Predicting clines from environment
 # What environmental variables drive convergent evolution to cities on a global scale?

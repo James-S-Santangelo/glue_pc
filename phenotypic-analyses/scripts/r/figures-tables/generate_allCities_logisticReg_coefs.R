@@ -5,19 +5,38 @@
 
 # Create list with paths to dataframes
 inpath <- "data/clean/popMeans_allCities_withEnviro/"
-df_list <- create_df_list(inpath)
+df_list <- create_df_list(inpath) %>% 
+  map(., std_var_zero_one, var = 'GMIS_Mean')
 
 # Get continent for each city
 continents <- do.call(rbind, df_list) %>%
   group_by(city) %>%
   distinct(continent)
 
-# Get stats from logistic regression by city
-log_reg_stats <- df_list %>% 
-  map_dfr(., logistic_regression_stats)
+# Get stats from logistic regression by city using standardized distance as a predictor
+log_reg_stats_distance <- df_list %>% 
+  map_dfr(., logistic_regression_stats, 
+          predictor = 'std_distance') %>% 
+  rename_at(vars(-city),function(x) paste0(x,"_Dist"))
+
+# Get stats from logistic regression by city using standardized GMIS as a predictor
+log_reg_stats_gmis <- df_list %>% 
+  map_dfr(., logistic_regression_stats, 
+          predictor = 'std_GMIS_Mean') %>% 
+  rename_at(vars(-city),function(x) paste0(x,"_GMIS"))
+
+# Get stats from logistic regression by city using standardized HII as a predictor
+log_reg_stats_hii <- df_all_popMeans_stdHII %>% 
+  filter(!(city == 'Elmira')) %>% 
+  group_split(city) %>% 
+  map_dfr(., logistic_regression_stats, 
+          predictor = 'std_hii') %>% 
+  rename_at(vars(-city),function(x) paste0(x,"_hii"))
 
 # Merge logistic regression stats
-linearClineTable_mod <- log_reg_stats %>% 
+linearClineTable_mod <- log_reg_stats_distance %>% 
+  left_join(., log_reg_stats_gmis, by = 'city') %>% 
+  left_join(., log_reg_stats_hii, by = 'city') %>% 
   left_join(., continents, by = 'city')
 
 # Write cline model summary to disk

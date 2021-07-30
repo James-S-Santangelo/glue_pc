@@ -11,7 +11,8 @@ ng1 <- theme(aspect.ratio=0.7,panel.background = element_blank(),
           panel.border=element_blank(),
           axis.line.x = element_line(color="black",size=1),
           axis.line.y = element_line(color="black",size=1),
-          axis.ticks=element_line(color="black"),
+          axis.ticks=element_line(size = 1, color="black"),
+          axis.ticks.length=unit(0.25, 'cm'),
           axis.text=element_text(color="black",size=15),
           axis.title=element_text(color="black",size=1),
           axis.title.y=element_text(vjust=2,size=17),
@@ -215,18 +216,14 @@ ggsave(filename = "analysis/figures/manuscript-panels/figure-2/figure2.pdf", plo
 
 ## Histogram showing distribution of slopes of clines, with different colors for significantly negative, positive, and no cline.
 
-# Get betas and pvalues from robust regressions
-hcnClinesSummary <- df_all_popMeans %>% group_split(city) %>% 
-  purrr::map_dfr(., logistic_regression_stats)
-
 pal <- c("#909090", "#FF0000", "#046C9A")
-logOddsHistogram <- hcnClinesSummary %>% 
+logOddsHistogram <- linearClineTable_mod %>% 
   mutate(Significance = case_when(
-    betaLog < 0 & pvalLog < 0.05 ~ "Significantly negative",
-    betaLog > 0 & pvalLog < 0.05 ~ "Significantly positive",
+    betaLog_Dist < 0 & pvalLog_Dist < 0.05 ~ "Significantly negative",
+    betaLog_Dist > 0 & pvalLog_Dist < 0.05 ~ "Significantly positive",
     TRUE ~ "Not significant"
   )) %>% 
-  ggplot(., aes(x = betaLog, fill = Significance)) +
+  ggplot(., aes(x = betaLog_Dist, fill = Significance)) +
   geom_histogram(data = . %>% filter(Significance == 'Significantly negative'), 
                  bins = 50,
                  color = 'black') +
@@ -238,8 +235,10 @@ logOddsHistogram <- hcnClinesSummary %>%
                  color = 'black',
                  alpha = 0.4) +
   geom_vline(xintercept = 0, linetype = "dotted") +
-  geom_vline(xintercept = mean(hcnClinesSummary$betaLog, linetype = "dashed", size = 1)) +
+  geom_vline(xintercept = mean(linearClineTable_mod$betaLog_Dist), linetype = "dashed", size = 1) +
   xlab("Standardized slope of cline") + ylab("Count") +
+  coord_cartesian(ylim = c(0, 21)) +
+  scale_y_continuous(breaks = seq(from = 0, to = 20, by = 5), expand = c(0, 0)) +
   scale_fill_manual(values = pal) +
   ng1 + theme(legend.position = "top", 
               legend.direction="horizontal",
@@ -256,13 +255,12 @@ ggsave(filename = "analysis/figures/manuscript-panels/figure-3/figure3A_logOddsH
 ### Figure 3B
 
 ## Reaction norm plot with HCN vs distance for all cities, colored by whether relationship 
-## is positive or negative. Use solid line if the relationship is significant and dashed lines if not. 
-## Set alpha = 0.5 on lines to better see overlap and avoid clutter.
+## is positive or negative. Set alpha = 0.5 on lines to better see overlap and avoid clutter.
 
 HCN_by_city <- df_all_popMeans %>%
-  left_join(., hcnClinesSummary, by = "city") %>% 
-  mutate(significant = ifelse(pvalLog < 0.05, "Yes", "No"),
-         direction = ifelse(betaLog > 0, "Positive", "Negative"),
+  left_join(., linearClineTable_mod, by = "city") %>% 
+  mutate(significant = ifelse(pvalLog_Dist < 0.05, "Yes", "No"),
+         direction = ifelse(betaLog_Dist > 0, "Positive", "Negative"),
          color = case_when(significant == "Yes" & direction == "Positive" ~ "Significantly positive",
                            significant == "Yes" & direction == "Negative" ~ "Significantly negative",
                            TRUE ~ "Not significant")) %>%
@@ -283,9 +281,9 @@ HCN_by_city <- df_all_popMeans %>%
   scale_alpha_discrete(range = c(0.5, 0.8)) +
   scale_y_continuous(breaks = seq(from = 0, to = 1, by = 0.1)) +
   scale_x_continuous(breaks = seq(from = 0, to = 1.1, by = 0.25)) +
-  coord_cartesian(ylim = c(-0.05, 1.05), xlim = c(0, 1), clip = 'off') +
+  coord_cartesian(ylim = c(-0.01, 1.01), xlim = c(0, 1)) +
   ng1 
-HCN_by_city
+HCN_by_city 
 
 ggsave(filename = "analysis/figures/manuscript-panels/figure-3/figure3B_clineByCity.pdf", plot = HCN_by_city,
        device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
@@ -316,6 +314,8 @@ fig3_inset_biplot <- function(df){
                 size = 1.5) +
     xlab("Standardized distance") +
     ylab("Frequency of HCN") +
+    scale_y_continuous(breaks = seq(from = 0, to = 1, by = 0.1)) +
+    coord_cartesian(ylim = c(-0.01, 1.01), xlim = c(0, 1)) +
     ng1
   
   return(plot)
@@ -333,7 +333,7 @@ ggsave(filename = "analysis/figures/manuscript-panels/figure-3/figure3E_Temuco_H
        device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
 
 ### Combine panels for figure 2
-figure3 <- (logOddsHistogram + HCN_by_city) / (muenster_plot | freehold_plot | temuco_plot) +
+figure3 <- (logOddsHistogram + HCN_by_city) / (temuco_plot | freehold_plot | muenster_plot) +
   plot_annotation(tag_levels = 'A') &
   theme(legend.position = c(1, 1.2),
         plot.tag.position = c(0.05, 1.05),
@@ -375,12 +375,12 @@ logOdds_by_winterNDVI <- ggplot(model_matrix_df, aes(x = winterNDVI_Mean, y = be
   geom_smooth(method = 'lm', se = TRUE, color = 'black', size = 1.5) +
   xlab('Mean winter NDVI') + ylab('Slope of HCN cline') +
   scale_y_continuous(breaks = seq(from = -1, to = 5, by = 2)) +
+  # coord_cartesian(xlim = c(-1.7, 2), ylim = c(-1.4, 6)) +
   ng1
 logOdds_by_winterNDVI
 
 ggsave(filename = "analysis/figures/manuscript-panels/figure-6/figure6A_logOdds_by_winterNDVI.pdf", 
        plot = logOdds_by_winterNDVI, device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
-
 
 ### Figure 6A inset
 
@@ -411,13 +411,13 @@ mean <- round(mean(model_matrix_df$summerNDVI_Mean), 1)
 low <- round(mean(model_matrix_df$summerNDVI_Mean) - sd(model_matrix_df$summerNDVI_Mean), 1)
 
 # Get dataframe with predicted lines from model for effects  
-range(model_matrix_df$summerNDVI_Mean) # Used to parameterize x-axis range in list below. 
-val_list <- list(annualPET_Slope = seq(from = -2.7, to = 1.9, by = 0.1), summerNDVI_Mean = c(low, mean, high))
+range(model_matrix_df$annualPET_Slope) # Used to parameterize x-axis range in list below. 
+val_list <- list(annualPET_Slope = seq(from = -7.5, to = 3, by = 0.1), summerNDVI_Mean = c(low, mean, high))
 pred_df <- emmip(mod, summerNDVI_Mean~annualPET_Slope, at = val_list, CIs=TRUE, plotit=FALSE)
 
 # Color palette
-low_col = wes_palette("Zissou1", 5, type = "discrete")[5]
-high_col = wes_palette("Zissou1", 5, type = "discrete")[1]
+low_col = wes_palette("Rushmore1", 5, type = "discrete")[4]
+high_col = wes_palette("Darjeeling1", 5, type = "discrete")[3]
 cols = c(low_col, high_col)
 
 pred_df$fsummerNDVI_Mean <- factor(pred_df$summerNDVI_Mean)
@@ -429,7 +429,9 @@ plot <- pred_df %>%
   ylab("Predicted HCN slope") + xlab("Slope of annual PET") +
   scale_color_manual(values = rev(cols), name = "Mean summer NDVI", labels = c("low (-1 sd)","high (+1 sd)")) +
   scale_fill_manual(values = rev(cols), name = "Mean summer NDVI", labels = c("low (-1 sd)","high (+1 sd)")) +
-  scale_y_continuous(breaks = seq(from = -0.4, to = 2, by = 0.4)) +
+  # coord_cartesian(xlim = c(-3, 2)) +
+  scale_y_continuous(breaks = seq(from = -2, to = 4, by = 2)) +
+  scale_x_continuous(breaks = seq(from = -7.5, to = 3, by = 1.5)) +
   ng1 + theme(legend.position = 'right')
 plot
 
@@ -449,14 +451,9 @@ mean <- round(mean(model_matrix_df$GMIS_Mean), 1)
 low <- round(mean(model_matrix_df$GMIS_Mean) - sd(model_matrix_df$GMIS_Mean), 1)
 
 # Get dataframe with predicted lines from model for effects  
-range(model_matrix_df$GMIS_Mean) # Used to parameterize x-axis range in list below. 
-val_list <- list(annualPET_Slope = seq(from = -2.1, to = 3.5, by = 0.1), GMIS_Mean = c(low, mean, high))
+range(model_matrix_df$annualPET_Slope) # Used to parameterize x-axis range in list below. 
+val_list <- list(annualPET_Slope = seq(from = -7.5, to = 3, by = 0.1), GMIS_Mean = c(low, mean, high))
 pred_df <- emmip(mod, GMIS_Mean~annualPET_Slope, at = val_list, CIs=TRUE, plotit=FALSE)
-
-# Color palette
-low_col = wes_palette("Zissou1", 5, type = "discrete")[5]
-high_col = wes_palette("Zissou1", 5, type = "discrete")[1]
-cols = c(low_col, high_col)
 
 pred_df$fGMIS_Mean <- factor(pred_df$GMIS_Mean)
 plot <- pred_df %>% 
@@ -467,7 +464,8 @@ plot <- pred_df %>%
   ylab("Predicted HCN slope") + xlab("Slope of annual PET") +
   scale_color_manual(values = rev(cols), name = "Mean GMIS", labels = c("low (-1 sd)","high (+1 sd)")) +
   scale_fill_manual(values = rev(cols), name = "Mean GMIS", labels = c("low (-1 sd)","high (+1 sd)")) +
-  scale_y_continuous(breaks = seq(from = -0.4, to = 2, by = 0.4)) +
+  scale_y_continuous(breaks = seq(from = -3, to = 3, by = 1.5)) +
+  scale_x_continuous(breaks = seq(from = -7.5, to = 3, by = 1.5)) +
   ng1 + theme(legend.position = 'right')
 plot
 
@@ -487,14 +485,9 @@ mean <- round(mean(model_matrix_df$annualAI_Mean), 1)
 low <- round(mean(model_matrix_df$annualAI_Mean) - sd(model_matrix_df$annualAI_Mean), 1)
 
 # Get dataframe with predicted lines from model for effects  
-range(model_matrix_df$annualAI_Mean) # Used to parameterize x-axis range in list below. 
-val_list <- list(summerNDVI_Slope = seq(from = -2.5, to = 4, by = 0.1), annualAI_Mean = c(low, mean, high))
+range(model_matrix_df$summerNDVI_Slope) # Used to parameterize x-axis range in list below. 
+val_list <- list(summerNDVI_Slope = seq(from = -2.5, to = 3, by = 0.1), annualAI_Mean = c(low, mean, high))
 pred_df <- emmip(mod, annualAI_Mean~summerNDVI_Slope, at = val_list, CIs=TRUE, plotit=FALSE)
-
-# Color palette
-low_col = wes_palette("Zissou1", 5, type = "discrete")[5]
-high_col = wes_palette("Zissou1", 5, type = "discrete")[1]
-cols = c(low_col, high_col)
 
 pred_df$fannualAI_Mean <- factor(pred_df$annualAI_Mean)
 plot <- pred_df %>% 
@@ -511,3 +504,4 @@ plot
 
 ggsave(filename = "analysis/figures/manuscript-panels/figure-6/figure6D_betaLog_by_AImean_sNDVImean.pdf", 
        plot = plot, device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
+
