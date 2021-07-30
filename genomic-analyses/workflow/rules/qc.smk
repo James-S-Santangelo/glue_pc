@@ -157,8 +157,7 @@ rule qc_analysis_notebook:
     Notebook for interactive exploration of QC results using some of the text files written by multiQC.
     """
     input:
-        rules.multiqc.output,
-        rules.single_sample_sfs_done.output
+        rules.multiqc.output
     output:
         plot1 = '{0}/supplemental/qc/mean_coverage_histogram.pdf'.format(FIGURES_DIR),
         plot2 = '{0}/supplemental/qc/general_error_rate_histogram.pdf'.format(FIGURES_DIR),
