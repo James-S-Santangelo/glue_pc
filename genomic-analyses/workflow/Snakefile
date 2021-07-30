@@ -35,12 +35,10 @@ GLUE_RAW_READ_DIR = '{0}'.format(config['glue_raw_read_prefix'])
 TOR_RAW_READ_DIR = '{0}'.format(config['tor_raw_read_prefix'])
 TRIMMED_READ_DIR = '{0}/trimmed_reads'.format(config['results_prefix'])
 QC_DIR = '{0}/qc'.format(config['results_prefix'])
-SPECIES_ID_DIR = '{0}/species_id'.format(config['results_prefix'])
 BAM_DIR = '{0}/bam'.format(config['results_prefix'])
 PROGRAM_RESOURCE_DIR = '{0}/program_resources'.format(config['results_prefix'])
 ANGSD_DIR = '{0}/angsd'.format(config['results_prefix'])
 POP_STRUC_DIR = '{0}/population_structure'.format(config['results_prefix'])
-SS_SFS_DIR = '{0}/single_sample_sfs'.format(config['results_prefix'])
 HCN_LOCI_DIR = '{0}/hcn_genotyping'.format(config['results_prefix'])
 FIGURES_DIR = '{0}/figures'.format(config['results_prefix'])
 
@@ -52,10 +50,6 @@ CORES_PER_NODE = config['cluster']['cores_per_node']
 
 # Parameters for variant calling with ANGSD
 ANGSD_MAX_DP = config['angsd']['max_dp']
-
-# Parameters for NGSadmix
-NGSADMIX_K = [x for x in range(2, 11)]
-NGSADMIX_SEEDS = [x for x in range(1, 11)]
 
 # Parameters for pairwise pi and Fst
 BOOT_SEEDS = [x for x in range(1, 101)]
