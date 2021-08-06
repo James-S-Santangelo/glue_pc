@@ -87,9 +87,9 @@ source('scripts/data-processing/create_deep3_lane2_libraryConcentrations.R')
 # Create sample sheet with habitat info for downstream genomics analyses
 source('scripts/data-processing/create_deep3_lane2_sampleSheet.R')
 
-#####################################################
-#### STEP 6a: DEEP3 LANE2 library concentrations ####
-#####################################################
+##########################################################
+#### STEP 6c: DEEP3/LOW2 LANE3 library concentrations ####
+##########################################################
 
 # Add Illumina indices and clean post-PCR library concentrations
 # for the first lane of DEEP3 sequencing
