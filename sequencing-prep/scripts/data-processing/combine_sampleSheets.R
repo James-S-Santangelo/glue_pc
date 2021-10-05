@@ -22,6 +22,6 @@ deep3_low2_lane3_ss <- read_delim('resources/deep3_low2_lane3_sampleSheet.txt', 
 # Combine sample sheets
 sample_sheet <- bind_rows(low1_ss, deep3_lane1_ss, deep3_lane2_ss, deep3_low2_lane3_ss)
 
-write_csv(sample_sheet, 'resources/glue_allSamples_sampleSheet.txt')
+write_delim(sample_sheet, 'resources/glue_allSamples_sampleSheet.txt', delim = '\t')
 
 
