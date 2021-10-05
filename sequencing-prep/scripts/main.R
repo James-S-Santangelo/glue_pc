@@ -101,3 +101,10 @@ source('scripts/data-processing/create_deep3_low2_lane3_libraryConcentrations.R'
 
 # Create sample sheet with habitat info for downstream genomics analyses
 source('scripts/data-processing/create_deep3_low2_lane3_sampleSheet.R')
+
+########################################
+#### STEP 8: COMBINE SAMPLE SHEETS  ####
+########################################
+
+# Combine sample sheets to have one containing all samples
+source('scripts/data-processing/combine_sampleSheets.R')
