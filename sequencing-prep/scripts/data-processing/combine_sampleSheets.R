@@ -20,7 +20,8 @@ deep3_low2_lane3_ss <- read_delim('resources/deep3_low2_lane3_sampleSheet.txt', 
   select(cols)
 
 # Combine sample sheets
-sample_sheet <- bind_rows(low1_ss, deep3_lane1_ss, deep3_lane2_ss, deep3_low2_lane3_ss)
+sample_sheet <- bind_rows(low1_ss, deep3_lane1_ss, deep3_lane2_ss, deep3_low2_lane3_ss) %>% 
+  filter(!(sample == 'Medellin_39_10_dup'))  ## This sample was missing from sequencing
 
 write_delim(sample_sheet, 'resources/glue_allSamples_sampleSheet.txt', delim = '\t')
 
