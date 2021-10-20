@@ -106,5 +106,11 @@ source('scripts/data-processing/create_deep3_low2_lane3_sampleSheet.R')
 #### STEP 8: COMBINE SAMPLE SHEETS  ####
 ########################################
 
-# Combine sample sheets to have one containing all samples
-source('scripts/data-processing/combine_sampleSheets.R')
+# Create sample sheet with all samples for GLUE_GI and GLUE_PS
+source('scripts/data-processing/create_glue_allSamples_sampleSheet.R')
+
+# Create sample sheet with plants from LOW1 and DEEP3 for GLUE_PC
+read_delim('resources/glue_allSamples_sampleSheet.txt', delim = '\t') %>% 
+  filter(library != 'low2') %>%  # Remove Low2 samples
+  filter(site != 's') %>%   # Remove suburban samples from Toronto
+  write_delim('resources/glue_pc_sampleSheet.txt', delim = '\t')

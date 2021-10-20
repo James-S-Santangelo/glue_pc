@@ -29,7 +29,10 @@ toronto_gwsd <- read_delim('resources/sequencedPlants_phenotypesHabitat.txt', de
          city = 'Toronto',
          range = 'Introduced',
          library = 'Toronto',
-         lane = 1)
+         lane = 1) %>% 
+  mutate(site = case_when(site == 'Urban' ~ 'u',
+                          site == 'Rural' ~ 'r',
+                          TRUE ~ 's'))
 
 # Combine sample sheets
 sample_sheet <- bind_rows(low1_ss, deep3_lane1_ss, deep3_lane2_ss, deep3_low2_lane3_ss, toronto_gwsd) %>% 
