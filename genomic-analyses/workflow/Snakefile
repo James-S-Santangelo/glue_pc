@@ -3,7 +3,6 @@ import glob
 import itertools
 import pandas as pd
 from pathlib import Path
-from tqdm import tqdm
 from snakemake.utils import min_version
 
 ###############
@@ -11,10 +10,17 @@ from snakemake.utils import min_version
 ###############
 
 # Require at least this version
-min_version('5.26.1')
+min_version('6.9.1')
 
 # Defailt configfile. Can be changed at command-line (--configfile)
-configfile: '../config/hpcnode.yaml'
+configfile: '../config/graham.yaml'
+
+# Import rules from QC workflow
+module glue_dnaSeqQC:
+    snakefile: config['glue_dnaSeqQC_workflow']['snakefile']
+    config: config['glue_dnaSeqQC_workflow']
+
+use rule * from glue_dnaSeqQC as glue_dnaSeqQC_*
 
 SAMPLE_SHEET_DF = pd.read_table(config['samples'], sep='\t')
 
@@ -24,18 +30,13 @@ TOR_SAMPLES = [x for x in SAMPLES if x.startswith('s_')]
 CITIES = SAMPLE_SHEET_DF['city'].unique().tolist()
 HABITATS = SAMPLE_SHEET_DF['site'].unique().tolist()
 CHROMOSOMES = pd.read_table(config['chromosomes'], header=None).iloc[:,0].tolist()
+GFF_FILE = ancient(config['gff'])
 
-# Reference genome and annotation
-REFERENCE_GENOME = ancient(config['files']['reference_genome'])
-GFF_FILE = ancient(config['files']['gff'])
+# Path to results from glue_dnaSeqQC workflow
+QC_DIR = '{0}/qc'.format(config['glue_dnaSeqQC_workflow']['results_prefix'])
 
 # Paths for output files
 TMPDIR = config['temp_dir']
-GLUE_RAW_READ_DIR = '{0}'.format(config['glue_raw_read_prefix'])
-TOR_RAW_READ_DIR = '{0}'.format(config['tor_raw_read_prefix'])
-TRIMMED_READ_DIR = '{0}/trimmed_reads'.format(config['results_prefix'])
-QC_DIR = '{0}/qc'.format(config['results_prefix'])
-BAM_DIR = '{0}/bam'.format(config['results_prefix'])
 PROGRAM_RESOURCE_DIR = '{0}/program_resources'.format(config['results_prefix'])
 ANGSD_DIR = '{0}/angsd'.format(config['results_prefix'])
 POP_STRUC_DIR = '{0}/population_structure'.format(config['results_prefix'])
@@ -70,17 +71,17 @@ localrules: create_tmp_dir, create_bam_list_finalSamples_lowCovRemoved, create_s
 rule all:
    input:
         # Trimming, mapping, and QC
-        '{0}/multiqc/multiqc_report.html'.format(QC_DIR),
+        #'{0}/multiqc/multiqc_report.html'.format(QC_DIR),
         # Downsample Toronto data
-        '{0}/downsample_toronto.done'.format(BAM_DIR),
+        #'{0}/downsample_toronto.done'.format(BAM_DIR),
         # Angsd
         '{0}/angsd.done'.format(ANGSD_DIR),
-        '{0}/angsd_byCity_byHabitat.done'.format(ANGSD_DIR),
-        '{0}/angsd_byCity_byHabitat_permuted.done'.format(ANGSD_DIR),
+        #'{0}/angsd_byCity_byHabitat.done'.format(ANGSD_DIR),
+        #'{0}/angsd_byCity_byHabitat_permuted.done'.format(ANGSD_DIR),
         # Population structure
-        '{0}/population_structure.done'.format(POP_STRUC_DIR),
+        #'{0}/population_structure.done'.format(POP_STRUC_DIR),
         # HCN loci frequencies
-        '{0}/hcn_loci_freq_done'.format(HCN_LOCI_DIR)
+        #'{0}/hcn_loci_freq_done'.format(HCN_LOCI_DIR)
 
 # Create temporary directory used throughout pipeline
 rule create_tmp_dir:
@@ -91,22 +92,22 @@ rule create_tmp_dir:
 # Snakefiles with rules for particular pieces of the pipeline
 # See Snakefiles for details
 include: 'rules/common.smk'
-include: 'rules/ref.smk'
-include: 'rules/trimming.smk'
-include: 'rules/mapping.smk'
-include: 'rules/qc.smk'
-include: 'rules/toronto_downsample.smk'
+#include: 'rules/ref.smk'
+#include: 'rules/trimming.smk'
+#include: 'rules/mapping.smk'
+#include: 'rules/qc.smk'
+#include: 'rules/toronto_downsample.smk'
 include: 'rules/angsd_global.smk'
-include: 'rules/angsd_byCity.smk'
-include: 'rules/angsd_byCity_byHabitat.smk'
-include: 'rules/angsd_byCity_byHabitat_permute.smk'
-include: 'rules/population_structure.smk'
-include: 'rules/hcn_loci_freqs.smk'
+#include: 'rules/angsd_byCity.smk'
+#include: 'rules/angsd_byCity_byHabitat.smk'
+#include: 'rules/angsd_byCity_byHabitat_permute.smk'
+#include: 'rules/population_structure.smk'
+#include: 'rules/hcn_loci_freqs.smk'
 
 # Rule to clean directory of all output files
 rule clean:
     """Clean pipeline output files"""
     params:
-        'logs {0} {1}/* {2} fastp.json'.format(config['results_prefix'], TRIMMED_READ_DIR, TMPDIR)
+        '{0}'.format(config['results_prefix'])
     shell:
         'rm -rfv {params}'
