@@ -15,9 +15,9 @@ Here is a brief description of each subdirectory. Details and documentation can 
 
 - [genomic-analyses](./genomic-analyses): Contains the pipeline used to generate the genomic results derived from low-coverage (~1X) whole-genome resequencing of 520 white clover plants. Uses Conda + Snakemake for reproducibility and pipeline management. 
 - [phenotypic-analyses](./phenotypic-analyses): Contains the code used to generate results from the environmental and phenotypic data (i.e., HCN frequencies). Uses Rproject + `renv` for project and dependency management.
-- [sequencing-prep](./sequencing-prep): Contains code used to select plants for whole-genome resequencing. This repository is provided for completeness but probably doesn't need to be run by anybody else. Uses Rproject + `renv` for project and dependency management.
 
 Some scripts use files from other repositories, so repos are best executed in the following order:
+
     1. phenotypic-analyses
     2. sequencing-prep
     3. genomic-analyses
