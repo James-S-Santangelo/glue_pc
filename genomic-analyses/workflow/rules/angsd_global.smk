@@ -1,30 +1,60 @@
 # Uses ANGSD to estimate SFS and genotype likelihoods across the genome using all samples
 # as input (i.e., a global dataset). Only really used to perform PCA of global samples. 
 
-rule create_samples_to_remove:
+rule subset_bams_degeneracy:
     """
-    Writes file with sample names for those with high alignment error rates and another 
-    with samples with low coverage. Thresholds were assessed through exploratory analysis
-    of QC data. 
+    Subset BAMs for all samples around 4fold sites to speed up ANGSD computations.
     """
     input:
-        flag = rules.glue_dnaSeqQC_multiqc.output,
-        qc_data = '{0}/multiqc/multiqc_data/multiqc_qualimap_bamqc_genome_results_qualimap_bamqc.txt'.format(QC_DIR)
-    output: 
-        error_df = '{0}/highErrorRate_toRemove.txt'.format(PROGRAM_RESOURCE_DIR),
-        lowCov_df = '{0}/lowCoverageSamples_toRemove.txt'.format(PROGRAM_RESOURCE_DIR)
-    run:
-        import pandas as pd
-        qc_data = pd.read_table(input.qc_data, sep = '\t')
-        qc_data['sample'] = qc_data['Sample'].str.extract('(\w+_\d+_\d+)')
-        cols = ['sample', 'mean_coverage', 'general_error_rate']
-        qc_data = qc_data[cols]
-        # Samples with high ealignment errors have error rates > 0.04
-        highError_samples = qc_data[qc_data['general_error_rate'] > 0.04]
-        highError_samples['sample'].to_csv(output.error_df, header = None, index = None)
-        # Samples with low coverage are those with mean coverage < 0.31X
-        lowCov_samples = qc_data[qc_data['mean_coverage'] < 0.31]
-        lowCov_samples['sample'].to_csv(output.lowCov_df, header = None, index = None)
+        unpack(get_subset_bams_degeneracy_input)
+    output:
+        '{0}/{{site}}/{{sample}}_{{site}}.bam'.format(BAM_DIR)
+    log: 'logs/subset_bams_degenerate/{sample}_{site}_subset.log'
+    conda: '../envs/degeneracy.yaml'
+    resources:
+        mem_mb = lambda wildcards, attempt: attempt * 2000,
+        time = '01:00:00'
+    shell:
+        """
+        samtools view -bh -L {input.regions} {input.bam} > {output} 2> {log}
+        """
+
+rule index_degenerate_bam:
+    input:
+        rules.subset_bams_degeneracy.output
+    output:
+        '{0}/{{site}}/{{sample}}_{{site}}.bam.bai'.format(BAM_DIR)
+    log: 'logs/index_degenerate_bam/{sample}_{site}_index.log'
+    conda: '../envs/degeneracy.yaml'
+    shell:
+        """
+        samtools index {input} 2> {log}
+        """
+
+# rule create_samples_to_remove:
+#     """
+#     Writes file with sample names for those with high alignment error rates and another 
+#     with samples with low coverage. Thresholds were assessed through exploratory analysis
+#     of QC data. 
+#     """
+#     input:
+#         flag = rules.glue_dnaSeqQC_multiqc.output,
+#         qc_data = '{0}/multiqc/multiqc_data/multiqc_qualimap_bamqc_genome_results_qualimap_bamqc.txt'.format(QC_DIR)
+#     output: 
+#         error_df = '{0}/highErrorRate_toRemove.txt'.format(PROGRAM_RESOURCE_DIR),
+#         lowCov_df = '{0}/lowCoverageSamples_toRemove.txt'.format(PROGRAM_RESOURCE_DIR)
+#     run:
+#         import pandas as pd
+#         qc_data = pd.read_table(input.qc_data, sep = '\t')
+#         qc_data['sample'] = qc_data['Sample'].str.extract('(\w+_\d+_\d+)')
+#         cols = ['sample', 'mean_coverage', 'general_error_rate']
+#         qc_data = qc_data[cols]
+#         # Samples with high ealignment errors have error rates > 0.04
+#         highError_samples = qc_data[qc_data['general_error_rate'] > 0.04]
+#         highError_samples['sample'].to_csv(output.error_df, header = None, index = None)
+#         # Samples with low coverage are those with mean coverage < 0.31X
+#         lowCov_samples = qc_data[qc_data['mean_coverage'] < 0.31]
+#         lowCov_samples['sample'].to_csv(output.lowCov_df, header = None, index = None)
 
 # rule create_bam_list_highErrorRemoved:
 #     """
@@ -525,19 +555,20 @@ rule create_samples_to_remove:
 #                     sample = bam.split('_merged')[0]
 #                     fout.write('{0}\n'.format(sample))
 # 
-# rule angsd_done:
-#     """
-#     Generate empty flag file signalling successful completion of global SFS and GL estimation across all samples. 
-#     """
-#     input:
+rule angsd_done:
+    """
+    Generate empty flag file signalling successful completion of global SFS and GL estimation across all samples. 
+    """
+    input:
+        expand('{0}/{{site}}/{{sample}}_{{site}}.bam.bai'.format(BAM_DIR), sample=SAMPLES, site=['4fold'])
 #         expand(rules.angsd_depth.output, chrom='CM019101.1', sample_set=['highErrorRemoved','finalSamples_lowCovRemoved']),
 #         expand(rules.concat_angsd_stats.output, site=['allSites','0fold','4fold'], sample_set=['highErrorRemoved','finalSamples_lowCovRemoved']),
 #         expand(rules.sum_sfs.output, site=['allSites','0fold','4fold'], sample_set=['highErrorRemoved','finalSamples_lowCovRemoved']),
 #         expand(rules.concat_angsd_gl.output, sample_set=['highErrorRemoved','finalSamples_lowCovRemoved'], site=['allSites','0fold','4fold'], maf=['0.005','0.01','0.05']),
 #         expand(rules.concat_angsd_mafs.output, sample_set=['highErrorRemoved','finalSamples_lowCovRemoved'], site=['allSites','0fold','4fold'], maf=['0.005','0.01','0.05']),
 #         expand(rules.extract_sample_angsd.output, sample_set=['highErrorRemoved','finalSamples_lowCovRemoved'])
-#     output:
-#         '{0}/angsd.done'.format(ANGSD_DIR)
-#     shell:
-#         "touch {output}"
-# 
+    output:
+        '{0}/angsd.done'.format(ANGSD_DIR)
+    shell:
+        "touch {output}"
+

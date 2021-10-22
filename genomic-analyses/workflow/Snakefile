@@ -37,6 +37,7 @@ QC_DIR = '{0}/qc'.format(config['glue_dnaSeqQC_workflow']['results_prefix'])
 
 # Paths for output files
 TMPDIR = config['temp_dir']
+BAM_DIR = '{0}/bam'.format(config['results_prefix'])
 PROGRAM_RESOURCE_DIR = '{0}/program_resources'.format(config['results_prefix'])
 ANGSD_DIR = '{0}/angsd'.format(config['results_prefix'])
 POP_STRUC_DIR = '{0}/population_structure'.format(config['results_prefix'])
@@ -64,12 +65,14 @@ wildcard_constraints:
     chrom='|'.join([x for x in CHROMOSOMES])
 
 # Rules to be run locally on as single process
-localrules: create_tmp_dir, create_samples_to_remove, angsd_index_degenerate, concat_angsd_stats, concat_sfs, sum_sfs, convert_sites_for_angsd, split_angsd_sites_byChrom, files_for_angsd_site_subset, subset_angsd_gl, subset_angsd_maf, extract_sample_angsd, angsd_done, pop_structure_done, extract_angsd_allSites, angsd_index_allSites, angsd_index_degenerate, create_bam_list_byCity_byHabitat, angsd_fst_readable, concat_habitat_bamLists_withinCities, create_random_bam_list_byCity_byHabitat, angsd_byCity_byHabitat_done, angsd_byCity_byHabitat_permuted_done, angsd_byCity_done, angsd_fst_readable_snps_hcn_chroms 
+localrules: create_tmp_dir, index_degenerate_bam, create_samples_to_remove, angsd_index_degenerate, concat_angsd_stats, concat_sfs, sum_sfs, convert_sites_for_angsd, split_angsd_sites_byChrom, files_for_angsd_site_subset, subset_angsd_gl, subset_angsd_maf, extract_sample_angsd, angsd_done, pop_structure_done, extract_angsd_allSites, angsd_index_allSites, angsd_index_degenerate, create_bam_list_byCity_byHabitat, angsd_fst_readable, concat_habitat_bamLists_withinCities, create_random_bam_list_byCity_byHabitat, angsd_byCity_byHabitat_done, angsd_byCity_byHabitat_permuted_done, angsd_byCity_done, angsd_fst_readable_snps_hcn_chroms 
 
 # Pipeline targets
 # Each step generates an empty flagfile as its final target
 rule all:
    input:
+        # Degeneracy
+        '{0}/degeneracy.done'.format(PROGRAM_RESOURCE_DIR),
         # Angsd
         '{0}/angsd.done'.format(ANGSD_DIR),
         #'{0}/angsd_byCity_byHabitat.done'.format(ANGSD_DIR),
@@ -88,6 +91,7 @@ rule create_tmp_dir:
 # Snakefiles with rules for particular pieces of the pipeline
 # See Snakefiles for details
 include: 'rules/common.smk'
+include: 'rules/degeneracy.smk'
 include: 'rules/angsd_global.smk'
 #include: 'rules/angsd_byCity.smk'
 #include: 'rules/angsd_byCity_byHabitat.smk'
