@@ -161,12 +161,12 @@ rule angsd_gl_allSamples:
         sites = rules.split_angsd_sites_byChrom.output,
         idx = rules.index_angsd_sites.output
     output:
-        gls = temp('{0}/gls/allSamples/{{site}}/{{chrom}}/{{chrom}}_{{site}}_maf{{maf}}.beagle.gz'.format(ANGSD_DIR)),
-        mafs = temp('{0}/gls/allSamples/{{site}}/{{chrom}}/{{chrom}}_{{site}}_maf{{maf}}.mafs.gz'.format(ANGSD_DIR)),
+        gls = temp('{0}/gls/allSamples/{{site}}/{{chrom}}/{{chrom}}_{{site}}.beagle.gz'.format(ANGSD_DIR)),
+        mafs = temp('{0}/gls/allSamples/{{site}}/{{chrom}}/{{chrom}}_{{site}}.mafs.gz'.format(ANGSD_DIR)),
     log: 'logs/angsd_gl_allSamples/{chrom}_{site}_maf{maf}_angsd_gl.log'
     container: 'library://james-s-santangelo/angsd/angsd:0.933' 
     params:
-        out = '{0}/gls/allSamples/{{site}}/{{chrom}}/{{chrom}}_{{site}}_maf{{maf}}'.format(ANGSD_DIR),
+        out = '{0}/gls/allSamples/{{site}}/{{chrom}}/{{chrom}}_{{site}}'.format(ANGSD_DIR),
         max_dp = ANGSD_MAX_DP
     threads: 6
     resources:
@@ -192,7 +192,6 @@ rule angsd_gl_allSamples:
             -minInd $MIN_IND \
             -minQ 20 \
             -minMapQ 30 \
-            -minMaf {wildcards.maf} \
             -sites {input.sites} \
             -r {wildcards.chrom} \
             -bam {input.bams} 2> {log}
@@ -205,9 +204,9 @@ rule concat_angsd_gl:
     input:
         get_angsd_gl_toConcat
     output:
-        '{0}/gls/{{sample_set}}/{{site}}/allChroms_{{sample_set}}_{{site}}_maf{{maf}}.beagle.gz'.format(ANGSD_DIR)
-    log: 'logs/concat_angsd_gl/concat_angsd_gl_{sample_set}_{site}_maf{maf}.log'
-    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+        '{0}/gls/allSamples/{{site}}/allChroms_{{site}}.beagle.gz'.format(ANGSD_DIR)
+    log: 'logs/concat_angsd_gl/allSamples_{site}_concat.log'
+    container: 'library://james-s-santangelo/angsd/angsd:0.933' 
     shell:
         """
         first=1
@@ -228,9 +227,9 @@ rule concat_angsd_mafs:
     input:
         get_angsd_maf_toConcat
     output:
-        '{0}/gls/{{sample_set}}/{{site}}/allChroms_{{sample_set}}_{{site}}_maf{{maf}}.mafs.gz'.format(ANGSD_DIR)
-    log: 'logs/concat_angsd_mafs/concat_angsd_mafs_{sample_set}_{site}_maf{maf}.log'
-    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+        '{0}/gls/allSamples/{{site}}/allChroms_{{site}}.mafs.gz'.format(ANGSD_DIR)
+    log: 'logs/concat_angsd_mafs/allSamples_{site}_concat.log'
+    container: 'library://james-s-santangelo/angsd/angsd:0.933' 
     shell:
         """
         first=1
@@ -244,38 +243,15 @@ rule concat_angsd_mafs:
         done | bgzip -c > {output} 2> {log}
         """
 
-# rule extract_sample_angsd:
-#     """
-#     Create text file with order of samples in ANGSD output files. Order is the same as the sample
-#     order in the BAM list used as input for ANGSD.
-#     """
-#     input:
-#         get_bams_for_angsd
-#     output:
-#         '{0}/angsd_{{sample_set}}_order.txt'.format(PROGRAM_RESOURCE_DIR)
-#     run:
-#         with open(output[0], 'w') as fout:
-#             with open(input[0], 'r') as fin:
-#                 for line in fin:
-#                     sline = line.strip().split('/')
-#                     bam = sline[-1]
-#                     sample = bam.split('_merged')[0]
-#                     fout.write('{0}\n'.format(sample))
-# 
 rule angsd_done:
     """
     Generate empty flag file signalling successful completion of global SFS and GL estimation across all samples. 
     """
     input:
-        expand('{0}/{{site}}/{{sample}}_{{site}}.bam.bai'.format(BAM_DIR), sample=SAMPLES, site=['4fold'])
-#         expand(rules.angsd_depth.output, chrom='CM019101.1', sample_set=['highErrorRemoved','finalSamples_lowCovRemoved']),
-#         expand(rules.concat_angsd_stats.output, site=['allSites','0fold','4fold'], sample_set=['highErrorRemoved','finalSamples_lowCovRemoved']),
-#         expand(rules.sum_sfs.output, site=['allSites','0fold','4fold'], sample_set=['highErrorRemoved','finalSamples_lowCovRemoved']),
-#         expand(rules.concat_angsd_gl.output, sample_set=['highErrorRemoved','finalSamples_lowCovRemoved'], site=['allSites','0fold','4fold'], maf=['0.005','0.01','0.05']),
-#         expand(rules.concat_angsd_mafs.output, sample_set=['highErrorRemoved','finalSamples_lowCovRemoved'], site=['allSites','0fold','4fold'], maf=['0.005','0.01','0.05']),
-#         expand(rules.extract_sample_angsd.output, sample_set=['highErrorRemoved','finalSamples_lowCovRemoved'])
+        expand(rules.concat_angsd_gl.output, site=['4fold']),
+        expand(rules.concat_angsd_mafs.output, site=['4fold']),
     output:
-        '{0}/angsd.done'.format(ANGSD_DIR)
+        '{0}/angsd_allSamples.done'.format(ANGSD_DIR)
     shell:
         "touch {output}"
 
