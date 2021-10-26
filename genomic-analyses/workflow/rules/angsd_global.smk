@@ -60,7 +60,7 @@ rule create_samples_to_remove:
         lowCov_samples = qc_data[qc_data['mean_coverage'] < 0.31]
         lowCov_samples['sample'].to_csv(output.lowCov_df, header = None, index = None)
 
-rule create_bam_list_highErrorRemoved:
+rule create_bam_list_finalSamples:
     """
     Create text file with paths to BAMs, excluding samples with high alignment error rates
     """
@@ -78,26 +78,6 @@ rule create_bam_list_highErrorRemoved:
             for bam in input.bams:
                 if wildcards.sample not in bad_samples:
                     f.write('{0}\n'.format(bam))
-
-rule create_bam_list_finalSamples_lowCovRemoved:
-    """
-    Create text file with paths to BAMs, excluding an additional 83 samples with low coverage
-    """
-    input:
-        allSamples = rules.create_bam_list_highErrorRemoved.output,
-        lowCov = rules.create_samples_to_remove.output.lowCov_df
-    output:
-        '{0}/bam_lists/finalSamples_lowCovRemoved_bams.list'.format(PROGRAM_RESOURCE_DIR)
-    log: 'logs/create_bam_list/finalSamples_lowCovRemoved_bam_list.log'
-    run:
-        import os
-        import pandas as pd
-        lowCov_samples = pd.read_table(input.lowCov, header=None).iloc[:,0].tolist()
-        bams = open(input.allSamples[0], 'r').readlines()
-        with open(output[0], 'w') as f:
-            for bam in bams:
-                if wildcards.sample not in lowCov_samples:
-                    f.write('{0}'.format(bam))
 
 rule convert_sites_for_angsd:
     """
@@ -156,7 +136,7 @@ rule angsd_gl_allSamples:
     Estimate genotype likelihoods for all samples separately for each of 16 chromosomes using ANGSD.
     """
     input:
-        bams = rules.subset_bams_degeneracy.output,
+        bams = rules.create_bam_list_finalSamples.output,
         ref = rules.glue_dnaSeqQC_unzip_reference.output,
         sites = rules.split_angsd_sites_byChrom.output,
         idx = rules.index_angsd_sites.output
