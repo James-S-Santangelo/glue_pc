@@ -74,7 +74,7 @@ rule all:
         # Degeneracy
         '{0}/degeneracy.done'.format(PROGRAM_RESOURCE_DIR),
         # Angsd
-        '{0}/angsd.done'.format(ANGSD_DIR),
+        '{0}/angsd_allSamples.done'.format(ANGSD_DIR),
         #'{0}/angsd_byCity_byHabitat.done'.format(ANGSD_DIR),
         #'{0}/angsd_byCity_byHabitat_permuted.done'.format(ANGSD_DIR),
         # Population structure
@@ -92,7 +92,7 @@ rule create_tmp_dir:
 # See Snakefiles for details
 include: 'rules/common.smk'
 include: 'rules/degeneracy.smk'
-include: 'rules/angsd_global.smk'
+include: 'rules/angsd_allSamples.smk'
 #include: 'rules/angsd_byCity.smk'
 #include: 'rules/angsd_byCity_byHabitat.smk'
 #include: 'rules/angsd_byCity_byHabitat_permute.smk'

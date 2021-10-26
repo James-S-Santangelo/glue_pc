@@ -68,8 +68,8 @@ rule create_bam_list_finalSamples:
         bams = get_all_bams,
         highErr = rules.create_samples_to_remove.output.error_df
     output:
-        '{0}/bam_lists/highErrorSamplesRemoved_bams.list'.format(PROGRAM_RESOURCE_DIR)
-    log: 'logs/create_bam_list/highErrorSamples_bam_list.log'
+        '{0}/bam_lists/finalSamples_{{site}}_bams.list'.format(PROGRAM_RESOURCE_DIR)
+    log: 'logs/create_bam_list/finalSamples_{site}_bam_list.log'
     run:
         import os
         import pandas as pd
@@ -85,7 +85,7 @@ rule convert_sites_for_angsd:
     site coordinates required by ANGSD
     """
     input:
-        get_bed_to_subset
+        get_bed
     output:
         '{0}/angsd_sites/Trepens_{{site}}.sites'.format(PROGRAM_RESOURCE_DIR) 
     log: 'logs/convert_sites_for_angsd/convert_{site}_for_angsd.log'
@@ -143,7 +143,7 @@ rule angsd_gl_allSamples:
     output:
         gls = temp('{0}/gls/allSamples/{{site}}/{{chrom}}/{{chrom}}_{{site}}.beagle.gz'.format(ANGSD_DIR)),
         mafs = temp('{0}/gls/allSamples/{{site}}/{{chrom}}/{{chrom}}_{{site}}.mafs.gz'.format(ANGSD_DIR)),
-    log: 'logs/angsd_gl_allSamples/{chrom}_{site}_maf{maf}_angsd_gl.log'
+    log: 'logs/angsd_gl_allSamples/{chrom}_{site}_angsd_gl.log'
     container: 'library://james-s-santangelo/angsd/angsd:0.933' 
     params:
         out = '{0}/gls/allSamples/{{site}}/{{chrom}}/{{chrom}}_{{site}}'.format(ANGSD_DIR),
@@ -229,7 +229,7 @@ rule angsd_done:
     """
     input:
         expand(rules.concat_angsd_gl.output, site=['4fold']),
-        expand(rules.concat_angsd_mafs.output, site=['4fold']),
+        expand(rules.concat_angsd_mafs.output, site=['4fold'])
     output:
         '{0}/angsd_allSamples.done'.format(ANGSD_DIR)
     shell:

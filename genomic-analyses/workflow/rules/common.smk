@@ -16,10 +16,17 @@ def get_subset_bams_degeneracy_input(wildcards):
 
 def get_all_bams(wildcards):
     """
-    Returns list with paths to 500 GLUE bams and 20 Downsampled Toronto Bams
+    Returns list with paths to GLUE bams 
     """
-    glue_bams = expand(rules.subset_bams_degeneracy.output, sample=SAMPLES, site=wildcards.site)
-    return glue_bams
+    bams = expand(rules.subset_bams_degeneracy.output, sample=SAMPLES, site=wildcards.site)
+    return bams
+
+def get_bed(wildcards):
+    """
+    Get correct BED file for conversion to ANGSD sites format
+    """
+    bed = expand(rules.get_fourfold_zerofold.output, site=wildcards.site)
+    return bed
 
 def get_angsd_gl_toConcat(wildcards):
     """
