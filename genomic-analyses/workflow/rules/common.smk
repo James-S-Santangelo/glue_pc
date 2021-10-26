@@ -18,10 +18,8 @@ def get_all_bams(wildcards):
     """
     Returns list with paths to 500 GLUE bams and 20 Downsampled Toronto Bams
     """
-    glue_bams = expand(rules.samtools_markdup.output.bam, sample = SAMPLES)
-    glue_bams_noTor = [bam for bam in glue_bams if not os.path.basename(bam).startswith('s_')]
-    tor_bams = expand(rules.downsample_toronto_bam.output, sample = TOR_SAMPLES)
-    return glue_bams_noTor + tor_bams
+    glue_bams = expand(rules.subset_bams_degeneracy.output, sample=SAMPLES, site=wildcards.site)
+    return glue_bams
 
 def get_bed_to_subset(wildcards):
     """
