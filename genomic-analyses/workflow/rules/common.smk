@@ -25,19 +25,9 @@ def get_bed_to_subset(wildcards):
     """
     Returns BED file for either 0fold or 4fold sites, depending on value of "site" wildcard.
     """
-    all_bed_files = rules.get_fourfold_zerofold.output
+    all_bed_files = rules.glue_dnaSeqQC_get_fourfold_zerofold.output
     bed = [bed for bed in all_bed_files if wildcards.site in os.path.basename(bed)]
     return bed
-
-def get_bams_for_angsd(wildcards):
-    """
-    Returns correct text file with paths to BAM file to be including in ANGSD, depending on
-    value of "sample_set" wildcard.
-    """
-    if wildcards.sample_set == 'highErrorRemoved':
-        return rules.create_bam_list_highErrorRemoved.output
-    elif wildcards.sample_set == 'finalSamples_lowCovRemoved':
-        return rules.create_bam_list_finalSamples_lowCovRemoved.output
 
 def angsd_sfs_input(wildcards):
     """
