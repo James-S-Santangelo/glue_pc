@@ -147,27 +147,26 @@ rule index_angsd_sites:
         angsd sites index {input} 2> {log}
         """
 
-####################
-#### SAF and GL ####
-####################
+##############################
+#### GENOTYPE LIKELIHOODS ####
+##############################
         
-rule angsd_saf_likelihood_allSamples:
+rule angsd_gl_allSamples:
     """
-    Estimate Site Allele Frequency (SAF) likelihood file across all samples separately for each of 16 chromosomes using ANGSD. 
+    Estimate genotype likelihoods for all samples separately for each of 16 chromosomes using ANGSD.
     """
     input:
         bams = rules.subset_bams_degeneracy.output,
-        ref = rules.glue_dnaSeqQC_unzip_reference.output
+        ref = rules.glue_dnaSeqQC_unzip_reference.output,
+        sites = rules.split_angsd_sites_byChrom.output,
+        idx = rules.index_angsd_sites.output
     output:
-        saf = temp('{0}/sfs/{{site}}/{{chrom}}/{{chrom}}_{{site}}.saf.gz'.format(ANGSD_DIR)),
-        saf_idx = temp('{0}/sfs/{{site}}/{{chrom}}/{{chrom}}_{{site}}.saf.idx'.format(ANGSD_DIR)),
-        saf_pos = temp('{0}/sfs/{{site}}/{{chrom}}/{{chrom}}_{{site}}.saf.pos.gz'.format(ANGSD_DIR)),
-        pos = '{0}/sfs/{{site}}/{{chrom}}/{{chrom}}_{{site}}.pos.gz'.format(ANGSD_DIR),
-        counts = '{0}/sfs/{{site}}/{{chrom}}/{{chrom}}_{{site}}.counts.gz'.format(ANGSD_DIR)
-    log: 'logs/angsd_saf_likelihood_allSites/{chrom}_{site}_angsd_saf.log'
+        gls = temp('{0}/gls/allSamples/{{site}}/{{chrom}}/{{chrom}}_{{site}}_maf{{maf}}.beagle.gz'.format(ANGSD_DIR)),
+        mafs = temp('{0}/gls/allSamples/{{site}}/{{chrom}}/{{chrom}}_{{site}}_maf{{maf}}.mafs.gz'.format(ANGSD_DIR)),
+    log: 'logs/angsd_gl_allSamples/{chrom}_{site}_maf{maf}_angsd_gl.log'
     container: 'library://james-s-santangelo/angsd/angsd:0.933' 
     params:
-        out = '{0}/sfs/{{site}}/{{chrom}}/{{chrom}}_{{site}}'.format(ANGSD_DIR),
+        out = '{0}/gls/allSamples/{{site}}/{{chrom}}/{{chrom}}_{{site}}_maf{{maf}}'.format(ANGSD_DIR),
         max_dp = ANGSD_MAX_DP
     threads: 6
     resources:
@@ -178,299 +177,73 @@ rule angsd_saf_likelihood_allSamples:
     shell:
         """
         NUM_IND=$( wc -l < {input.bams} );
-        MIN_IND=$(( NUM_IND*50/100 ));
+        MIN_IND=$(( NUM_IND*50/100 ))
         angsd -GL 1 \
             -out {params.out} \
             -nThreads {threads} \
+            -doGlf 2 \
+            -doMajorMinor 1 \
+            -SNP_pval 1e-6 \
+            -doMaf 1 \
             -doCounts 1 \
-            -dumpCounts 2 \
             -setMaxDepth {params.max_dp} \
             -baq 2 \
             -ref {input.ref} \
             -minInd $MIN_IND \
             -minQ 20 \
             -minMapQ 30 \
-            -doSaf 1 \
-            -anc {input.ref} \
+            -minMaf {wildcards.maf} \
             -sites {input.sites} \
             -r {wildcards.chrom} \
             -bam {input.bams} 2> {log}
         """
-# 
-# rule angsd_gl_allSites:
-#     """
-#     Estimate genotype likelihoods for all samples separately for each of 16 chromosomes using ANGSD.
-#     """
-#     input:
-#         bams = get_bams_for_angsd,
-#         ref = REFERENCE_GENOME
-#     output:
-#         gls = temp('{0}/gls/{{sample_set}}/allSites/{{chrom}}/{{chrom}}_{{sample_set}}_allSites_maf{{maf}}.beagle.gz'.format(ANGSD_DIR)),
-#         mafs = temp('{0}/gls/{{sample_set}}/allSites/{{chrom}}/{{chrom}}_{{sample_set}}_allSites_maf{{maf}}.mafs.gz'.format(ANGSD_DIR)),
-#     log: 'logs/angsd_gl_allSites/{chrom}_{sample_set}_allSites_maf{maf}_angsd_gl.log'
-#     conda: '../envs/angsd.yaml'
-#     #container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
-#     params:
-#         out = '{0}/gls/{{sample_set}}/allSites/{{chrom}}/{{chrom}}_{{sample_set}}_allSites_maf{{maf}}'.format(ANGSD_DIR),
-#         max_dp = ANGSD_MAX_DP
-#     resources:
-#         nodes = 1,
-#         ntasks = CORES_PER_NODE,
-#         time = '12:00:00'
-#     wildcard_constraints:
-#         site='allSites'
-#     shell:
-#         """
-#         NUM_IND=$( wc -l < {input.bams} );
-#         MIN_IND=$(( NUM_IND*50/100 ))
-#         angsd -GL 1 \
-#             -out {params.out} \
-#             -nThreads {resources.ntasks} \
-#             -doGlf 2 \
-#             -doMajorMinor 1 \
-#             -SNP_pval 1e-6 \
-#             -doMaf 1 \
-#             -doCounts 1 \
-#             -setMaxDepth {params.max_dp} \
-#             -baq 2 \
-#             -ref {input.ref} \
-#             -minInd $MIN_IND \
-#             -minQ 20 \
-#             -minMapQ 30 \
-#             -minMaf {wildcards.maf} \
-#             -r {wildcards.chrom} \
-#             -bam {input.bams} 2> {log}
-#         """
-#  
-# 
-# rule angsd_estimate_sfs:
-#     """
-#     Estimate folded SFS using realSFS separately for each chromosome.
-#     Done for "allSites", "0fold", and "4fold" sites.
-#     """
-#     input:
-#         unpack(angsd_sfs_input) 
-#     output:
-#         temp('{0}/sfs/{{sample_set}}/{{site}}/{{chrom}}/{{chrom}}_{{sample_set}}_{{site}}.sfs'.format(ANGSD_DIR))
-#     log: 'logs/angsd_estimate_sfs/{chrom}_{sample_set}_{site}_sfs.log'
-#     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
-#     threads: 10
-#     resources:
-#         mem_mb = lambda wildcards, attempt: attempt * 60000,
-#         time = '03:00:00'
-#     shell:
-#         """
-#         realSFS {input.saf_idx} -P {threads} -sites {input.sites} -fold 1 -maxIter 2000 -seed 42 > {output} 2> {log}
-#         """
-# 
-# rule angsd_estimate_thetas:
-#     """
-#     Estimate per-site thetas for all site types and seaprately for all 16 chromosomes.
-#     """
-#     input:
-#         unpack(angsd_estimate_thetas_input)
-#     output:
-#         idx = '{0}/summary_stats/thetas/{{sample_set}}/{{site}}/{{chrom}}/{{chrom}}_{{sample_set}}_{{site}}.thetas.idx'.format(ANGSD_DIR),
-#         thet = '{0}/summary_stats/thetas/{{sample_set}}/{{site}}/{{chrom}}/{{chrom}}_{{sample_set}}_{{site}}.thetas.gz'.format(ANGSD_DIR)
-#     log: 'logs/angsd_estimate_thetas/{chrom}_{sample_set}_{site}_thetas.log'
-#     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
-#     threads: 10
-#     params:
-#         out = '{0}/summary_stats/thetas/{{sample_set}}/{{site}}/{{chrom}}/{{chrom}}_{{sample_set}}_{{site}}'.format(ANGSD_DIR)
-#     resources:
-#         mem_mb = lambda wildcards, attempt: attempt * 4000,
-#         time = '03:00:00'
-#     shell:
-#         """
-#         realSFS saf2theta {input.saf_idx} \
-#             -fold 1 \
-#             -P {threads} \
-#             -sfs {input.sfs} \
-#             -sites {input.sites} \
-#             -outname {params.out} 2> {log}
-#         """
-# 
-# rule angsd_diversity_neutrality_stats:
-#     """
-#     Estimate pi, Waterson's theta, Tajima's D, etc., for all site types and seaprately for each of 16 chromosomes.
-#     """
-#     input:
-#         rules.angsd_estimate_thetas.output.idx
-#     output:
-#        temp( '{0}/summary_stats/thetas/{{sample_set}}/{{site}}/{{chrom}}/{{chrom}}_{{sample_set}}_{{site}}.thetas.idx.pestPG'.format(ANGSD_DIR))
-#     log: 'logs/angsd_diversity_neutrality_stats/{chrom}_{sample_set}_{site}_diversity_neutrality.log'
-#     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
-#     resources:
-#         mem_mb = lambda wildcards, attempt: attempt * 4000,
-#         time = '03:00:00'
-#     shell:
-#         """
-#         thetaStat do_stat {input} 2> {log}
-#         """
-#  
-# rule concat_angsd_stats:
-#     """
-#     Concatenate diversity and neutrality statistics for each of 16 chromosomes into single file.
-#     """
-#     input:
-#         get_angsd_stats_toConcat
-#     output:
-#         '{0}/summary_stats/thetas/{{sample_set}}/{{site}}/allChroms_{{sample_set}}_{{site}}_diversityNeutrality.thetas.idx.pestPG'.format(ANGSD_DIR)
-#     log: 'logs/concat_angsd_stats_specificSites/{sample_set}_{site}_concat_angsd_stats.log'
-#     shell:
-#         """
-#         first=1
-#         for f in {input}; do
-#             if [ "$first"  ]; then
-#                 cat "$f"
-#                 first=
-#             else
-#                 cat "$f"| tail -n +2
-#             fi
-#         done > {output} 2> {log}
-#         """
-# 
-# rule concat_sfs:
-#     """
-#     Concatenate folded SFS files for each of 16 chromosomes into single file (one chromosome per line)
-#     """
-#     input:
-#         get_angsd_sfs_toConcat
-#     output:
-#         '{0}/sfs/{{sample_set}}/{{site}}/{{sample_set}}_{{site}}_allChroms.cat'.format(ANGSD_DIR)
-#     log: 'logs/concat_sfs/{sample_set}_{site}_concat_sfs.log'
-#     shell:
-#         """
-#         cat {input} > {output} 2> {log}
-#         """
-# 
-# rule sum_sfs:
-#     """
-#     Generate genome-wide folded SFS by summing allele frequency bins across each of 16 chromosomes.
-#     (e.g., sum all singletons, sum all doubletons, etc.)
-#     """
-#     input:
-#         rules.concat_sfs.output
-#     output:
-#         '{0}/sfs/{{sample_set}}/{{site}}/{{sample_set}}_{{site}}_allChroms.sfs'.format(ANGSD_DIR)
-#     log: 'logs/sum_sfs/{sample_set}_{site}.log'
-#     run:
-#         import pandas as pd
-#         import sys
-#         with open(log[0], 'w') as logfile:
-#             sys.stderr = logfile
-#             sfs_allChroms = pd.read_table(input[0], sep = ' ', header = None)
-#             sfs_sum = sfs_allChroms.sum(axis=0) 
-#             sfs_sum.to_csv(output[0], sep = '\t', header = None)
-#         
-# 
-# rule files_for_angsd_site_subset:
-#     """
-#     Generate files for later subsetting of MAF and GL files by site type (i.e., allSites, 0fold, 4fold). 
-#     One file to subset GLs and one for MAFs (positions are encoded separately for these two filetypes)
-#     """
-#     input:
-#         rules.split_angsd_sites_byChrom.output
-#     output:
-#         gl = '{0}/angsd_sites/{{chrom}}/{{chrom}}_{{site}}_gl.positions'.format(PROGRAM_RESOURCE_DIR),
-#         maf = '{0}/angsd_sites/{{chrom}}/{{chrom}}_{{site}}_maf.positions'.format(PROGRAM_RESOURCE_DIR)
-#     log: 'logs/files_for_angsd_site_subset/{chrom}_{site}_subsetFile.log'
-#     shell:
-#         """
-#         ( sed 's/\t/_/g' {input} > {output.gl};
-#         cut -f2 {input} > {output.maf} ) 2> {log}
-#         """
-# 
-# rule subset_angsd_gl:
-#     """
-#     Subset GLs for each site type (allSites, 0fold, 4fold). Done separately for each of 16 chromosomes.
-#     """
-#     input:
-#         sites = rules.split_angsd_sites_byChrom.output,
-#         subset = rules.files_for_angsd_site_subset.output.gl,
-#         gl = rules.angsd_gl_allSites.output.gls
-#     output:
-#         '{0}/gls/{{sample_set}}/{{site}}/{{chrom}}/{{chrom}}_{{sample_set}}_{{site}}_maf{{maf}}.beagle.gz'.format(ANGSD_DIR)
-#     log: 'logs/subset_angsd_gl/{chrom}_{sample_set}_{site}_maf{maf}_subset_gl.log'
-#     params:
-#         unzip_out='{0}/gls/{{sample_set}}/{{site}}/{{chrom}}/{{chrom}}_{{sample_set}}_{{site}}_maf{{maf}}.beagle'.format(ANGSD_DIR)
-#     wildcard_constraints:
-#         site='0fold|4fold'
-#     shell:
-#         """
-#         ( zcat {input.gl} | sed -n 1p > {params.unzip_out} &&
-#         zcat {input.gl} | awk 'NR==FNR{{A[$1]; next}} $1 in A' {input.subset} - >> {params.unzip_out} &&
-#         gzip {params.unzip_out} ) 2> {log}
-#         """
-# 
-# rule subset_angsd_maf:
-#     """
-#     Subset MAFs for each site type (allSites, 0fold, 4fold). Done separately for each of 16 chromosomes.
-#     """
-#     input:
-#         sites = rules.split_angsd_sites_byChrom.output,
-#         subset = rules.files_for_angsd_site_subset.output.maf,
-#         mafs = rules.angsd_gl_allSites.output.mafs
-#     output:
-#         '{0}/gls/{{sample_set}}/{{site}}/{{chrom}}/{{chrom}}_{{sample_set}}_{{site}}_maf{{maf}}.mafs.gz'.format(ANGSD_DIR)
-#     log: 'logs/subset_angsd_maf/{chrom}_{sample_set}_{site}_maf{maf}_subset_maf.log'
-#     params:
-#         unzip_out='{0}/gls/{{sample_set}}/{{site}}/{{chrom}}/{{chrom}}_{{sample_set}}_{{site}}_maf{{maf}}.mafs'.format(ANGSD_DIR)
-#     wildcard_constraints:
-#         site='0fold|4fold'
-#     shell:
-#         """
-#         ( zcat {input.mafs} | sed -n 1p  > {params.unzip_out} &&
-#         zcat {input.mafs} | awk 'NR==FNR{{A[$1]; next}} $2 in A' {input.subset} - >> {params.unzip_out} &&
-#         gzip {params.unzip_out} ) 2> {log}
-#         """
-# 
-# rule concat_angsd_gl:
-#     """
-#     Concatenated GLs from all 16 chromosomes into single file. Done separately for each site type.
-#     """
-#     input:
-#         get_angsd_gl_toConcat
-#     output:
-#         '{0}/gls/{{sample_set}}/{{site}}/allChroms_{{sample_set}}_{{site}}_maf{{maf}}.beagle.gz'.format(ANGSD_DIR)
-#     log: 'logs/concat_angsd_gl/concat_angsd_gl_{sample_set}_{site}_maf{maf}.log'
-#     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
-#     shell:
-#         """
-#         first=1
-#         for f in {input}; do
-#             if [ "$first"  ]; then
-#                 zcat "$f"
-#                 first=
-#             else
-#                 zcat "$f"| tail -n +2
-#             fi
-#         done | bgzip -c > {output} 2> {log}
-#         """
-# 
-# rule concat_angsd_mafs:
-#     """
-#     Concatenate MAF files for each of 16 chromosomes into single file. Done separately for each site type.
-#     """
-#     input:
-#         get_angsd_maf_toConcat
-#     output:
-#         '{0}/gls/{{sample_set}}/{{site}}/allChroms_{{sample_set}}_{{site}}_maf{{maf}}.mafs.gz'.format(ANGSD_DIR)
-#     log: 'logs/concat_angsd_mafs/concat_angsd_mafs_{sample_set}_{site}_maf{maf}.log'
-#     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
-#     shell:
-#         """
-#         first=1
-#         for f in {input}; do
-#             if [ "$first"  ]; then
-#                 zcat "$f"
-#                 first=
-#             else
-#                 zcat "$f"| tail -n +2
-#             fi
-#         done | bgzip -c > {output} 2> {log}
-#         """
-# 
+ 
+rule concat_angsd_gl:
+    """
+    Concatenated GLs from all 16 chromosomes into single file. Done separately for each site type.
+    """
+    input:
+        get_angsd_gl_toConcat
+    output:
+        '{0}/gls/{{sample_set}}/{{site}}/allChroms_{{sample_set}}_{{site}}_maf{{maf}}.beagle.gz'.format(ANGSD_DIR)
+    log: 'logs/concat_angsd_gl/concat_angsd_gl_{sample_set}_{site}_maf{maf}.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    shell:
+        """
+        first=1
+        for f in {input}; do
+            if [ "$first"  ]; then
+                zcat "$f"
+                first=
+            else
+                zcat "$f"| tail -n +2
+            fi
+        done | bgzip -c > {output} 2> {log}
+        """
+
+rule concat_angsd_mafs:
+    """
+    Concatenate MAF files for each of 16 chromosomes into single file. Done separately for each site type.
+    """
+    input:
+        get_angsd_maf_toConcat
+    output:
+        '{0}/gls/{{sample_set}}/{{site}}/allChroms_{{sample_set}}_{{site}}_maf{{maf}}.mafs.gz'.format(ANGSD_DIR)
+    log: 'logs/concat_angsd_mafs/concat_angsd_mafs_{sample_set}_{site}_maf{maf}.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    shell:
+        """
+        first=1
+        for f in {input}; do
+            if [ "$first"  ]; then
+                zcat "$f"
+                first=
+            else
+                zcat "$f"| tail -n +2
+            fi
+        done | bgzip -c > {output} 2> {log}
+        """
+
 # rule extract_sample_angsd:
 #     """
 #     Create text file with order of samples in ANGSD output files. Order is the same as the sample
