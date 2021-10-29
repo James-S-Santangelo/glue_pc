@@ -44,12 +44,21 @@ def get_angsd_maf_toConcat(wildcards):
     out = expand(rules.angsd_gl_allSamples.output.mafs, chrom=CHROMOSOMES, site=wildcards.site)
     return out
 
+def get_files_for_saf_estimation_byCity_byHabitat(wildcards):
+    """
+    Get files to estimate SAF likelihhods for urban and rural habitats by city.
+    """
+    sites_idx = expand(rules.angsd_index_sites_allChromse.output.idx, site='4fold')
+    sites = expand(rules.convert_sites_for_angsd.output, site='4fold')
+    ref = rules.glue_dnaSeqQC_unzip_reference.output
+    bams = expand(rules.create_bam_list_byCity_byHabitat.output, city=wildcards.city, habitat=wildcards.habitat)
+    return { 'bams' : bams, 'sites_idx' : sites_idx , 'sites' : sites, 'ref' : ref }
+
 def get_habitat_saf_files_byCity(wildcards):
     """
     Returns list with 4fold urban and rural SAF files by city
     """
-    all_saf_files = expand(rules.angsd_saf_likelihood_byCity_byHabitat.output.saf_idx, city=CITIES, habitat=HABITATS, site=['4fold'])
-    city_saf_files = [x for x in all_saf_files if wildcards.city in x and wildcards.site in x]
+    all_saf_files = expand(rules.angsd_saf_likelihood_byCity_byHabitat.output.saf_idx, city=wildcards.city, habitat=wildcards.habitat, site=wildcards.site)
     return city_saf_files
 
 def get_bamLists_toConcat(wildcards):
@@ -115,15 +124,6 @@ def get_population_saf_and_sfs_files_byCity(wildcards):
     sfs = expand(rules.angsd_estimate_joint_sfs_populations.output, city = wildcards.city, site='4fold', pop_comb=wildcards.pop_comb)
     return { 'saf_files' : saf_files, 'sfs' : sfs }
 
-def get_files_for_saf_estimation_byHabitat(wildcards):
-    """
-    Get files to estimate SAF likelihhods for urban and rural habitats by city.
-    """
-    sites_idx = expand(rules.angsd_index_degenerate.output.idx, chrom='CM019101.1', site='4fold')
-    sites = expand(rules.split_angsd_sites_byChrom.output, chrom='CM019101.1', site='4fold')
-    ref = REFERENCE_GENOME
-    bams = expand(rules.create_bam_list_byCity_byHabitat.output, city=wildcards.city, habitat=wildcards.habitat)
-    return { 'bams' : bams, 'sites_idx' : sites_idx , 'sites' : sites, 'ref' : ref }
 
 def get_files_for_permuted_saf_estimation(wildcards):
     """

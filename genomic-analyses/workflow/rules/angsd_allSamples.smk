@@ -122,7 +122,7 @@ rule index_angsd_sites:
         binary = '{0}/angsd_sites/{{chrom}}/{{chrom}}_Trepens_{{site}}.sites.bin'.format(PROGRAM_RESOURCE_DIR),
         idx = '{0}/angsd_sites/{{chrom}}/{{chrom}}_Trepens_{{site}}.sites.idx'.format(PROGRAM_RESOURCE_DIR)
     log: 'logs/angsd_index/{chrom}_{site}_index.log'
-    conda: '../envs/angsd.yaml'
+    container: 'library://james-s-santangelo/angsd/angsd:0.933' 
     shell:
         """
         angsd sites index {input} 2> {log}
