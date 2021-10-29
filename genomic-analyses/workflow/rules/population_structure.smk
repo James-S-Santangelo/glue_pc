@@ -4,24 +4,24 @@
 #### GLOBAL ####
 ################
 
-rule pcangsd:
+rule pcangsd_allSamples:
     """
-    Perform PCA using genome-wide 4fold dengenerate sites using all samples from all cities. PCA is performed on both sample sets for comparison.  
+    Perform PCA using genome-wide 4fold dengenerate sites using all samples from all cities.
     """
     input:
         rules.concat_angsd_gl.output
     output:
-        '{0}/pcangsd/{{sample_set}}_{{site}}_maf{{maf}}_pcangsd.cov'.format(POP_STRUC_DIR),
-    log: 'logs/pcangsd/{sample_set}_{site}_maf{maf}_pcangsd.log'
+        '{0}/pcangsd/allSamples/allSamples_{{site}}_maf{{maf}}_pcangsd.cov'.format(POP_STRUC_DIR),
+    log: 'logs/pcangsd_allSamples/allSamples_{site}_maf{maf}_pcangsd.log'
     container: 'library://james-s-santangelo/pcangsd/pcangsd:0.99'
     threads: 10
     params:
-        out = '{0}/pcangsd/{{sample_set}}_{{site}}_maf{{maf}}_pcangsd'.format(POP_STRUC_DIR)
+        out = '{0}/pcangsd/allSamples/allSamples_{{site}}_maf{{maf}}_pcangsd'.format(POP_STRUC_DIR)
     wildcard_constraints:
         site = '4fold'
     resources:
-        mem_mb = lambda wildcards, attempt: attempt * 8000,
-        time = '02:00:00'
+        mem_mb = lambda wildcards, attempt: attempt * 12000,
+        time = '03:00:00'
     shell:
         """
         python3 /opt/pcangsd-v.0.99/pcangsd.py \
