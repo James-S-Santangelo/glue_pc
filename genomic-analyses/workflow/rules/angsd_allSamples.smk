@@ -45,8 +45,7 @@ rule create_samples_to_remove:
         flag = rules.glue_dnaSeqQC_multiqc.output,
         qc_data = '{0}/multiqc/multiqc_data/multiqc_qualimap_bamqc_genome_results_qualimap_bamqc.txt'.format(QC_DIR)
     output: 
-        error_df = '{0}/highErrorRate_toRemove.txt'.format(PROGRAM_RESOURCE_DIR),
-        lowCov_df = '{0}/lowCoverageSamples_toRemove.txt'.format(PROGRAM_RESOURCE_DIR)
+        error_df = '{0}/highErrorRate_toRemove.txt'.format(PROGRAM_RESOURCE_DIR)
     run:
         import pandas as pd
         qc_data = pd.read_table(input.qc_data, sep = '\t')
@@ -56,9 +55,6 @@ rule create_samples_to_remove:
         # Samples with high ealignment errors have error rates > 0.04
         highError_samples = qc_data[qc_data['general_error_rate'] >= 0.03]
         highError_samples['sample'].to_csv(output.error_df, header = None, index = None)
-        # Samples with low coverage are those with mean coverage < 0.31X
-        lowCov_samples = qc_data[qc_data['mean_coverage'] < 0.31]
-        lowCov_samples['sample'].to_csv(output.lowCov_df, header = None, index = None)
 
 rule create_bam_list_finalSamples:
     """
@@ -72,12 +68,17 @@ rule create_bam_list_finalSamples:
     log: 'logs/create_bam_list/finalSamples_{site}_bam_list.log'
     run:
         import os
+        import re
         import pandas as pd
-        bad_samples = pd.read_table(input.highErr, header=None).iloc[:,0].tolist()
-        with open(output[0], 'w') as f:
-            for bam in input.bams:
-                if wildcards.sample not in bad_samples:
-                    f.write('{0}\n'.format(bam))
+        from contextlib import redirect_stderr
+        with open(log[0], 'w') as stderr, redirect_stderr(stderr):
+            bad_samples = pd.read_table(input.highErr, header=None).iloc[:,0].tolist()
+            with open(output[0], 'w') as f:
+                for bam in input.bams:
+                    search = re.search('^(.+)(?=_\w)', os.path.basename(bam))
+                    sample = search.group(1)
+                    if sample not in bad_samples:
+                        f.write('{0}\n'.format(bam))
 
 rule convert_sites_for_angsd:
     """
@@ -148,9 +149,9 @@ rule angsd_gl_allSamples:
     params:
         out = '{0}/gls/allSamples/{{site}}/{{chrom}}/{{chrom}}_{{site}}'.format(ANGSD_DIR),
         max_dp = ANGSD_MAX_DP
-    threads: 6
+    threads: 12
     resources:
-        mem_mb = lambda wildcards, attempt: attempt * 8000,
+        mem_mb = lambda wildcards, attempt: attempt * 30000,
         time = '12:00:00'
     wildcard_constraints:
         site='4fold'
@@ -223,7 +224,7 @@ rule concat_angsd_mafs:
         done | bgzip -c > {output} 2> {log}
         """
 
-rule angsd_done:
+rule angsd_allSamples_done:
     """
     Generate empty flag file signalling successful completion of global SFS and GL estimation across all samples. 
     """

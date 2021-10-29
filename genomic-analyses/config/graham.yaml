@@ -20,6 +20,6 @@ cluster:
 
 # Parameters for variant calling and SFS estimation with ANGSD
 angsd:
-  max_dp: 1250  # 2 x mean coverage from qualimap x # samples
+  max_dp: 4200   # ~2 x mean coverage from qualimap x # samples
 
 

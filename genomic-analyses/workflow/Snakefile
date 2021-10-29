@@ -65,7 +65,7 @@ wildcard_constraints:
     chrom='|'.join([x for x in CHROMOSOMES])
 
 # Rules to be run locally on as single process
-localrules: create_tmp_dir, index_degenerate_bam, create_samples_to_remove, index_angsd_sites, convert_sites_for_angsd, split_angsd_sites_byChrom, angsd_done, pop_structure_done, extract_angsd_allSites, angsd_index_allSites, angsd_index_degenerate, create_bam_list_byCity_byHabitat, angsd_fst_readable, concat_habitat_bamLists_withinCities, create_random_bam_list_byCity_byHabitat, angsd_byCity_byHabitat_done, angsd_byCity_byHabitat_permuted_done, angsd_byCity_done, angsd_fst_readable_snps_hcn_chroms 
+localrules: create_tmp_dir, index_degenerate_bam, create_samples_to_remove, create_bam_list_finalSamples, index_angsd_sites, convert_sites_for_angsd, split_angsd_sites_byChrom, angsd_allSamples_done, pop_structure_done, create_bam_list_byCity_byHabitat, angsd_fst_readable, concat_habitat_bamLists_withinCities, create_random_bam_list_byCity_byHabitat, angsd_byCity_byHabitat_done, angsd_byCity_byHabitat_permuted_done, angsd_byCity_done, angsd_fst_readable_snps_hcn_chroms 
 
 # Pipeline targets
 # Each step generates an empty flagfile as its final target
