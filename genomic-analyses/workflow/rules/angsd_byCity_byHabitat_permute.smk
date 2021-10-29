@@ -1,6 +1,10 @@
 # Rules to permute urban and rural samples by city to estimate null distribution of pi and Fst
 # Used to test whether urban-rural difference in Pi and Fst are different than expected by chance.
 
+###############
+#### SETUP ####
+###############
+
 rule create_random_bam_list_byCity_byHabitat:
     """
     Create text files with paths to BAM files for each city. 'urban' and 'rural' samples are randomly
@@ -28,6 +32,10 @@ rule create_random_bam_list_byCity_byHabitat:
             for bam in randR:
                 rout.write(bam)
 
+##############################
+#### PERMUTED SAF AND SFS ####
+##############################
+
 rule angsd_permuted_saf_likelihood_byCity_byHabitat:
     """
     Generate Site Allele Frequency (SAF) likelihood file for each habitat in each city using ANGSD. 
@@ -45,8 +53,8 @@ rule angsd_permuted_saf_likelihood_byCity_byHabitat:
         out = '{0}/sfs/by_city/{{city}}/randomized/{{city}}_{{habitat}}_{{site}}_seed{{seed}}'.format(ANGSD_DIR)
     threads: 6
     resources:
-        mem_mb = lambda wildcards, attempt: attempt * 4000,
-        time = '01:00:00'
+        mem_mb = lambda wildcards, attempt: attempt * 8000,
+        time = '03:00:00'
     wildcard_constraints:
         site='4fold'
     shell:
@@ -62,7 +70,6 @@ rule angsd_permuted_saf_likelihood_byCity_byHabitat:
             -minMapQ 30 \
             -doSaf 1 \
             -anc {input.ref} \
-            -r CM019101.1 \
             -bam {input.bams} 2> {log}
         """
 
@@ -79,51 +86,11 @@ rule angsd_estimate_permuted_joint_sfs_byCity:
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     threads: 4
     resources:
-        mem_mb = lambda wildcards, attempt: attempt * 4000,
-        time = '01:00:00'
+        mem_mb = lambda wildcards, attempt: attempt * 20000,
+        time = '03:00:00'
     shell:
         """
         realSFS {input} -maxIter 2000 -seed 42 -fold 1 -P {threads} > {output} 2> {log}
-        """
-
-rule angsd_permuted_fst_index:
-    """
-    Estimate per-site alphas (numerator) and betas (denominator) for Hudson's Fst estimator.
-    Uses permuted urban and rural samples.
-    """
-    input: 
-        saf_idx = get_habitat_saf_files_byCity_permuted,
-        joint_sfs = rules.angsd_estimate_permuted_joint_sfs_byCity.output
-    output:
-        fst = '{0}/summary_stats/fst/fst1/{{city}}/randomized/{{city}}_{{site}}_seed{{seed}}_r_u.fst.gz'.format(ANGSD_DIR),
-        idx = '{0}/summary_stats/fst/fst1/{{city}}/randomized/{{city}}_{{site}}_seed{{seed}}_r_u.fst.idx'.format(ANGSD_DIR)
-    log: 'logs/angsd_permuted_fst_index/{city}_{site}_seed{seed}_index.log'
-    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
-    threads: 4
-    resources:
-        mem_mb = 4000,
-        time = '01:00:00'
-    params:
-        fstout = '{0}/summary_stats/fst/fst1/{{city}}/randomized/{{city}}_{{site}}_seed{{seed}}_r_u'.format(ANGSD_DIR)
-    shell:
-        """
-        realSFS fst index {input.saf_idx} -sfs {input.joint_sfs} -fold 1 -P {threads} -whichFst 1 -fstout {params.fstout} 2> {log}
-        """
-
-rule angsd_permuted_fst_readable:
-    """
-    Create readable Fst files. Required due to format of realSFS fst index output files. Uses permuted 
-    urban and rural samples.
-    """
-    input:
-        rules.angsd_permuted_fst_index.output.idx
-    output:
-        '{0}/summary_stats/fst/fst1/{{city}}/randomized/{{city}}_{{site}}_seed{{seed}}_r_u_readable.fst'.format(ANGSD_DIR)
-    log: 'logs/angsd_permuted_fst_readable/{city}_{site}_seed{{seed}}_readable.log'
-    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
-    shell:
-        """
-        realSFS fst print {input} > {output} 2> {log}
         """
 
 rule angsd_estimate_permuted_sfs_byCity_byHabitat:
@@ -139,11 +106,55 @@ rule angsd_estimate_permuted_sfs_byCity_byHabitat:
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     threads: 4
     resources:
-        mem_mb = lambda wildcards, attempt: attempt * 4000,
-        time = '01:00:00'
+        mem_mb = lambda wildcards, attempt: attempt * 10000,
+        time = '03:00:00'
     shell:
         """
         realSFS {input} -P {threads} -fold 1 -maxIter 2000 -seed 42 > {output} 2> {log}
+        """
+
+#################################
+#### PERMUTED FST AND THETAS ####
+#################################
+
+rule angsd_permuted_fst_index:
+    """
+    Estimate per-site alphas (numerator) and betas (denominator) for Hudson's Fst estimator.
+    Uses permuted urban and rural samples.
+    """
+    input: 
+        saf_idx = get_habitat_saf_files_byCity_permuted,
+        joint_sfs = rules.angsd_estimate_permuted_joint_sfs_byCity.output
+    output:
+        fst = '{0}/summary_stats/hudson_fst/{{city}}/randomized/{{city}}_{{site}}_seed{{seed}}_r_u.fst.gz'.format(ANGSD_DIR),
+        idx = '{0}/summary_stats/hudson_fst/{{city}}/randomized/{{city}}_{{site}}_seed{{seed}}_r_u.fst.idx'.format(ANGSD_DIR)
+    log: 'logs/angsd_permuted_fst_index/{city}_{site}_seed{seed}_index.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    threads: 4
+    resources:
+        mem_mb = 4000,
+        time = '01:00:00'
+    params:
+        fstout = '{0}/summary_stats/hudson_fst/{{city}}/randomized/{{city}}_{{site}}_seed{{seed}}_r_u'.format(ANGSD_DIR)
+    shell:
+        """
+        realSFS fst index {input.saf_idx} -sfs {input.joint_sfs} -fold 1 -P {threads} -whichFst 1 -fstout {params.fstout} 2> {log}
+        """
+
+rule angsd_permuted_fst_readable:
+    """
+    Create readable Fst files. Required due to format of realSFS fst index output files. Uses permuted 
+    urban and rural samples.
+    """
+    input:
+        rules.angsd_permuted_fst_index.output.idx
+    output:
+        '{0}/summary_stats/hudson_fst/{{city}}/randomized/{{city}}_{{site}}_seed{{seed}}_r_u_readable.fst'.format(ANGSD_DIR)
+    log: 'logs/angsd_permuted_fst_readable/{city}_{site}_seed{seed}_readable.log'
+    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    shell:
+        """
+        realSFS fst print {input} > {output} 2> {log}
         """
 
 rule angsd_estimate_permuted_thetas_byCity_byHabitat:
@@ -156,7 +167,7 @@ rule angsd_estimate_permuted_thetas_byCity_byHabitat:
     output:
         idx = '{0}/summary_stats/thetas/by_city/{{city}}/randomized/{{city}}_{{habitat}}_{{site}}_seed{{seed}}.thetas.idx'.format(ANGSD_DIR),
         thet = '{0}/summary_stats/thetas/by_city/{{city}}/randomized/{{city}}_{{habitat}}_{{site}}_seed{{seed}}.thetas.gz'.format(ANGSD_DIR)
-    log: 'logs/angsd_estimate_permuted_thetas_byCity_byHabitat/{city}_{habitat}_{site}_seed{{seed}}_thetas.log'
+    log: 'logs/angsd_estimate_permuted_thetas_byCity_byHabitat/{city}_{habitat}_{site}_seed{seed}_thetas.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     threads: 4
     params:
@@ -181,7 +192,7 @@ rule angsd_permuted_diversity_neutrality_stats_byCity_byHabitat:
         rules.angsd_estimate_permuted_thetas_byCity_byHabitat.output.idx
     output:
        '{0}/summary_stats/thetas/by_city/{{city}}/randomized/{{city}}_{{habitat}}_{{site}}_seed{{seed}}.thetas.idx.pestPG'.format(ANGSD_DIR)
-    log: 'logs/angsd_permuted_diversity_neutrality_stats_byCity_byHabitat/{city}_{habitat}_{site}_seed{{seed}}_diversity_neutrality.log'
+    log: 'logs/angsd_permuted_diversity_neutrality_stats_byCity_byHabitat/{city}_{habitat}_{site}_seed{seed}_diversity_neutrality.log'
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 4000,
@@ -190,6 +201,10 @@ rule angsd_permuted_diversity_neutrality_stats_byCity_byHabitat:
         """
         thetaStat do_stat {input} 2> {log}
         """
+
+##############
+#### POST ####
+##############
 
 rule angsd_byCity_byHabitat_permuted_done:
     """

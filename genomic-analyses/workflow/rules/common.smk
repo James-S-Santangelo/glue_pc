@@ -58,7 +58,35 @@ def get_habitat_saf_files_byCity(wildcards):
     """
     Returns list with 4fold urban and rural SAF files by city
     """
-    all_saf_files = expand(rules.angsd_saf_likelihood_byCity_byHabitat.output.saf_idx, city=wildcards.city, habitat=wildcards.habitat, site=wildcards.site)
+    city_saf_files = expand(rules.angsd_saf_likelihood_byCity_byHabitat.output.saf_idx, city=wildcards.city, habitat=HABITATS, site=wildcards.site)
+    return city_saf_files
+
+def get_urban_rural_bam_lists(wildcards):
+    """
+    Collect files with paths to urban and rural bams by City. Return as dictionary. 
+    """
+    urban = expand(rules.create_bam_list_byCity_byHabitat.output, city=wildcards.city, habitat='u')[0]
+    rural = expand(rules.create_bam_list_byCity_byHabitat.output, city=wildcards.city, habitat='r')[0]
+    return { 'urban_bams' : urban, 'rural_bams' : rural }
+
+def get_files_for_permuted_saf_estimation(wildcards):
+    """
+    Get files to estimate SAF likelihoods for permuted versions of "urban" and "rural" populations
+    """
+    sites_idx = expand(rules.angsd_index_sites_allChroms.output.idx, site='4fold')
+    sites = expand(rules.convert_sites_for_angsd.output, site='4fold')
+    ref = rules.glue_dnaSeqQC_unzip_reference.output
+    if wildcards.habitat == 'u':
+        bams = expand(rules.create_random_bam_list_byCity_byHabitat.output.urban, city=wildcards.city, seed=wildcards.seed)
+    elif wildcards.habitat == 'r':
+        bams = expand(rules.create_random_bam_list_byCity_byHabitat.output.rural, city=wildcards.city, seed=wildcards.seed)
+    return { 'bams' : bams, 'sites_idx' : sites_idx , 'sites' : sites, 'ref' : ref }
+
+def get_habitat_saf_files_byCity_permuted(wildcards):
+    """
+    Returns list with 4fold urban and rural SAF files by city
+    """
+    city_saf_files = expand(rules.angsd_permuted_saf_likelihood_byCity_byHabitat.output.saf_idx, city=wildcards.city, habitat=HABITATS, site=wildcards.site, seed=wildcards.seed)
     return city_saf_files
 
 def get_bamLists_toConcat(wildcards):
@@ -101,14 +129,6 @@ def get_population_saf_files_byCity(wildcards):
     saf2 = [x for x in all_saf_files if '_{0}_'.format(pop2) in os.path.basename(x)]
     return saf1 + saf2
 
-def get_urban_rural_bam_lists(wildcards):
-    """
-    Collect files with paths to urban and rural bams by City. Return as dictionary. 
-    """
-    urban = expand(rules.create_bam_list_byCity_byHabitat.output, city=wildcards.city, habitat='u')[0]
-    rural = expand(rules.create_bam_list_byCity_byHabitat.output, city=wildcards.city, habitat='r')[0]
-    return { 'urban_bams' : urban, 'rural_bams' : rural }
-
 def get_population_saf_and_sfs_files_byCity(wildcards):
     """
     Get SAF and SFS files for two populations for which Fst should be estimated. 
@@ -124,27 +144,6 @@ def get_population_saf_and_sfs_files_byCity(wildcards):
     sfs = expand(rules.angsd_estimate_joint_sfs_populations.output, city = wildcards.city, site='4fold', pop_comb=wildcards.pop_comb)
     return { 'saf_files' : saf_files, 'sfs' : sfs }
 
-
-def get_files_for_permuted_saf_estimation(wildcards):
-    """
-    Get files to estimate SAF likelihoods for permuted versions of "urban" and "rural" populations
-    """
-    sites_idx = expand(rules.angsd_index_degenerate.output.idx, chrom='CM019101.1', site='4fold')
-    sites = expand(rules.split_angsd_sites_byChrom.output, chrom='CM019101.1', site='4fold')
-    ref = REFERENCE_GENOME
-    if wildcards.habitat == 'u':
-        bams = expand(rules.create_random_bam_list_byCity_byHabitat.output.urban, city=wildcards.city, seed=wildcards.seed)
-    elif wildcards.habitat == 'r':
-        bams = expand(rules.create_random_bam_list_byCity_byHabitat.output.rural, city=wildcards.city, seed=wildcards.seed)
-    return { 'bams' : bams, 'sites_idx' : sites_idx , 'sites' : sites, 'ref' : ref }
-
-def get_habitat_saf_files_byCity_permuted(wildcards):
-    """
-    Returns list with 4fold urban and rural SAF files by city
-    """
-    all_saf_files = expand(rules.angsd_permuted_saf_likelihood_byCity_byHabitat.output.saf_idx, city=CITIES, habitat=HABITATS, site=['4fold'], seed=wildcards.seed)
-    city_saf_files = [x for x in all_saf_files if wildcards.city in x and wildcards.site in x]
-    return city_saf_files
 
 def aggregate_input_fst(wildcards):
     """

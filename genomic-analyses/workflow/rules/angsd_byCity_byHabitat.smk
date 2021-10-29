@@ -63,7 +63,7 @@ rule angsd_saf_likelihood_byCity_byHabitat:
         out = '{0}/sfs/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}'.format(ANGSD_DIR)
     threads: 6
     resources:
-        mem_mb = lambda wildcards, attempt: attempt * 4000,
+        mem_mb = lambda wildcards, attempt: attempt * 8000,
         time = '03:00:00'
     wildcard_constraints:
         site='4fold'
@@ -102,6 +102,29 @@ rule angsd_estimate_joint_sfs_byCity:
         realSFS {input} -maxIter 2000 -seed 42 -fold 1 -P {threads} > {output} 2> {log}
         """
 
+rule angsd_estimate_sfs_byCity_byHabitat:
+    """
+    Estimate folded SFS separately for each habitat in each city (i.e., 1D SFS) using realSFS. 
+    """
+    input:
+        rules.angsd_saf_likelihood_byCity_byHabitat.output.saf_idx
+    output:
+        '{0}/sfs/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}.sfs'.format(ANGSD_DIR)
+    log: 'logs/angsd_estimate_sfs_byCity_byHabitat/{city}_{habitat}_{site}_sfs.log'
+    container: 'library://james-s-santangelo/angsd/angsd:0.933'
+    threads: 4
+    resources:
+        mem_mb = lambda wildcards, attempt: attempt * 10000,
+        time = '03:00:00'
+    shell:
+        """
+        realSFS {input} -P {threads} -fold 1 -maxIter 2000 -seed 42 > {output} 2> {log}
+        """
+
+#######################
+#### FST AND THETA ####
+#######################
+
 rule angsd_fst_index:
     """
     Estimate per-site alphas (numerator) and betas (denominator) for Fst estimation.
@@ -138,25 +161,6 @@ rule angsd_fst_readable:
     shell:
         """
         realSFS fst print {input} > {output} 2> {log}
-        """
-
-rule angsd_estimate_sfs_byCity_byHabitat:
-    """
-    Estimate folded SFS separately for each habitat in each city (i.e., 1D SFS) using realSFS. 
-    """
-    input:
-        rules.angsd_saf_likelihood_byCity_byHabitat.output.saf_idx
-    output:
-        '{0}/sfs/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}.sfs'.format(ANGSD_DIR)
-    log: 'logs/angsd_estimate_sfs_byCity_byHabitat/{city}_{habitat}_{site}_sfs.log'
-    container: 'library://james-s-santangelo/angsd/angsd:0.933'
-    threads: 4
-    resources:
-        mem_mb = lambda wildcards, attempt: attempt * 10000,
-        time = '03:00:00'
-    shell:
-        """
-        realSFS {input} -P {threads} -fold 1 -maxIter 2000 -seed 42 > {output} 2> {log}
         """
 
 rule angsd_estimate_thetas_byCity_byHabitat:
