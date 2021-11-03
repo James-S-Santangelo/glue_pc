@@ -107,7 +107,7 @@ rule angsd_estimate_sfs_byCity_byHabitat:
     container: 'library://james-s-santangelo/angsd/angsd:0.933'
     threads: 10
     resources:
-        mem_mb = lambda wildcards, attempt: attempt * 10000,
+        mem_mb = lambda wildcards, attempt: attempt * 5000,
         time = '03:00:00'
     shell:
         """

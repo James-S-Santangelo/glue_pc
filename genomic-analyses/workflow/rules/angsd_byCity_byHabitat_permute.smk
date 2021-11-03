@@ -48,7 +48,7 @@ rule angsd_permuted_saf_likelihood_byCity_byHabitat:
         saf_idx = temp('{0}/sfs/by_city/{{city}}/randomized/{{city}}_{{habitat}}_{{site}}_seed{{seed}}.saf.idx'.format(ANGSD_DIR)),
         saf_pos = temp('{0}/sfs/by_city/{{city}}/randomized/{{city}}_{{habitat}}_{{site}}_seed{{seed}}.saf.pos.gz'.format(ANGSD_DIR))
     log: 'logs/angsd_permuted_saf_likelihood_byCity_byHabitat/{city}_{habitat}_{site}_seed{seed}_saf.log'
-    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    container: 'library://james-s-santangelo/angsd/angsd:0.933'
     params:
         out = '{0}/sfs/by_city/{{city}}/randomized/{{city}}_{{habitat}}_{{site}}_seed{{seed}}'.format(ANGSD_DIR)
     threads: 6
@@ -79,18 +79,24 @@ rule angsd_estimate_permuted_joint_sfs_byCity:
     Uses permuted urban and rural samples.
     """
     input:
-        get_habitat_saf_files_byCity_permuted
+        saf = get_habitat_saf_files_byCity_permuted,
+        sites = rules.select_random_degenerate_sites.output
     output:
         '{0}/sfs/by_city/{{city}}/randomized/{{city}}_{{site}}_seed{{seed}}_r_u.2dsfs'.format(ANGSD_DIR)
     log: 'logs/angsd_estimate_permuted_2dsfs_byCity/{city}_{site}_seed{seed}.2dsfs.log'
-    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
-    threads: 4
+    container: 'library://james-s-santangelo/angsd/angsd:0.933'
+    threads: 10
     resources:
-        mem_mb = lambda wildcards, attempt: attempt * 50000,
+        mem_mb = lambda wildcards, attempt: attempt * 10000,
         time = '03:00:00'
     shell:
         """
-        realSFS {input} -maxIter 2000 -seed 42 -fold 1 -P {threads} > {output} 2> {log}
+        realSFS {input.saf} \
+            -sites {input.sites} \
+            -maxIter 2000 \
+            -seed 42 \
+            -fold 1 \
+            -P {threads} > {output} 2> {log}
         """
 
 rule angsd_estimate_permuted_sfs_byCity_byHabitat:
@@ -99,18 +105,24 @@ rule angsd_estimate_permuted_sfs_byCity_byHabitat:
     urban and rural samples.
     """
     input:
-        rules.angsd_permuted_saf_likelihood_byCity_byHabitat.output.saf_idx
+        saf = rules.angsd_permuted_saf_likelihood_byCity_byHabitat.output.saf_idx,
+        sites = rules.select_random_degenerate_sites.output
     output:
         '{0}/sfs/by_city/{{city}}/randomized/{{city}}_{{habitat}}_{{site}}_seed{{seed}}.sfs'.format(ANGSD_DIR)
     log: 'logs/angsd_estimate_permuted_sfs_byCity_byHabitat/{city}_{habitat}_{site}_seed{seed}_sfs.log'
-    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
-    threads: 4
+    container: 'library://james-s-santangelo/angsd/angsd:0.933'
+    threads: 10
     resources:
-        mem_mb = lambda wildcards, attempt: attempt * 25000,
+        mem_mb = lambda wildcards, attempt: attempt * 5000,
         time = '03:00:00'
     shell:
         """
-        realSFS {input} -P {threads} -fold 1 -maxIter 2000 -seed 42 > {output} 2> {log}
+        realSFS {input.saf} \
+            -sites {input.sites} \
+            -P {threads} \
+            -fold 1 \
+            -maxIter 2000 \
+            -seed 42 > {output} 2> {log}
         """
 
 #################################
@@ -124,12 +136,13 @@ rule angsd_permuted_fst_index:
     """
     input: 
         saf_idx = get_habitat_saf_files_byCity_permuted,
-        joint_sfs = rules.angsd_estimate_permuted_joint_sfs_byCity.output
+        joint_sfs = rules.angsd_estimate_permuted_joint_sfs_byCity.output,
+        sites = rules.select_random_degenerate_sites.output
     output:
         fst = '{0}/summary_stats/hudson_fst/{{city}}/randomized/{{city}}_{{site}}_seed{{seed}}_r_u.fst.gz'.format(ANGSD_DIR),
         idx = '{0}/summary_stats/hudson_fst/{{city}}/randomized/{{city}}_{{site}}_seed{{seed}}_r_u.fst.idx'.format(ANGSD_DIR)
     log: 'logs/angsd_permuted_fst_index/{city}_{site}_seed{seed}_index.log'
-    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    container: 'library://james-s-santangelo/angsd/angsd:0.933'
     threads: 4
     resources:
         mem_mb = 4000,
@@ -138,7 +151,13 @@ rule angsd_permuted_fst_index:
         fstout = '{0}/summary_stats/hudson_fst/{{city}}/randomized/{{city}}_{{site}}_seed{{seed}}_r_u'.format(ANGSD_DIR)
     shell:
         """
-        realSFS fst index {input.saf_idx} -sfs {input.joint_sfs} -fold 1 -P {threads} -whichFst 1 -fstout {params.fstout} 2> {log}
+        realSFS fst index {input.saf_idx} \
+            -sites {input.sites} \
+            -sfs {input.joint_sfs} \
+            -fold 1 \
+            -P {threads} \
+            -whichFst 1 \
+            -fstout {params.fstout} 2> {log}
         """
 
 rule angsd_permuted_fst_readable:
@@ -151,7 +170,7 @@ rule angsd_permuted_fst_readable:
     output:
         '{0}/summary_stats/hudson_fst/{{city}}/randomized/{{city}}_{{site}}_seed{{seed}}_r_u_readable.fst'.format(ANGSD_DIR)
     log: 'logs/angsd_permuted_fst_readable/{city}_{site}_seed{seed}_readable.log'
-    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    container: 'library://james-s-santangelo/angsd/angsd:0.933'
     shell:
         """
         realSFS fst print {input} > {output} 2> {log}
@@ -163,12 +182,13 @@ rule angsd_estimate_permuted_thetas_byCity_byHabitat:
     """
     input:
         saf_idx = rules.angsd_permuted_saf_likelihood_byCity_byHabitat.output.saf_idx,
-        sfs = rules.angsd_estimate_permuted_sfs_byCity_byHabitat.output
+        sfs = rules.angsd_estimate_permuted_sfs_byCity_byHabitat.output,
+        sites = rules.select_random_degenerate_sites.output
     output:
         idx = '{0}/summary_stats/thetas/by_city/{{city}}/randomized/{{city}}_{{habitat}}_{{site}}_seed{{seed}}.thetas.idx'.format(ANGSD_DIR),
         thet = '{0}/summary_stats/thetas/by_city/{{city}}/randomized/{{city}}_{{habitat}}_{{site}}_seed{{seed}}.thetas.gz'.format(ANGSD_DIR)
     log: 'logs/angsd_estimate_permuted_thetas_byCity_byHabitat/{city}_{habitat}_{site}_seed{seed}_thetas.log'
-    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    container: 'library://james-s-santangelo/angsd/angsd:0.933'
     threads: 4
     params:
         out = '{0}/summary_stats/thetas/by_city/{{city}}/randomized/{{city}}_{{habitat}}_{{site}}_seed{{seed}}'.format(ANGSD_DIR)
@@ -178,6 +198,7 @@ rule angsd_estimate_permuted_thetas_byCity_byHabitat:
     shell:
         """
         realSFS saf2theta {input.saf_idx} \
+            -sites {input.sites} \
             -P {threads} \
             -fold 1 \
             -sfs {input.sfs} \
@@ -193,7 +214,7 @@ rule angsd_permuted_diversity_neutrality_stats_byCity_byHabitat:
     output:
        '{0}/summary_stats/thetas/by_city/{{city}}/randomized/{{city}}_{{habitat}}_{{site}}_seed{{seed}}.thetas.idx.pestPG'.format(ANGSD_DIR)
     log: 'logs/angsd_permuted_diversity_neutrality_stats_byCity_byHabitat/{city}_{habitat}_{site}_seed{seed}_diversity_neutrality.log'
-    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
+    container: 'library://james-s-santangelo/angsd/angsd:0.933'
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 4000,
         time = '01:00:00'
