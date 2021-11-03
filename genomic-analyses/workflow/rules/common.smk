@@ -25,8 +25,9 @@ def get_bed(wildcards):
     """
     Get correct BED file for conversion to ANGSD sites format
     """
-    bed = expand(rules.get_fourfold_zerofold.output, site=wildcards.site)
-    return bed
+    bed = expand(rules.get_fourfold_zerofold.output, site=['4fold', '0fold'])
+    bed_out = [x for x in bed if wildcards.site in os.path.basename(x)]
+    return bed_out
 
 def get_angsd_gl_toConcat(wildcards):
     """
@@ -48,10 +49,10 @@ def get_files_for_saf_estimation_byCity_byHabitat(wildcards):
     """
     Get files to estimate SAF likelihhods for urban and rural habitats by city.
     """
-    sites_idx = expand(rules.angsd_index_sites_allChromse.output.idx, site='4fold')
-    sites = expand(rules.convert_sites_for_angsd.output, site='4fold')
+    sites_idx = expand(rules.angsd_index_random_degen_sites.output.idx, site=wildcards.site)
+    sites = expand(rules.select_random_degenerate_sites.output, site=wildcards.site)
     ref = rules.glue_dnaSeqQC_unzip_reference.output
-    bams = expand(rules.create_bam_list_byCity_byHabitat.output, city=wildcards.city, habitat=wildcards.habitat)
+    bams = expand(rules.create_bam_list_byCity_byHabitat.output, city=wildcards.city, habitat=wildcards.habitat, site = wildcards.site)
     return { 'bams' : bams, 'sites_idx' : sites_idx , 'sites' : sites, 'ref' : ref }
 
 def get_habitat_saf_files_byCity(wildcards):
@@ -65,21 +66,21 @@ def get_urban_rural_bam_lists(wildcards):
     """
     Collect files with paths to urban and rural bams by City. Return as dictionary. 
     """
-    urban = expand(rules.create_bam_list_byCity_byHabitat.output, city=wildcards.city, habitat='u')[0]
-    rural = expand(rules.create_bam_list_byCity_byHabitat.output, city=wildcards.city, habitat='r')[0]
+    urban = expand(rules.create_bam_list_byCity_byHabitat.output, city=wildcards.city, habitat='u', site=wildcards.site)[0]
+    rural = expand(rules.create_bam_list_byCity_byHabitat.output, city=wildcards.city, habitat='r', site=wildcards.site)[0]
     return { 'urban_bams' : urban, 'rural_bams' : rural }
 
 def get_files_for_permuted_saf_estimation(wildcards):
     """
     Get files to estimate SAF likelihoods for permuted versions of "urban" and "rural" populations
     """
-    sites_idx = expand(rules.angsd_index_sites_allChroms.output.idx, site='4fold')
-    sites = expand(rules.convert_sites_for_angsd.output, site='4fold')
+    sites_idx = expand(rules.angsd_index_sites_allChroms.output.idx, site=wildcards.site)
+    sites = expand(rules.convert_sites_for_angsd.output, site=wildcards.site)
     ref = rules.glue_dnaSeqQC_unzip_reference.output
     if wildcards.habitat == 'u':
-        bams = expand(rules.create_random_bam_list_byCity_byHabitat.output.urban, city=wildcards.city, seed=wildcards.seed)
+        bams = expand(rules.create_random_bam_list_byCity_byHabitat.output.urban, city=wildcards.city, seed=wildcards.seed, site=wildcards.site)
     elif wildcards.habitat == 'r':
-        bams = expand(rules.create_random_bam_list_byCity_byHabitat.output.rural, city=wildcards.city, seed=wildcards.seed)
+        bams = expand(rules.create_random_bam_list_byCity_byHabitat.output.rural, city=wildcards.city, seed=wildcards.seed, site=wildcards.site)
     return { 'bams' : bams, 'sites_idx' : sites_idx , 'sites' : sites, 'ref' : ref }
 
 def get_habitat_saf_files_byCity_permuted(wildcards):

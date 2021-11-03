@@ -11,8 +11,7 @@ rule create_bam_list_byCity_byHabitat:
     input:
         rules.create_bam_list_finalSamples.output
     output:
-        '{0}/bam_lists/by_city/{{city}}/{{city}}_{{habitat}}_bams.list'.format(PROGRAM_RESOURCE_DIR)
-    log: 'logs/create_bam_list/{city}_{habitat}.log'
+        '{0}/bam_lists/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}_bams.list'.format(PROGRAM_RESOURCE_DIR)
     wildcard_constraints:
         habitat='u|r'
     run:
@@ -29,19 +28,6 @@ rule create_bam_list_byCity_byHabitat:
                 if sample in samples_city_habitat:
                     f.write('{0}'.format(bam))
 
-rule angsd_index_sites_allChroms:
-    input:
-        rules.convert_sites_for_angsd.output
-    output:
-        binary = '{0}/angsd_sites/Trepens_{{site}}.sites.bin'.format(PROGRAM_RESOURCE_DIR),
-        idx = '{0}/angsd_sites/Trepens_{{site}}.sites.idx'.format(PROGRAM_RESOURCE_DIR)
-    log: 'logs/angsd_index_sites_allChroms/allChroms_{site}_index.log'
-    container: 'library://james-s-santangelo/angsd/angsd:0.933'
-    shell:
-        """
-        angsd sites index {input} 2> {log}
-        """
-
 ###############################
 #### SFS AND SUMMARY STATS ####
 ###############################
@@ -52,7 +38,7 @@ rule angsd_saf_likelihood_byCity_byHabitat:
     Uses only 4fold sites.
     """
     input:
-        unpack(get_files_for_saf_estimation_byHabitat)
+        unpack(get_files_for_saf_estimation_byCity_byHabitat)
     output:
         saf = temp('{0}/sfs/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}.saf.gz'.format(ANGSD_DIR)),
         saf_idx = temp('{0}/sfs/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}.saf.idx'.format(ANGSD_DIR)),
@@ -88,18 +74,24 @@ rule angsd_estimate_joint_sfs_byCity:
     Estimated folded, two-dimensional urban-rural SFS for each city using realSFS. Uses 4fold sites.
     """
     input:
-        get_habitat_saf_files_byCity
+        saf = get_habitat_saf_files_byCity,
+        sites = rules.select_random_degenerate_sites.output
     output:
         '{0}/sfs/by_city/{{city}}/{{city}}_{{site}}_r_u.2dsfs'.format(ANGSD_DIR)
     log: 'logs/angsd_estimate_2dsfs_byCity/{city}_{site}.2dsfs.log'
     container: 'library://james-s-santangelo/angsd/angsd:0.933'
-    threads: 4
+    threads: 10
     resources:
-        mem_mb = lambda wildcards, attempt: attempt * 20000,
+        mem_mb = lambda wildcards, attempt: attempt * 10000,
         time = '03:00:00'
     shell:
         """
-        realSFS {input} -maxIter 2000 -seed 42 -fold 1 -P {threads} > {output} 2> {log}
+        realSFS {input.saf} \
+            -sites {input.sites} \
+            -maxIter 2000 \
+            -seed 42 \
+            -fold 1 \
+            -P {threads} > {output} 2> {log}
         """
 
 rule angsd_estimate_sfs_byCity_byHabitat:
@@ -107,18 +99,24 @@ rule angsd_estimate_sfs_byCity_byHabitat:
     Estimate folded SFS separately for each habitat in each city (i.e., 1D SFS) using realSFS. 
     """
     input:
-        rules.angsd_saf_likelihood_byCity_byHabitat.output.saf_idx
+        saf = rules.angsd_saf_likelihood_byCity_byHabitat.output.saf_idx,
+        sites = rules.select_random_degenerate_sites.output
     output:
         '{0}/sfs/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}.sfs'.format(ANGSD_DIR)
     log: 'logs/angsd_estimate_sfs_byCity_byHabitat/{city}_{habitat}_{site}_sfs.log'
     container: 'library://james-s-santangelo/angsd/angsd:0.933'
-    threads: 4
+    threads: 10
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 10000,
         time = '03:00:00'
     shell:
         """
-        realSFS {input} -P {threads} -fold 1 -maxIter 2000 -seed 42 > {output} 2> {log}
+        realSFS {input.saf} \
+            -sites {input.sites} \
+            -P {threads} \
+            -fold 1 \
+            -maxIter 2000 \
+            -seed 42 > {output} 2> {log}
         """
 
 #######################
@@ -131,7 +129,8 @@ rule angsd_fst_index:
     """
     input: 
         saf_idx = get_habitat_saf_files_byCity,
-        joint_sfs = rules.angsd_estimate_joint_sfs_byCity.output
+        joint_sfs = rules.angsd_estimate_joint_sfs_byCity.output,
+        sites = rules.select_random_degenerate_sites.output
     output:
         fst = '{0}/summary_stats/hudson_fst/{{city}}/{{city}}_{{site}}_r_u.fst.gz'.format(ANGSD_DIR),
         idx = '{0}/summary_stats/hudson_fst/{{city}}/{{city}}_{{site}}_r_u.fst.idx'.format(ANGSD_DIR)
@@ -145,7 +144,13 @@ rule angsd_fst_index:
         fstout = '{0}/summary_stats/hudson_fst/{{city}}/{{city}}_{{site}}_r_u'.format(ANGSD_DIR)
     shell:
         """
-        realSFS fst index {input.saf_idx} -sfs {input.joint_sfs} -fold 1 -P {threads} -whichFst 1 -fstout {params.fstout} 2> {log}
+        realSFS fst index {input.saf_idx} \
+            -sites {input.sites} \
+            -sfs {input.joint_sfs} \
+            -fold 1 \
+            -P {threads} \
+            -whichFst 1 \
+            -fstout {params.fstout} 2> {log}
         """
 
 rule angsd_fst_readable:
@@ -169,7 +174,8 @@ rule angsd_estimate_thetas_byCity_byHabitat:
     """
     input:
         saf_idx = rules.angsd_saf_likelihood_byCity_byHabitat.output.saf_idx,
-        sfs = rules.angsd_estimate_sfs_byCity_byHabitat.output
+        sfs = rules.angsd_estimate_sfs_byCity_byHabitat.output,
+        sites = rules.select_random_degenerate_sites.output
     output:
         idx = '{0}/summary_stats/thetas/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}.thetas.idx'.format(ANGSD_DIR),
         thet = '{0}/summary_stats/thetas/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}.thetas.gz'.format(ANGSD_DIR)
@@ -184,6 +190,7 @@ rule angsd_estimate_thetas_byCity_byHabitat:
     shell:
         """
         realSFS saf2theta {input.saf_idx} \
+            -sites {input.sites} \
             -P {threads} \
             -fold 1 \
             -sfs {input.sfs} \
@@ -219,7 +226,6 @@ rule angsd_byCity_byHabitat_done:
     """
     input:
         expand(rules.angsd_fst_readable.output, city=CITIES, site=['4fold']),
-        expand(rules.angsd_diversity_neutrality_stats_byCity_byHabitat.output, city=CITIES, habitat=HABITATS, site=['4fold']),
         expand(rules.angsd_diversity_neutrality_stats_byCity_byHabitat.output, city=CITIES, habitat=HABITATS, site=['4fold'])
     output:
         '{0}/angsd_byCity_byHabitat.done'.format(ANGSD_DIR)

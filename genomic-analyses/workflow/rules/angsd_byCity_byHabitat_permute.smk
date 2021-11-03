@@ -13,8 +13,8 @@ rule create_random_bam_list_byCity_byHabitat:
     input:
         unpack(get_urban_rural_bam_lists)
     output:
-        urban = '{0}/bam_lists/by_city/{{city}}/randomized/{{city}}_randU_seed{{seed}}_bams.list'.format(PROGRAM_RESOURCE_DIR),
-        rural = '{0}/bam_lists/by_city/{{city}}/randomized/{{city}}_randR_seed{{seed}}_bams.list'.format(PROGRAM_RESOURCE_DIR)
+        urban = '{0}/bam_lists/by_city/{{city}}/randomized/{{city}}_randU_seed{{seed}}_{{site}}_bams.list'.format(PROGRAM_RESOURCE_DIR),
+        rural = '{0}/bam_lists/by_city/{{city}}/randomized/{{city}}_randR_seed{{seed}}_{{site}}_bams.list'.format(PROGRAM_RESOURCE_DIR)
     run:
         import random
         urban_bams = list(open(input.urban_bams, 'r'))
@@ -86,7 +86,7 @@ rule angsd_estimate_permuted_joint_sfs_byCity:
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     threads: 4
     resources:
-        mem_mb = lambda wildcards, attempt: attempt * 20000,
+        mem_mb = lambda wildcards, attempt: attempt * 50000,
         time = '03:00:00'
     shell:
         """
@@ -106,7 +106,7 @@ rule angsd_estimate_permuted_sfs_byCity_byHabitat:
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     threads: 4
     resources:
-        mem_mb = lambda wildcards, attempt: attempt * 10000,
+        mem_mb = lambda wildcards, attempt: attempt * 25000,
         time = '03:00:00'
     shell:
         """
@@ -171,7 +171,7 @@ rule angsd_estimate_permuted_thetas_byCity_byHabitat:
     container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
     threads: 4
     params:
-        out = '{0}/summary_stats/thetas/by_city/{{city}}/randomized/{{city}}_{{habitat}}_{{site}}_seed{seed}'.format(ANGSD_DIR)
+        out = '{0}/summary_stats/thetas/by_city/{{city}}/randomized/{{city}}_{{habitat}}_{{site}}_seed{{seed}}'.format(ANGSD_DIR)
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 4000,
         time = '01:00:00'
