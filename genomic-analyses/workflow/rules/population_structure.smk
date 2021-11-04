@@ -58,7 +58,7 @@ rule pcangsd_byCity:
         time = '02:00:00'
     shell:
         """
-        python3 /opt/pcangsd/pcangsd.py \
+        python3 /opt/pcangsd-v.0.99/pcangsd.py \
             -beagle {input} \
             -o {params.out} \
             -minMaf {wildcards.maf} \
