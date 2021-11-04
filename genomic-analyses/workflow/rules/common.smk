@@ -94,26 +94,44 @@ def get_bamLists_toConcat(wildcards):
     """
     Collect text files with paths to urban and rural bams by city
     """
-    all_bam_lists = expand(rules.create_bam_list_byCity_byHabitat.output, city = wildcards.city, habitat = ['u', 'r'])
+    all_bam_lists = expand(rules.create_bam_list_byCity_byHabitat.output, city = wildcards.city, habitat = HABITATS, site = wildcards.site)
     return all_bam_lists
+
+def get_bams_for_read_counts(wildcards):
+    """
+    Returns the correct GLUE or Toronto BAM file
+    """
+    tor_bams = expand(rules.glue_dnaSeqQC_downsample_toronto_bam.output, sample=TOR_SAMPLES)
+    glue_bams = expand(rules.glue_dnaSeqQC_samtools_markdup.output.bam, sample=SAMPLES)
+    return tor_bams + glue_bams
 
 def get_files_for_saf_estimation_snps_hcn_chroms(wildcards):
     """
     Get files to estimate SAF likelihhods for urban and rural habitats by city.
     """
     if wildcards.gene == 'li':
-        sites_idx = expand(rules.angsd_index_degenerate.output.idx, chrom='CM019108.1', site='4fold')
+        sites_idx = expand(rules.index_chromosomal_angsd_sites.output.idx, chrom='CM019108.1', site='4fold')
         sites = expand(rules.split_angsd_sites_byChrom.output, chrom='CM019108.1', site='4fold')
     elif wildcards.gene == 'ac':
-        sites_idx = expand(rules.angsd_index_degenerate.output.idx, chrom='CM019103.1', site='4fold')
+        sites_idx = expand(rules.index_chromosomal_angsd_sites.output.idx, chrom='CM019103.1', site='4fold')
         sites = expand(rules.split_angsd_sites_byChrom.output, chrom='CM019103.1', site='4fold')
-    ref = REFERENCE_GENOME
-    bams = expand(rules.create_bam_list_byCity_byHabitat.output, city=wildcards.city, habitat=wildcards.habitat)
+    ref = rules.glue_dnaSeqQC_unzip_reference.output
+    bams = expand(rules.create_bam_list_byCity_byHabitat.output, city=wildcards.city, habitat=wildcards.habitat, site=wildcards.site)
     return { 'bams' : bams, 'sites_idx' : sites_idx , 'sites' : sites, 'ref' : ref }
 
 def get_habitat_saf_files_byCity_hcn_chroms(wildcards):
     """
     Returns list with 4fold urban and rural SAF files by city
     """
-    saf_files = expand(rules.angsd_saf_likelihood_snps_hcn_chroms.output.saf_idx, city=wildcards.city, habitat=HABITATS, site=['4fold'], gene=wildcards.gene)
+    saf_files = expand(rules.angsd_saf_likelihood_snps_hcn_chroms.output.saf_idx, city=wildcards.city, habitat=HABITATS, site=wildcards.site, gene=wildcards.gene)
     return saf_files
+
+def get_sites_for_hcn_chrom_analysis(wildcards):
+    """
+    Return sites file for degenerate sites along the correct chromosome, based on 'gene' wildcard
+    """
+    if wildcards.gene == 'li':
+        sites = expand(rules.split_angsd_sites_byChrom.output, chrom = 'CM019108.1', site=wildcards.site)
+    elif wildcards.gene == 'ac':
+        sites = expand(rules.split_angsd_sites_byChrom.output, chrom = 'CM019103.1', site=wildcards.site)
+    return sites

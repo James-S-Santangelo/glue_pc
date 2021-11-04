@@ -134,7 +134,7 @@ rule angsd_index_random_degen_sites:
 
 rule split_random_angsd_sites_byChrom:
     """
-    Split ANGSD sites file into separate sites files by chromosome
+    Split randomly selected degenerate ANGSD sites file into separate sites files by chromosome
     """
     input:
         rules.select_random_degenerate_sites.output
@@ -151,7 +151,7 @@ rule index_random_chromosomal_angsd_sites:
     Index chromosomal ANGSD sites files for use with ANGSD
     """
     input:
-        rules..output
+        rules.split_random_angsd_sites_byChrom.output
     output:
         binary = '{0}/angsd_sites/{{chrom}}/{{chrom}}_Trepens_{{site}}_random.sites.bin'.format(PROGRAM_RESOURCE_DIR),
         idx = '{0}/angsd_sites/{{chrom}}/{{chrom}}_Trepens_{{site}}_random.sites.idx'.format(PROGRAM_RESOURCE_DIR)

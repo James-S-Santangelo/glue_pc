@@ -54,7 +54,7 @@ CORES_PER_NODE = config['cluster']['cores_per_node']
 ANGSD_MAX_DP = config['angsd']['max_dp']
 
 # Parameters for pairwise pi and Fst
-BOOT_SEEDS = [x for x in range(1, 101)]
+BOOT_SEEDS = ['{0}'.format(x) for x in range(1,101)]
 
 ##################
 #### PIPELINE ####
@@ -62,10 +62,17 @@ BOOT_SEEDS = [x for x in range(1, 101)]
 
 # Only ever consider chromosomes in chromosome file
 wildcard_constraints:
-    chrom='|'.join([x for x in CHROMOSOMES])
+    chrom='|'.join([x for x in CHROMOSOMES]),
+    habitat='|'.join([x for x in HABITATS]),
+    city='|'.join([x for x in CITIES]),
+    sample='|'.join([x for x in SAMPLES]),
+    seed='|'.join([x for x in BOOT_SEEDS]),
+    maf='0.05',
+    gene='li|ac',
+    site='0fold|4fold'
 
 # Rules to be run locally on as single process
-localrules: create_tmp_dir, index_degenerate_bam, create_samples_to_remove, create_bam_list_finalSamples, convert_sites_for_angsd, select_random_degenerate_sites, angsd_index_random_degen_sites, split_random_angsd_sites_byChrom, index_random_chromosomal_angsd_sites, angsd_allSamples_done, create_bam_list_byCity_byHabitat, select_random_degenerate_sites, angsd_index_sites_random, angsd_fst_readable, create_random_bam_list_byCity_byHabitat, angsd_permuted_fst_readable, angsd_byCity_byHabitat_done, angsd_byCity_byHabitat_permuted_done
+localrules: create_tmp_dir, index_degenerate_bam, create_samples_to_remove, create_bam_list_finalSamples, convert_sites_for_angsd, select_random_degenerate_sites, angsd_index_random_degen_sites, split_random_angsd_sites_byChrom, index_random_chromosomal_angsd_sites, angsd_allSamples_done, create_bam_list_byCity_byHabitat, select_random_degenerate_sites, angsd_fst_readable, create_random_bam_list_byCity_byHabitat, angsd_permuted_fst_readable, angsd_byCity_byHabitat_done, angsd_byCity_byHabitat_permuted_done, concat_habitat_bamLists_withinCities, angsd_byCity_done, split_angsd_sites_byChrom, index_chromosomal_angsd_sites, angsd_fst_readable_snps_hcn_chroms, hcn_loci_freq_done
 
 # Pipeline targets
 # Each step generates an empty flagfile as its final target
@@ -75,12 +82,13 @@ rule all:
         '{0}/degeneracy.done'.format(PROGRAM_RESOURCE_DIR),
         # Angsd
         '{0}/angsd_allSamples.done'.format(ANGSD_DIR),
+        '{0}/angsd_byCity_done'.format(ANGSD_DIR),
         '{0}/angsd_byCity_byHabitat.done'.format(ANGSD_DIR),
-        '{0}/angsd_byCity_byHabitat_permuted.done'.format(ANGSD_DIR),
+        #'{0}/angsd_byCity_byHabitat_permuted.done'.format(ANGSD_DIR),
         # Population structure
-        #'{0}/population_structure.done'.format(POP_STRUC_DIR),
+        '{0}/population_structure.done'.format(POP_STRUC_DIR),
         # HCN loci frequencies
-        #'{0}/hcn_loci_freq_done'.format(HCN_LOCI_DIR)
+        '{0}/hcn_loci_freq_done'.format(HCN_LOCI_DIR)
 
 # Create temporary directory used throughout pipeline
 rule create_tmp_dir:
@@ -94,10 +102,10 @@ include: 'rules/common.smk'
 include: 'rules/degeneracy.smk'
 include: 'rules/angsd_allSamples.smk'
 include: 'rules/angsd_byCity_byHabitat.smk'
-include: 'rules/angsd_byCity_byHabitat_permute.smk'
-#include: 'rules/angsd_byCity.smk'
-#include: 'rules/population_structure.smk'
-#include: 'rules/hcn_loci_freqs.smk'
+#include: 'rules/angsd_byCity_byHabitat_permute.smk'
+include: 'rules/angsd_byCity.smk'
+include: 'rules/population_structure.smk'
+include: 'rules/hcn_loci_freqs.smk'
 
 # Rule to clean directory of all output files
 rule clean:

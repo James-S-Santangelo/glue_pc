@@ -13,30 +13,11 @@ rule concat_habitat_bamLists_withinCities:
     input:
         get_bamLists_toConcat
     output:
-        '{0}/bam_lists/by_city/{{city}}/{{city}}_bams.list'.format(PROGRAM_RESOURCE_DIR)
-    log: 'logs/concat_habitat_bamLists_withinCities/{city}_concat.log'
+        '{0}/bam_lists/by_city/{{city}}/{{city}}_{{site}}_bams.list'.format(PROGRAM_RESOURCE_DIR)
+    log: 'logs/concat_habitat_bamLists_withinCities/{city}_{site}_concat.log'
     shell:
         """
         cat {input} > {output} 2> {log}
-        """
-
-rule angsd_index_degenerate_allChroms:
-    """
-    Indexes ANGSD sites files containing genome-wide positions. Since only 4fold sites are going to be
-    used here, we can generate the SAF file across all chromosomes simultaneously.
-    """
-    input:
-        rules.convert_sites_for_angsd.output
-    output:
-        binary = '{0}/angsd_sites/Trepens_{{site}}.sites.bin'.format(PROGRAM_RESOURCE_DIR),
-        idx = '{0}/angsd_sites/Trepens_{{site}}.sites.idx'.format(PROGRAM_RESOURCE_DIR)
-    log: 'logs/angsd_index/allChroms_{site}_index.log'
-    container: 'shub://James-S-Santangelo/singularity-recipes:angsd_v0.933'
-    wildcard_constraints:
-        site='4fold'
-    shell:
-        """
-        angsd sites index {input} 2> {log}
         """
 
 rule angsd_gl_byCity:

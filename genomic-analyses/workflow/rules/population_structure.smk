@@ -83,35 +83,35 @@ rule pop_structure_done:
         touch {output}
         """
 
-rule admixture_notebook:
-    input:
-        rules.pop_structure_done.output
-    output:
-        '{0}/admixture_notebook.done'.format(POP_STRUC_DIR)
-    conda: '../envs/notebooks.yaml'
-    notebook:
-        "../notebooks/admixture.r.ipynb"
-
-rule global_depth_pi_sfs_theta_notebook:
-    """
-    Interactive exploration of global ANGSD analysis and population structure. Include analysis of depth
-    along chromosome 1, and patterns of diversity and structure across all samples. 
-    """
-    input:
-        rules.angsd_done.output,
-        rules.pop_structure_done.output
-    output:
-        plot1 = '{0}/supplemental/angsd/depth/depthGlobal_histogram.pdf'.format(FIGURES_DIR),
-        plot2 = '{0}/supplemental/angsd/sfs/sfs_allChroms_bySite_bySampleSet.pdf'.format(FIGURES_DIR),
-        plot3 = '{0}/supplemental/angsd/sfs/sfs_allChroms_bySite_finalSamples_lowCovRemoved.pdf'.format(FIGURES_DIR),
-        table = '{0}/tables/allChroms_diversity_bySite_bySampleSet.txt'.format(FIGURES_DIR),
-        plot4 = '{0}/supplemental/population_structure/highErrorRemoved_PCA_byHabitat_bySampleSet_byMAF.pdf'.format(FIGURES_DIR),
-        plot5 = '{0}/supplemental/population_structure/highErrorRemoved_PCA_byCity_byMAF.pdf'.format(FIGURES_DIR),
-        plot6 = '{0}/supplemental/population_structure/highErrorRemoved_PCA_byContinent_byMAF.pdf'.format(FIGURES_DIR),
-        plot7 = '{0}/supplemental/population_structure/highErrorRemoved_PCA_byRange_byMAF.pdf'.format(FIGURES_DIR),
-        plot8 = '{0}/supplemental/population_structure/highErrorRemoved_PCA_byCity_maf0.05.pdf'.format(FIGURES_DIR),
-        plot9 = '{0}/supplemental/population_structure/highErrorRemoved_PCA_byContinent_maf0.05.pdf'.format(FIGURES_DIR),
-        plot10 = '{0}/supplemental/population_structure/highErrorRemoved_PCA_byRange_maf0.05.pdf'.format(FIGURES_DIR)
-    conda: '../envs/notebooks.yaml'
-    notebook:
-        "../notebooks/global_depth_pi_sfs_theta.r.ipynb"
+# rule admixture_notebook:
+#     input:
+#         rules.pop_structure_done.output
+#     output:
+#         '{0}/admixture_notebook.done'.format(POP_STRUC_DIR)
+#     conda: '../envs/notebooks.yaml'
+#     notebook:
+#         "../notebooks/admixture.r.ipynb"
+# 
+# rule global_depth_pi_sfs_theta_notebook:
+#     """
+#     Interactive exploration of global ANGSD analysis and population structure. Include analysis of depth
+#     along chromosome 1, and patterns of diversity and structure across all samples. 
+#     """
+#     input:
+#         rules.angsd_done.output,
+#         rules.pop_structure_done.output
+#     output:
+#         plot1 = '{0}/supplemental/angsd/depth/depthGlobal_histogram.pdf'.format(FIGURES_DIR),
+#         plot2 = '{0}/supplemental/angsd/sfs/sfs_allChroms_bySite_bySampleSet.pdf'.format(FIGURES_DIR),
+#         plot3 = '{0}/supplemental/angsd/sfs/sfs_allChroms_bySite_finalSamples_lowCovRemoved.pdf'.format(FIGURES_DIR),
+#         table = '{0}/tables/allChroms_diversity_bySite_bySampleSet.txt'.format(FIGURES_DIR),
+#         plot4 = '{0}/supplemental/population_structure/highErrorRemoved_PCA_byHabitat_bySampleSet_byMAF.pdf'.format(FIGURES_DIR),
+#         plot5 = '{0}/supplemental/population_structure/highErrorRemoved_PCA_byCity_byMAF.pdf'.format(FIGURES_DIR),
+#         plot6 = '{0}/supplemental/population_structure/highErrorRemoved_PCA_byContinent_byMAF.pdf'.format(FIGURES_DIR),
+#         plot7 = '{0}/supplemental/population_structure/highErrorRemoved_PCA_byRange_byMAF.pdf'.format(FIGURES_DIR),
+#         plot8 = '{0}/supplemental/population_structure/highErrorRemoved_PCA_byCity_maf0.05.pdf'.format(FIGURES_DIR),
+#         plot9 = '{0}/supplemental/population_structure/highErrorRemoved_PCA_byContinent_maf0.05.pdf'.format(FIGURES_DIR),
+#         plot10 = '{0}/supplemental/population_structure/highErrorRemoved_PCA_byRange_maf0.05.pdf'.format(FIGURES_DIR)
+#     conda: '../envs/notebooks.yaml'
+#     notebook:
+#         "../notebooks/global_depth_pi_sfs_theta.r.ipynb"
