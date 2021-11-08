@@ -9,7 +9,7 @@
 #### SETUP ####
 ###############
 
-import sys
+import logging
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -100,83 +100,83 @@ def gt_likelihoods(focal_read_count,total_reads, region_size, genome_size, error
 #### ANALYSIS ####
 ##################
 
-with open(snakemake.log[0], 'w') as f:
-    sys.stderr = sys.stdout = f
+logging.basicConfig(filename=snakemake.log[0], level=logging.DEBUG)
+try:
+    # Create dictionary with info for all samples 
+    sample_info = {}
+    for l in open(snakemake.input.counts[0], 'r'):
+        b, c = l.strip().split()
+        s = b.split("/")[-1].split("_merged")[0]
+        city = "_".join(s.split("_")[:-2])
+        population = city+ "_" + s.split("_")[-2]
+        sample_info[s] = {'bam' : b, 'read_count' : int(c), 'city' : city, 'population' : population}
+        
+    # Path to multiQC files with mapping statistics
+    qual_datafile = snakemake.input.qual_datafile
 
-    try:
-        # Create dictionary with info for all samples 
-        sample_info = {}
-        for l in open(snakemake.input.counts[0], 'r'):
-            b, c = l.strip().split()
-            s = b.split("/")[-1].split("_merged")[0]
-            city = "_".join(s.split("_")[:-2])
-            population = city+ "_" + s.split("_")[-2]
-            sample_info[s] = {'bam' : b, 'read_count' : int(c), 'city' : city, 'population' : population}
-            
-        # Path to multiQC files with mapping statistics
-        qual_datafile = '../results/qc/multiqc/multiqc_data/multiqc_bamtools_stats_bamtools_stats.txt'
+    # Add number of mapped and duplicate reads to sample dictionary
+    for l in open(qual_datafile).readlines()[1:]:
+        s = l.split("\t")[0].split("|")[-1].strip()
+        mapped_reads = float(l.split("\t")[2])
+        duplicates = float(l.split("\t")[10])
+        try:
+            sample_info[s]['mapped_reads'] = mapped_reads
+            sample_info[s]['duplicates'] = duplicates
+        except KeyError:
+            print(s)
+    
+    # Create dataframe from sample dictionary
+    df = pd.DataFrame.from_dict(sample_info, orient = 'index')
+    df['read_count_normalized'] = df.read_count/(df.mapped_reads-df.duplicates)
+    
+    # Define constants
+    # TODO Automate region size calculation from Snakemake parameters 
+    total_reads = df.mapped_reads.mean()
+    if snakemake.wildcards.gene == 'li':
+        region_size = (30229250 - 30218214 + 1) + (30247247 - 30230911 + 1)
+    else:
+        region_size = 19573344 - 19559221 + 1
+    genome_size = 1e9 * 0.75  # Only 75% of genome is mappable
+    sample_size = df.shape[0]
 
-        # Add number of mapped and duplicate reads to sample dictionary
-        for l in open(qual_datafile).readlines()[1:]:
-            s = l.split("\t")[0].split("|")[-1].strip()
-            mapped_reads = float(l.split("\t")[2])
-            duplicates = float(l.split("\t")[10])
-            try:
-                sample_info[s]['mapped_reads'] = mapped_reads
-                sample_info[s]['duplicates'] = duplicates
-            except KeyError:
-                print(s)
-        
-        # Create dataframe from sample dictionary
-        df = pd.DataFrame.from_dict(sample_info, orient = 'index')
-        df['read_count_normalized'] = df.read_count/(df.mapped_reads-df.duplicates)
-        
-        # Define constants
-        # TODO Automate region size calculation from Snakemake parameters 
-        total_reads = df.mapped_reads.mean()
-        if snakemake.wildcards.gene == 'li':
-            region_size = (30229250 - 30218214 + 1) + (30247247 - 30230911 + 1)
-        else:
-            region_size = 19573344 - 19559221 + 1
-        genome_size = 1e9 * 0.75  # Only 75% of genome is mappable
-        sample_size = df.shape[0]
+    # Define coefficients and optimize fit by least squares
+    coeffs0 = np.array([15, 0.65, 2, 2.5e-6], dtype='float')
+    coeff_bounds = ([1,0,0,0], [np.inf,1, np.inf,1])
+    largest_read_count = int(round(max(df.mapped_reads.mean() * df.read_count_normalized)))
+    x_values = np.array(range(largest_read_count), dtype="float")
+    y_data, bins = plt.hist(df.mapped_reads.mean() * df.read_count_normalized, bins = range(0, largest_read_count + 1))[:2]
+    fitted_coeffs = least_squares(residuals, coeffs0, args=(y_data, x_values), bounds=coeff_bounds)
+    
+    # Fitted parameters
+    dispersion_factor, p_a, scale_factor, error_rate = fitted_coeffs.x
+    
+    # Estimate genotype likelihoods from standardized read counts
+    df = df[df['read_count_normalized'].notna()]
+    df['read_count_standardized'] = df.read_count_normalized * total_reads
+    df['read_count_standardized'] = df['read_count_standardized'].astype(int)
+    df['l_aa'] = p_aa(df.read_count_standardized, total_reads, region_size, genome_size, error_rate, dispersion_factor, scale_factor)
+    df['l_Aa'] = p_Aa(df.read_count_standardized, total_reads, region_size, genome_size, error_rate, dispersion_factor, scale_factor)
+    df['l_AA'] = p_AA(df.read_count_standardized, total_reads, region_size, genome_size, error_rate, dispersion_factor, scale_factor)
+    
+    # Normalize genotype likelihoods so they sum to 1 
+    df["l_aa_norm"] = df.l_aa / sum([df.l_aa,  df.l_Aa, df.l_AA])
+    df["l_Aa_norm"] = df.l_Aa / sum([df.l_aa,  df.l_Aa, df.l_AA])
+    df["l_AA_norm"] = df.l_AA / sum([df.l_aa,  df.l_Aa, df.l_AA]) 
+    
+    # Write genotype likelihoods to disk
+    df.to_csv(snakemake.output.likes, sep = '\t', index_label = 'sample') 
+   
+    # Calculate allele frequencies from genotpe likelihoods
+    with open(snakemake.output.freqs, 'w') as freqs_out:
+        freqs_out.write('city\tp\n')  # Header
+        for city in df.city.unique():
+            num_aa = sum(df[df.city==city].l_aa_norm)
+            num_Aa = sum(df[df.city==city].l_Aa_norm)
+            num_AA = sum(df[df.city==city].l_AA_norm)
+            p = (num_aa + (0.5 * num_Aa)) / (num_aa + num_Aa + num_AA)
+            if city == 's': city = 'Toronto'
+            freqs_out.write('{0}\t{1}\n'.format(city, p))
 
-        # Define coefficients and optimize fit by least squares
-        coeffs0 = np.array([15, 0.65, 2, 2.5e-6], dtype='float')
-        coeff_bounds = ([1,0,0,0], [np.inf,1, np.inf,1])
-        largest_read_count = int(round(max(df.mapped_reads.mean() * df.read_count_normalized)))
-        x_values = np.array(range(largest_read_count), dtype="float")
-        y_data, bins = plt.hist(df.mapped_reads.mean() * df.read_count_normalized, bins = range(0, largest_read_count + 1))[:2]
-        fitted_coeffs = least_squares(residuals, coeffs0, args=(y_data, x_values), bounds=coeff_bounds)
-        
-        # Fitted parameters
-        dispersion_factor, p_a, scale_factor, error_rate = fitted_coeffs.x
-        
-        # Estimate genotype likelihoods from standardized read counts
-        df['read_count_standardized'] = df.read_count_normalized * total_reads
-        df['read_count_standardized'] = df['read_count_standardized'].astype(int)
-        df['l_aa'] = p_aa(df.read_count_standardized, total_reads, region_size, genome_size, error_rate, dispersion_factor, scale_factor)
-        df['l_Aa'] = p_Aa(df.read_count_standardized, total_reads, region_size, genome_size, error_rate, dispersion_factor, scale_factor)
-        df['l_AA'] = p_AA(df.read_count_standardized, total_reads, region_size, genome_size, error_rate, dispersion_factor, scale_factor)
-        
-        # Normalize genotype likelihoods so they sum to 1 
-        df["l_aa_norm"] = df.l_aa / sum([df.l_aa,  df.l_Aa, df.l_AA])
-        df["l_Aa_norm"] = df.l_Aa / sum([df.l_aa,  df.l_Aa, df.l_AA])
-        df["l_AA_norm"] = df.l_AA / sum([df.l_aa,  df.l_Aa, df.l_AA]) 
-        
-        # Write genotype likelihoods to disk
-        df.to_csv(snakemake.output.likes, sep = '\t', index_label = 'sample') 
-       
-        # Calculate allele frequencies from genotpe likelihoods
-        with open(snakemake.output.freqs, 'w') as freqs_out:
-            freqs_out.write('city\tp\n')  # Header
-            for city in df.city.unique():
-                num_aa = sum(df[df.city==city].l_aa_norm)
-                num_Aa = sum(df[df.city==city].l_Aa_norm)
-                num_AA = sum(df[df.city==city].l_AA_norm)
-                p = (num_aa + (0.5 * num_Aa)) / (num_aa + num_Aa + num_AA)
-                if city == 's': city = 'Toronto'
-                freqs_out.write('{0}\t{1}\n'.format(city, p))
-
-    except Exception as e:
-        print(e) 
+except:
+    logging.exception("An error occured!")
+    raise

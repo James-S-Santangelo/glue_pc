@@ -103,6 +103,7 @@ def get_bams_for_read_counts(wildcards):
     """
     tor_bams = expand(rules.glue_dnaSeqQC_downsample_toronto_bam.output, sample=TOR_SAMPLES)
     glue_bams = expand(rules.glue_dnaSeqQC_samtools_markdup.output.bam, sample=SAMPLES)
+    glue_bams = [bam for bam in glue_bams if not os.path.basename(bam).startswith('s_')]
     return tor_bams + glue_bams
 
 def get_files_for_saf_estimation_snps_hcn_chroms(wildcards):
