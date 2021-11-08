@@ -215,12 +215,3 @@ rule hcn_loci_freq_done:
         """
         touch {output}
         """
-
-rule hcn_loci_notebook:
-    input:
-        rules.hcn_loci_freq_done.output
-    output:
-        '{0}/hcn_loci_notebook.done'.format(HCN_LOCI_DIR)
-    conda: '../envs/notebooks.yaml'
-    notebook:
-        "../notebooks/hcn_loci.r.ipynb"
