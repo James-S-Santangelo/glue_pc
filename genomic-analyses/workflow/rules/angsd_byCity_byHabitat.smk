@@ -94,6 +94,38 @@ rule angsd_estimate_joint_sfs_byCity:
             -P {threads} > {output} 2> {log}
         """
 
+rule angsd_alleleFreqs_byCity_byHabitat:
+    input:
+        unpack(get_files_for_alleleFreq_estimation_byCity_byHabitat)
+    output:
+        afs = temp('{0}/afs/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}.mafs.gz'.format(ANGSD_DIR))
+    log: 'logs/angsd_alleleFreq_byCity_byHabitat/{city}_{habitat}_{site}_saf.log'
+    container: 'library://james-s-santangelo/angsd/angsd:0.933'
+    params:
+        out = '{0}/afs/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}'.format(ANGSD_DIR)
+    threads: 6
+    resources:
+        mem_mb = lambda wildcards, attempt: attempt * 8000,
+        time = '06:00:00'
+    wildcard_constraints:
+        site='4fold'
+    shell:
+        """
+        angsd -GL 1 \
+            -out {params.out} \
+            -nThreads {threads} \
+            -doMajorMinor 4 \
+            -SNP_pval 1e-6 \
+            -doMaf 1 \
+            -baq 2 \
+            -ref {input.ref} \
+            -sites {input.sites} \
+            -minQ 20 \
+            -minMapQ 30 \
+            -anc {input.ref} \
+            -bam {input.bams} 2> {log}
+        """
+
 rule angsd_estimate_sfs_byCity_byHabitat:
     """
     Estimate folded SFS separately for each habitat in each city (i.e., 1D SFS) using realSFS. 
@@ -226,7 +258,8 @@ rule angsd_byCity_byHabitat_done:
     """
     input:
         expand(rules.angsd_fst_readable.output, city=CITIES, site=['4fold']),
-        expand(rules.angsd_diversity_neutrality_stats_byCity_byHabitat.output, city=CITIES, habitat=HABITATS, site=['4fold'])
+        expand(rules.angsd_diversity_neutrality_stats_byCity_byHabitat.output, city=CITIES, habitat=HABITATS, site=['4fold']),
+        expand(rules.angsd_alleleFreqs_byCity_byHabitat.output, city=CITIES, habitat=HABITATS, site=['4fold'])
     output:
         '{0}/angsd_byCity_byHabitat.done'.format(ANGSD_DIR)
     shell:

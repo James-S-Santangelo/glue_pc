@@ -97,6 +97,19 @@ rule convert_sites_for_angsd:
         awk '{{print $1"\t"$2+1}}' {input} > {output} 2> {log}
         """
 
+rule angsd_index_allDegenerateSites:
+    input:
+        rules.convert_sites_for_angsd.output
+    output:
+        binary = '{0}/angsd_sites/Trepens_{{site}}.sites.bin'.format(PROGRAM_RESOURCE_DIR),
+        idx = '{0}/angsd_sites/Trepens_{{site}}.sites.idx'.format(PROGRAM_RESOURCE_DIR)
+    log: 'logs/angsd_index_allDegenerateSites/{site}_index.log'
+    container: 'library://james-s-santangelo/angsd/angsd:0.933'
+    shell:
+        """
+        angsd sites index {input} 2> {log}
+        """
+    
 rule select_random_degenerate_sites:
     """
     Random select `params.nSites` degenerate (i.e., 4fold or 0fold) sites from across the genome

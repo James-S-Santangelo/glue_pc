@@ -1,9 +1,9 @@
 # Rules to get genotype likelihoods across all individuals per city. 
 # Used for population structure analyses. 
 
-##############################
-#### GENOTYPE LIKELIHOODS ####
-##############################
+###############
+#### SETUP ####
+###############
 
 rule concat_habitat_bamLists_withinCities:
     """
@@ -20,12 +20,47 @@ rule concat_habitat_bamLists_withinCities:
         cat {input} > {output} 2> {log}
         """
 
+rule remove_lowCovSamples_forPCA_byCity:
+    input:
+        bams = rules.concat_habitat_bamLists_withinCities.output,
+        qc_data = '{0}/multiqc/multiqc_data/multiqc_qualimap_bamqc_genome_results_qualimap_bamqc.txt'.format(QC_DIR)
+    output:
+        '{0}/bam_lists/by_city/{{city}}/{{city}}_{{site}}_lowCovRemoved_bams.list'.format(PROGRAM_RESOURCE_DIR)
+    log: 'logs/remove_lowCovSamples_forPCA_byCity/{city}_{site}_remove_lowCovSamples.log'
+    params:
+        cov = 0.2
+    run:
+        import logging
+        import re
+        import pandas as pd
+        logging.basicConfig(filename=log[0], level=logging.DEBUG)
+        try:
+            qc_data = pd.read_table(input.qc_data, sep = '\t')
+            qc_data['sample'] = qc_data['Sample'].str.extract('(\w+_\d+_\d+)')
+            cols = ['sample', 'mean_coverage']
+            qc_data = qc_data[cols]
+            samples_lowCovRemoved = qc_data[qc_data['mean_coverage'] >= float(params.cov)]['sample'].tolist()
+            bams = open(input.bams[0], 'r').readlines()
+            with open(output[0], 'w') as fout:
+                for bam in bams:
+                    match = re.search('^(.+)(?=_\w)', os.path.basename(bam))
+                    sample = match.group(1)
+                    if sample in samples_lowCovRemoved:
+                        fout.write(bam)
+        except:
+            logging.exception("An error occured!") 
+            raise
+
+##############################
+#### GENOTYPE LIKELIHOODS ####
+##############################
+
 rule angsd_gl_byCity:
     """
     Estimate Beagle genotype likelihoods jointly for all samples within city.
     """
     input:
-        bams = rules.concat_habitat_bamLists_withinCities.output,
+        bams = rules.remove_lowCovSamples_forPCA_byCity.output,
         sites = rules.select_random_degenerate_sites.output,
         sites_idx = rules.angsd_index_random_degen_sites.output,
         ref = rules.glue_dnaSeqQC_unzip_reference.output,
@@ -42,11 +77,11 @@ rule angsd_gl_byCity:
         site = '4fold'
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 5000,
-        time = '06:00:00' 
+        time = '12:00:00' 
     shell:
         """
         NUM_IND=$( wc -l < {input.bams} );
-        MIN_IND=$(( NUM_IND * 60/100 ));
+        MIN_IND=$(( NUM_IND * 50/100 ));
         angsd -GL 1 \
             -out {params.out} \
             -nThreads {threads} \
