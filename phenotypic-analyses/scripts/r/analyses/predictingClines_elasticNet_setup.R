@@ -36,7 +36,7 @@ envMeans <- calculate_city_eviro_means(df_all_popMeans) %>%
 
 # Get change in log-odds of HCN from binomial regression
 # These are extracted from the mixed model
-logOdds <- coef(glueClineModel_stdDist)$city %>%
+logOdds_fromGlobalModel <- coef(glueClineModel_stdDist)$city %>%
   rownames_to_column(var = 'city') %>% 
   dplyr::select(city, std_distance) %>% 
   rename('betaLog' = 'std_distance') %>% 
@@ -46,7 +46,7 @@ logOdds <- coef(glueClineModel_stdDist)$city %>%
 distance_vector <- results_statsMatrices$D.UR
 
 # Create dataframe with HCN slopes and environmental data
-df_slopes_enviro <- left_join(logOdds, envSlopes, by = 'city') %>% 
+df_slopes_enviro <- left_join(logOdds_fromGlobalModel, envSlopes, by = 'city') %>% 
   left_join(., envMeans, by = 'city')
 
 # Convert to matrices

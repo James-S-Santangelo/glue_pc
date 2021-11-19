@@ -19,6 +19,14 @@ log_reg_stats_distance <- df_list %>%
           predictor = 'std_distance') %>% 
   rename_at(vars(-city),function(x) paste0(x,"_Dist"))
 
+# Get change in log-odds of HCN from binomial regression
+# These are extracted from the mixed model
+logOdds_fromGlobalModel_forSupMat <- coef(glueClineModel_stdDist)$city %>%
+  rownames_to_column(var = 'city') %>% 
+  dplyr::select(city, std_distance) %>% 
+  rename('betaLog_fromGlobalModel' = 'std_distance') %>% 
+  mutate(betaLog_fromGlobalModel = round(betaLog_fromGlobalModel, 3))
+
 # Get stats from logistic regression by city using standardized GMIS as a predictor
 log_reg_stats_gmis <- df_list %>% 
   map_dfr(., logistic_regression_stats, 
@@ -37,7 +45,8 @@ log_reg_stats_hii <- df_all_popMeans_stdHII %>%
 linearClineTable_mod <- log_reg_stats_distance %>% 
   left_join(., log_reg_stats_gmis, by = 'city') %>% 
   left_join(., log_reg_stats_hii, by = 'city') %>% 
-  left_join(., continents, by = 'city')
+  left_join(., continents, by = 'city') %>% 
+  left_join(., logOdds_fromGlobalModel_forSupMat, by = 'city')
 
 # Write cline model summary to disk
 outpath <- "analysis/supplementary-tables/allCities_logisticReg_coefs.csv"
