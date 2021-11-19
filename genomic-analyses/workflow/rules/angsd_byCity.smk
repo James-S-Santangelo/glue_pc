@@ -77,7 +77,7 @@ rule angsd_gl_byCity:
         site = '4fold'
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 5000,
-        time = '12:00:00' 
+        time = '08:00:00' 
     shell:
         """
         NUM_IND=$( wc -l < {input.bams} );

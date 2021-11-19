@@ -45,7 +45,7 @@ rule pcangsd_byCity:
         rules.angsd_gl_byCity.output.gls
     output:
         cov = '{0}/pcangsd/by_city/{{city}}/{{city}}_{{site}}_maf{{maf}}_pcangsd.cov'.format(POP_STRUC_DIR),
-        pi = '{0}/pcangsd/by_city/{{city}}/{{city}}_{{site}}_maf{{maf}}_pcangsd.pi.npy'.format(POP_STRUC_DIR)
+        Q = '{0}/pcangsd/by_city/{{city}}/{{city}}_{{site}}_maf{{maf}}_pcangsd.admix.Q.npy'.format(POP_STRUC_DIR)
     log: 'logs/pcangsd_byCity/{city}_{site}_maf{maf}_pcangsd.log'
     container: 'library://james-s-santangelo/pcangsd/pcangsd:0.99'
     threads: 6
