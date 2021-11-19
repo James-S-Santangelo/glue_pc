@@ -16,12 +16,14 @@ min_version('6.9.1')
 configfile: '../config/graham.yaml'
 
 # Import rules from QC workflow
+# Use specific commit for QC pipeline in case it changes for future projects
 module glue_dnaSeqQC:
-    snakefile: config['glue_dnaSeqQC_workflow']['snakefile']
+    snakefile: github("James-S-Santangelo/glue_dnaSeqQC", path="workflow/Snakefile", commit="b987121")
     config: config['glue_dnaSeqQC_workflow']
 
 use rule * from glue_dnaSeqQC as glue_dnaSeqQC_*
 
+# Load sample sheet
 SAMPLE_SHEET_DF = pd.read_table(config['samples'], sep='\t')
 
 # Sample and chromosome info
