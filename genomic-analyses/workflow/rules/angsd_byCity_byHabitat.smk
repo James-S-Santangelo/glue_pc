@@ -98,7 +98,7 @@ rule angsd_alleleFreqs_byCity_byHabitat:
     input:
         unpack(get_files_for_alleleFreq_estimation_byCity_byHabitat)
     output:
-        afs = temp('{0}/afs/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}.mafs.gz'.format(ANGSD_DIR))
+        afs = '{0}/afs/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}.mafs.gz'.format(ANGSD_DIR)
     log: 'logs/angsd_alleleFreq_byCity_byHabitat/{city}_{habitat}_{site}_saf.log'
     container: 'library://james-s-santangelo/angsd/angsd:0.933'
     params:
