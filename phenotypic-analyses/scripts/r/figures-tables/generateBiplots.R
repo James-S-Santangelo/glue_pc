@@ -35,10 +35,9 @@ df_list <- create_df_list(inpath)
 
 # Apply write_popMeans to each dataframe in datafame list
 outpath <- "analysis/figures/cline_biplots/"
-purrr::walk(df_list, create_Biplot, response_var = "freqHCN", 
-            predictor_var = "std_distance", 
+purrr::walk(df_list, create_Biplot,
             outpath = outpath)
-
+df_list[1]
 #### ENVIRONMENTAL VARIABLES ####
 
 ## ANNUAL AI ##

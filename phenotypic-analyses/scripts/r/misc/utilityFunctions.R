@@ -69,73 +69,27 @@ std_var_zero_one <- function(df, var){
 #' @param outpath Path to which plot will be written
 #' 
 #' @return None. Writes plot to disk.
-create_Biplot <- function(df, response_var, predictor_var, outpath){
+create_Biplot <- function(df, outpath){
   
   # Get city name
   city_name <- df$city[1]
   
-  # print(path)
-  response_vector <- df %>% pull(response_var)
-
-  # Model the environmental variable as response against standardized distance
-  std_distance <- df %>% pull(std_distance)
-  std_distance_squared <- df %>% 
-    mutate(std_distance_squared = std_distance^2) %>% 
-    pull(std_distance_squared)
-
-  
-  if(!(all(is.na(response_vector)))){
+  plot <- df %>%
+    ggplot(., aes(x = std_distance, y = freqHCN)) +
+    geom_point(colour = "black", size = 3.5) +
+    geom_line(stat = "smooth", 
+              formula = y ~ x, 
+              method=function(formula,data,weights=weight) rlm(formula,data, weights=weight,maxit=200)) + 
+    ylab("HCN frequency") + xlab("Standardized distance") +
+    ng1
+      
+    path <- paste0(outpath, city_name, "_", "std_distance", "_", "by", 
+                   "_", "freqHCN", ".pdf")
+    # print(path)
     
-    quadratic_model = lm(response_vector ~ std_distance + std_distance_squared) # Specify quadratic model
-    linear_model = update(quadratic_model, ~ . - std_distance_squared) # Specify linear model
-    
-    AIC_quad = AIC(quadratic_model) # Get AIC of quadratic model
-    AIC_lin = AIC(linear_model) # Get AIC of linear model
-    
-    if (abs(AIC_quad) - abs(AIC_lin) > 2) {
-      
-      plot <- df %>%
-        ggplot(., aes_string(x = predictor_var, y = response_var)) +
-        geom_point(colour = "black", size = 3.5) +
-        geom_smooth(method = "lm", formula = y ~ x + I(x^2), se = TRUE, colour = "black", size = 2) + 
-        ylab(response_var) + xlab(predictor_var) +
-        ng1
-      
-      path <- paste0(outpath, city_name, "_", response_var, "_", "by", 
-                     "_", predictor_var, ".pdf")
-      # print(path)
-      
-      # Write dataframe
-      ggsave(filename = path, plot = plot, device = "pdf",
-             width = 5, height = 5, dpi = 300)
-    }else{
-      
-      plot <- df %>%
-        ggplot(., aes_string(x = predictor_var, y = response_var)) +
-        geom_point(colour = "black", size = 3.5) +
-        geom_smooth(method = "lm", formula = y ~ x, se = TRUE, colour = "black", size = 2) + 
-        ylab(response_var) + xlab(predictor_var) +
-        ng1
-      
-      path <- paste0(outpath, city_name, "_", response_var, "_", "by", 
-                     "_", predictor_var, ".pdf")
-      # print(path)
-      
-      # Write dataframe
-      ggsave(filename = path, plot = plot, device = "pdf",
-             width = 5, height = 5, dpi = 300)
-      
-    }
-    
-  }else{
-    write_line <- sprintf("Missing %s data", response_var)
-    path <- paste0(outpath, city_name, "_", response_var, "_", "by", 
-                   "_", predictor_var, ".txt")
-    # outfile <- paste0(path, ".txt")
-    # file.create(err_file)
-    write(write_line, path)
-  }
-  
+    # Write dataframe
+    ggsave(filename = path, plot = plot, device = "pdf",
+           width = 5, height = 5, dpi = 300)
 }
 
 
