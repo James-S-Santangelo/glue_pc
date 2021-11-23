@@ -32,7 +32,7 @@ dependencies:
   - bwidget=1.9.14=ha770c72_1
   - bzip2=1.0.8=h7f98852_4
   - c-ares=1.17.2=h7f98852_0
-  - ca-certificates=2021.10.8=ha878542_0
+  - ca-certificates=2021.10.26=h06a4308_2
   - cachetools=4.2.4=pyhd8ed1ab_0
   - cairo=1.16.0=h6cf1ce9_1008
   - certifi=2021.10.8=py38h578d9bd_1
@@ -343,6 +343,9 @@ dependencies:
   - r-ps=1.6.0=r36hcfec24a_0
   - r-purrr=0.3.4=r36hcfec24a_1
   - r-quantreg=5.85=r36h52d45c5_0
+  - r-r.methodss3=1.8.1=r36h6115d3f_0
+  - r-r.oo=1.24.0=r36h6115d3f_0
+  - r-r.utils=2.8.0=r36h6115d3f_0
   - r-r6=2.5.0=r36hc72bb7e_0
   - r-rcolorbrewer=1.1_2=r36h6115d3f_1003
   - r-rcpp=1.0.6=r36h03ef668_0
