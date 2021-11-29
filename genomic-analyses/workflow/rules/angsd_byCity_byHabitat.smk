@@ -12,8 +12,6 @@ rule create_bam_list_byCity_byHabitat:
         rules.create_bam_list_finalSamples.output
     output:
         '{0}/bam_lists/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}_bams.list'.format(PROGRAM_RESOURCE_DIR)
-    wildcard_constraints:
-        habitat='u|r'
     run:
         import os
         import pandas as pd
@@ -51,8 +49,6 @@ rule angsd_saf_likelihood_byCity_byHabitat:
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 8000,
         time = '03:00:00'
-    wildcard_constraints:
-        site='4fold'
     shell:
         """
         angsd -GL 1 \

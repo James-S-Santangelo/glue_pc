@@ -76,8 +76,6 @@ rule angsd_gl_byCity:
     params:
         out = '{0}/gls/by_city/{{city}}/{{city}}_{{site}}_maf{{maf}}'.format(ANGSD_DIR)
     threads: 6
-    wildcard_constraints:
-        site = '4fold'
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 5000,
         time = '08:00:00' 

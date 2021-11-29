@@ -55,8 +55,6 @@ rule angsd_permuted_saf_likelihood_byCity_byHabitat:
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 8000,
         time = '03:00:00'
-    wildcard_constraints:
-        site='4fold'
     shell:
         """
         angsd -GL 1 \

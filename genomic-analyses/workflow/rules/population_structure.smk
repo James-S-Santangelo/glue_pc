@@ -17,8 +17,6 @@ rule pcangsd_allSamples:
     threads: 10
     params:
         out = '{0}/pcangsd/allSamples/allSamples_{{site}}_maf{{maf}}_pcangsd'.format(POP_STRUC_DIR)
-    wildcard_constraints:
-        site = '4fold'
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 12000,
         time = '03:00:00'
@@ -51,8 +49,6 @@ rule pcangsd_byCity:
     threads: 6
     params:
         out = '{0}/pcangsd/by_city/{{city}}/{{city}}_{{site}}_maf{{maf}}_pcangsd'.format(POP_STRUC_DIR)
-    wildcard_constraints:
-        site = '4fold'
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 8000,
         time = '02:00:00'

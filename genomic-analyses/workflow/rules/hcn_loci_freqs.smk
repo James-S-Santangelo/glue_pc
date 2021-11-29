@@ -15,8 +15,6 @@ rule split_angsd_sites_byChrom:
     output:
         sites = '{0}/angsd_sites/{{chrom}}/{{chrom}}_Trepens_{{site}}.sites'.format(PROGRAM_RESOURCE_DIR),
     log: 'logs/split_random_angsd_sites_byChrom/{chrom}_{site}_split_angsd_sites_random.log'
-    wildcard_constraints:
-        site='4fold|0fold'
     shell:
         """
         grep {wildcards.chrom} {input} > {output.sites} 2> {log}
@@ -33,8 +31,6 @@ rule index_chromosomal_angsd_sites:
         idx = '{0}/angsd_sites/{{chrom}}/{{chrom}}_Trepens_{{site}}.sites.idx'.format(PROGRAM_RESOURCE_DIR)
     log: 'logs/index_random_chromosomal_angsd_sites/{chrom}_{site}_index.log'
     container: 'library://james-s-santangelo/angsd/angsd:0.933'
-    wildcard_constraints:
-        site='4fold|0fold'
     shell:
         """
         angsd sites index {input} 2> {log}
@@ -113,8 +109,6 @@ rule angsd_saf_likelihood_snps_hcn_chroms:
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 4000,
         time = '01:00:00'
-    wildcard_constraints:
-        site='4fold'
     shell:
         """
         angsd -GL 1 \
@@ -297,8 +291,6 @@ rule angsd_alleleFreqs_byCity_byHabitat:
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 8000,
         time = '06:00:00'
-    wildcard_constraints:
-        site='4fold'
     shell:
         """
         angsd -GL 1 \
