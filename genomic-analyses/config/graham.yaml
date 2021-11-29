@@ -3,9 +3,12 @@ samples: ../resources/glue_pc_sampleSheet.txt
 chromosomes: ../resources/chromosome_file.txt
 gff: ../resources/TrR.v5.renamed_reformated.gtf.gz
 
-# Path prefixes
+# Path prefixes for results output by this pipeline
 results_prefix: /home/santang3/scratch/glue/pc/results
 temp_dir: /home/santang3/scratch/glue/tmp
+
+# Path prefixes required by dnaSeqQC pipeline that is imported as Snakemake module
+# Some of these may be the same
 glue_dnaSeqQC_workflow: 
   snakefile: /home/santang3/scratch/glue/dnaSeqQC/glue_dnaSeqQC/workflow/Snakefile
   raw_read_prefix: /home/santang3/projects/def-johnso73/raw_data
@@ -15,10 +18,12 @@ glue_dnaSeqQC_workflow:
   gff: ../resources/TrR.v5.renamed_reformated.gtf.gz
   temp_dir: /home/santang3/scratch/glue/tmp
 
+# Cluster parameters
 cluster:
   cores_per_node: 32
 
 # Parameters for variant calling and SFS estimation with ANGSD
+# TODO: Some other parameters are hardcoded in the Snakefiles. Should probably move them here or move this to the Snakefile for consistency
 angsd:
   max_dp: 4200   # ~2 x mean coverage from qualimap x # samples
 
