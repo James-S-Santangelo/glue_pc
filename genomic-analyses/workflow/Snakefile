@@ -84,7 +84,7 @@ rule all:
         '{0}/degeneracy.done'.format(PROGRAM_RESOURCE_DIR),
         # Angsd
         '{0}/angsd_allSamples.done'.format(ANGSD_DIR),
-        '{0}/angsd_byCity_done'.format(ANGSD_DIR),
+        '{0}/angsd_byCity.done'.format(ANGSD_DIR),
         '{0}/angsd_byCity_byHabitat.done'.format(ANGSD_DIR),
         '{0}/angsd_byCity_byHabitat_permuted.done'.format(ANGSD_DIR),
         # Population structure
