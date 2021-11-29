@@ -59,8 +59,8 @@ def get_files_for_alleleFreq_estimation_byCity_byHabitat(wildcards):
     """
     Get files to estimate Allele Frequencies for urban and rural habitats by city.
     """
-    sites_idx = expand(rules.angsd_index_allDegenerateSites.output.idx, site=wildcards.site)
-    sites = expand(rules.convert_sites_for_angsd.output, site=wildcards.site)
+    sites_idx = expand(rules.angsd_index_city_snps.output.idx, site=wildcards.site, city=wildcards.city)
+    sites = expand(rules.snps_forAlleleFreqs_byCity_byHabitat.output, site=wildcards.site, city=wildcards.city)
     ref = rules.glue_dnaSeqQC_unzip_reference.output
     bams = expand(rules.create_bam_list_byCity_byHabitat.output, city=wildcards.city, habitat=wildcards.habitat, site = wildcards.site)
     chroms = config['chromosomes']

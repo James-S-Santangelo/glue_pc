@@ -101,49 +101,13 @@ rule angsd_gl_byCity:
             -bam {input.bams} 2> {log}
         """
 
-rule angsd_alleleFreqs_byCity:
-    input:
-        sites = rules.convert_sites_for_angsd.output,
-        sites_idx = rules.angsd_index_allDegenerateSites.output.idx,
-        ref = rules.glue_dnaSeqQC_unzip_reference.output,
-        bams = rules.concat_habitat_bamLists_withinCities.output,
-        chroms = config['chromosomes']
-    output:
-        afs = '{0}/afs/by_city/{{city}}/{{city}}_{{site}}.mafs.gz'.format(ANGSD_DIR)
-    log: 'logs/angsd_alleleFreq_byCity/{city}_{site}_maf.log'
-    container: 'library://james-s-santangelo/angsd/angsd:0.933'
-    params:
-        out = '{0}/afs/by_city/{{city}}/{{city}}_{{site}}'.format(ANGSD_DIR)
-    threads: 6
-    resources:
-        mem_mb = lambda wildcards, attempt: attempt * 8000,
-        time = '08:00:00'
-    shell:
-        """
-        angsd -GL 1 \
-            -out {params.out} \
-            -nThreads {threads} \
-            -doMajorMinor 4 \
-            -SNP_pval 1e-6 \
-            -doMaf 1 \
-            -baq 2 \
-            -ref {input.ref} \
-            -sites {input.sites} \
-            -minQ 20 \
-            -minMapQ 30 \
-            -anc {input.ref} \
-            -rf {input.chroms} \
-            -bam {input.bams} 2> {log}
-        """
-
 ##############
 #### POST ####
 ##############
 
 rule angsd_byCity_done:
     input:
-        expand(rules.angsd_gl_byCity.output, city=CITIES, site='4fold', maf='0.05'),
-        expand(rules.angsd_alleleFreqs_byCity.output, city=CITIES, site='4fold')
+        expand(rules.angsd_gl_byCity.output, city=CITIES, site='4fold', maf='0.05')
     output:
         '{0}/angsd_byCity.done'.format(ANGSD_DIR)
     shell:

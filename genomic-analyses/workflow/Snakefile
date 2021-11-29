@@ -74,7 +74,7 @@ wildcard_constraints:
     site='0fold|4fold'
 
 # Rules to be run locally on as single process
-localrules: create_tmp_dir, index_degenerate_bam, create_samples_to_remove, create_bam_list_finalSamples, convert_sites_for_angsd, angsd_index_allDegenerateSites, select_random_degenerate_sites, angsd_index_random_degen_sites, split_random_angsd_sites_byChrom, index_random_chromosomal_angsd_sites, angsd_index_sites, angsd_allSamples_done, create_bam_list_byCity_byHabitat, select_random_degenerate_sites, angsd_fst_readable, create_random_bam_list_byCity_byHabitat, angsd_permuted_fst_readable, angsd_byCity_byHabitat_done, angsd_byCity_byHabitat_permuted_done, concat_habitat_bamLists_withinCities, remove_lowCovSamples_forPCA_byCity, angsd_byCity_done, split_angsd_sites_byChrom, index_chromosomal_angsd_sites, angsd_fst_readable_snps_hcn_chroms, hcn_loci_freq_done
+localrules: create_tmp_dir, index_degenerate_bam, create_samples_to_remove, create_bam_list_finalSamples, convert_sites_for_angsd, angsd_index_allDegenerateSites, select_random_degenerate_sites, angsd_index_random_degen_sites, split_random_angsd_sites_byChrom, index_random_chromosomal_angsd_sites, angsd_index_sites, angsd_allSamples_done, create_bam_list_byCity_byHabitat, select_random_degenerate_sites, angsd_fst_readable, create_random_bam_list_byCity_byHabitat, snps_forAlleleFreqs_byCity_byHabitat, angsd_index_city_snps, angsd_permuted_fst_readable, angsd_byCity_byHabitat_done, angsd_byCity_byHabitat_permuted_done, concat_habitat_bamLists_withinCities, remove_lowCovSamples_forPCA_byCity, angsd_byCity_done, split_angsd_sites_byChrom, index_chromosomal_angsd_sites, angsd_fst_readable_snps_hcn_chroms, hcn_loci_freq_done
 
 # Pipeline targets
 # Each step generates an empty flagfile as its final target
@@ -90,7 +90,7 @@ rule all:
         # Population structure
         '{0}/population_structure.done'.format(POP_STRUC_DIR),
         # HCN loci frequencies
-        '{0}/hcn_loci_freq_done'.format(HCN_LOCI_DIR)
+        '{0}/hcn_loci_freq.done'.format(HCN_LOCI_DIR)
 
 # Create temporary directory used throughout pipeline
 rule create_tmp_dir:

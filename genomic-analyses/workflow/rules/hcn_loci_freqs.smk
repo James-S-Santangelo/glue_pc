@@ -202,15 +202,105 @@ rule angsd_fst_readable_snps_hcn_chroms:
         realSFS fst print {input} > {output} 2> {log}
         """
 
+rule angsd_alleleFreqs_byCity:
+    input:
+        sites = rules.convert_sites_for_angsd.output,
+        sites_idx = rules.angsd_index_allDegenerateSites.output.idx,
+        ref = rules.glue_dnaSeqQC_unzip_reference.output,
+        bams = rules.concat_habitat_bamLists_withinCities.output,
+        chroms = config['chromosomes']
+    output:
+        afs = '{0}/afs/by_city/{{city}}/{{city}}_{{site}}.mafs.gz'.format(ANGSD_DIR)
+    log: 'logs/angsd_alleleFreq_byCity/{city}_{site}_maf.log'
+    container: 'library://james-s-santangelo/angsd/angsd:0.933'
+    params:
+        out = '{0}/afs/by_city/{{city}}/{{city}}_{{site}}'.format(ANGSD_DIR)
+    threads: 6
+    resources:
+        mem_mb = lambda wildcards, attempt: attempt * 8000,
+        time = '08:00:00'
+    shell:
+        """
+        angsd -GL 1 \
+            -out {params.out} \
+            -nThreads {threads} \
+            -doMajorMinor 4 \
+            -SNP_pval 1e-6 \
+            -doMaf 1 \
+            -baq 2 \
+            -ref {input.ref} \
+            -sites {input.sites} \
+            -minQ 20 \
+            -minMapQ 30 \
+            -anc {input.ref} \
+            -rf {input.chroms} \
+            -bam {input.bams} 2> {log}
+        """
+
+rule snps_forAlleleFreqs_byCity_byHabitat:
+    input:
+        rules.angsd_alleleFreqs_byCity.output
+    output:
+        '{0}/angsd_sites/alleleFreqs/{{city}}_{{site}}_snps.sites'.format(PROGRAM_RESOURCE_DIR)
+    log: 'logs/snps_forAlleleFreqs_byCity_byHabitat/{city}_{site}.log'
+    shell:
+        """
+        zcat {input} | tail -n +2 | cut -f1,2 > {output} 2> {log}
+        """
+
+rule angsd_index_city_snps:
+    input:
+        rules.snps_forAlleleFreqs_byCity_byHabitat.output
+    output:
+        idx = '{0}/angsd_sites/alleleFreqs/{{city}}_{{site}}_snps.sites.idx'.format(PROGRAM_RESOURCE_DIR),
+        binary = '{0}/angsd_sites/alleleFreqs/{{city}}_{{site}}_snps.sites.bin'.format(PROGRAM_RESOURCE_DIR)
+    log: 'logs/angsd_index_city_snps/{city}_{site}_index.log'
+    container: 'library://james-s-santangelo/angsd/angsd:0.933'
+    shell:
+        """
+        angsd sites index {input} 2> {log}
+        """
+
+rule angsd_alleleFreqs_byCity_byHabitat:
+    input:
+        unpack(get_files_for_alleleFreq_estimation_byCity_byHabitat)
+    output:
+        afs = '{0}/afs/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}.mafs.gz'.format(ANGSD_DIR)
+    log: 'logs/angsd_alleleFreq_byCity_byHabitat/{city}_{habitat}_{site}_saf.log'
+    container: 'library://james-s-santangelo/angsd/angsd:0.933'
+    params:
+        out = '{0}/afs/by_city/{{city}}/{{city}}_{{habitat}}_{{site}}'.format(ANGSD_DIR)
+    threads: 6
+    resources:
+        mem_mb = lambda wildcards, attempt: attempt * 8000,
+        time = '06:00:00'
+    wildcard_constraints:
+        site='4fold'
+    shell:
+        """
+        angsd -GL 1 \
+            -out {params.out} \
+            -nThreads {threads} \
+            -doMajorMinor 4 \
+            -doMaf 1 \
+            -baq 2 \
+            -ref {input.ref} \
+            -sites {input.sites} \
+            -minQ 20 \
+            -minMapQ 30 \
+            -bam {input.bams} 2> {log}
+        """
+
 rule hcn_loci_freq_done:
     """
     Generate empty flag file to signal successful completion of GL and deletion frequency estimation
     """
     input:
         expand(rules.calculate_hcn_loci_frequencies.output, gene=['li', 'ac']),
-        expand(rules.angsd_fst_readable_snps_hcn_chroms.output, city=CITIES, gene=['li','ac'], site='4fold')
+        expand(rules.angsd_fst_readable_snps_hcn_chroms.output, city=CITIES, gene=['li','ac'], site='4fold'),
+        expand(rules.angsd_alleleFreqs_byCity_byHabitat.output, city=CITIES, habitat=HABITATS, site=['4fold'])
     output:
-        '{0}/hcn_loci_freq_done'.format(HCN_LOCI_DIR)
+        '{0}/hcn_loci_freq.done'.format(HCN_LOCI_DIR)
     shell:
         """
         touch {output}
