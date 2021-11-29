@@ -48,10 +48,6 @@ FIGURES_DIR = '{0}/figures'.format(config['results_prefix'])
 
 ## Fixed parameters
 
-# Sets number of tasks for processes to be split across nodes during cluster execution
-# (e.g. estimation of SAF files and GLs)
-CORES_PER_NODE = config['cluster']['cores_per_node']
-
 # Parameters for variant calling with ANGSD
 ANGSD_MAX_DP = config['angsd']['max_dp']
 

@@ -18,10 +18,6 @@ glue_dnaSeqQC_workflow:
   gff: ../resources/TrR.v5.renamed_reformated.gtf.gz
   temp_dir: /home/santang3/scratch/glue/tmp
 
-# Cluster parameters
-cluster:
-  cores_per_node: 32
-
 # Parameters for variant calling and SFS estimation with ANGSD
 # TODO: Some other parameters are hardcoded in the Snakefiles. Should probably move them here or move this to the Snakefile for consistency
 angsd:
