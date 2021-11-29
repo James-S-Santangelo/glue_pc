@@ -38,6 +38,9 @@ rule get_fourfold_zerofold:
         """
 
 rule degeneracy_done:
+    """
+    Write empty flag file signalling successful completion of Degenerate site extraction
+    """
     input:
         expand(rules.get_fourfold_zerofold.output, site=['4fold', '0fold'])
     output:

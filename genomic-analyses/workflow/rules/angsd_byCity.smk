@@ -21,6 +21,9 @@ rule concat_habitat_bamLists_withinCities:
         """
 
 rule remove_lowCovSamples_forPCA_byCity:
+    """
+    Removes samples with mean coverage lower than `params.cov` from within-city BAM lists.
+    """
     input:
         bams = rules.concat_habitat_bamLists_withinCities.output,
         qc_data = '{0}/multiqc/multiqc_data/multiqc_qualimap_bamqc_genome_results_qualimap_bamqc.txt'.format(QC_DIR)

@@ -1,5 +1,6 @@
 # Rules to get allele frequencies at Ac and Li loci from read count data
 # Also uses ANGSD to estimate Fst of SNPs along chromosomes containing Ac and Li
+# Estimates 4fold allele frequencie sin urban and rural habitats for HCN differentiation test
 
 ###############
 #### SETUP ####
@@ -89,6 +90,8 @@ rule calculate_hcn_loci_frequencies:
 ########################################
 #### FST ALONG HCN LOCI CHROMOSOMES ####
 ########################################
+
+# Used as null distribution against which to compare Ac and Li frequencies estimated above
 
 rule angsd_saf_likelihood_snps_hcn_chroms:
     """
@@ -202,7 +205,17 @@ rule angsd_fst_readable_snps_hcn_chroms:
         realSFS fst print {input} > {output} 2> {log}
         """
 
+######################################
+#### 4FOLD SNP ALLELE FREQUENCIES ####
+######################################
+
+# Used to estimate null distribution against which to compare observed differentiation in HCN
+
 rule angsd_alleleFreqs_byCity:
+    """
+    Estimate minor allele frequency of 4fold SNPs across all samples in a city.
+    Used to get polymophic SNPs across all samples in a city.
+    """
     input:
         sites = rules.convert_sites_for_angsd.output,
         sites_idx = rules.angsd_index_allDegenerateSites.output.idx,
@@ -238,6 +251,9 @@ rule angsd_alleleFreqs_byCity:
         """
 
 rule snps_forAlleleFreqs_byCity_byHabitat:
+    """
+    Extract positions of 4fold SNPs across all samples in a city
+    """
     input:
         rules.angsd_alleleFreqs_byCity.output
     output:
@@ -249,6 +265,9 @@ rule snps_forAlleleFreqs_byCity_byHabitat:
         """
 
 rule angsd_index_city_snps:
+    """
+    Index within-city 4fold SNP positions for use with ANGSD.
+    """
     input:
         rules.snps_forAlleleFreqs_byCity_byHabitat.output
     output:
@@ -262,6 +281,10 @@ rule angsd_index_city_snps:
         """
 
 rule angsd_alleleFreqs_byCity_byHabitat:
+    """
+    Estimate frequency of 4fold SNPs separately in urban and rural habits for each city.
+    Uses city-wide 4fold SNPs as -sites input to include SNPs that are fixed in one habitat or the other.
+    """
     input:
         unpack(get_files_for_alleleFreq_estimation_byCity_byHabitat)
     output:
@@ -293,7 +316,7 @@ rule angsd_alleleFreqs_byCity_byHabitat:
 
 rule hcn_loci_freq_done:
     """
-    Generate empty flag file to signal successful completion of GL and deletion frequency estimation
+    Generate empty flag file to signal successful completion of HCN and Ac/Li differentiation test rules.
     """
     input:
         expand(rules.calculate_hcn_loci_frequencies.output, gene=['li', 'ac']),

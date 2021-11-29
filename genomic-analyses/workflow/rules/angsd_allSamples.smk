@@ -24,6 +24,9 @@ rule subset_bams_degeneracy:
         """
 
 rule index_degenerate_bam:
+    """
+    Index BAM subsetted around 4fold sites
+    """
     input:
         rules.subset_bams_degeneracy.output
     output:
@@ -37,9 +40,8 @@ rule index_degenerate_bam:
 
 rule create_samples_to_remove:
     """
-    Writes file with sample names for those with high alignment error rates and another 
-    with samples with low coverage. Thresholds were assessed through exploratory analysis
-    of QC data. 
+    Writes file with sample names for those with high alignment error rates.
+    Thresholds were assessed through exploratory analysis of QC data. 
     """
     input:
         flag = rules.glue_dnaSeqQC_multiqc.output,
@@ -90,14 +92,15 @@ rule convert_sites_for_angsd:
     output:
         '{0}/angsd_sites/Trepens_{{site}}.sites'.format(PROGRAM_RESOURCE_DIR) 
     log: 'logs/convert_sites_for_angsd/convert_{site}_for_angsd.log'
-    wildcard_constraints:
-        site='0fold|4fold'
     shell:
         """
         awk '{{print $1"\t"$2+1}}' {input} > {output} 2> {log}
         """
 
 rule angsd_index_allDegenerateSites:
+    """
+    Indexes ANGSD sites files containing all genome-wide 4fold or 0fold sites.
+    """
     input:
         rules.convert_sites_for_angsd.output
     output:
@@ -112,7 +115,7 @@ rule angsd_index_allDegenerateSites:
     
 rule select_random_degenerate_sites:
     """
-    Random select `params.nSites` degenerate (i.e., 4fold or 0fold) sites from across the genome
+    Randomly select `params.nSites` degenerate (i.e., 4fold or 0fold) sites from across the genome
     """
     input:
         rules.convert_sites_for_angsd.output
@@ -147,7 +150,7 @@ rule angsd_index_random_degen_sites:
 
 rule split_random_angsd_sites_byChrom:
     """
-    Split randomly selected degenerate ANGSD sites file into separate sites files by chromosome
+    Split randomly selected degenerate ANGSD sites file into separate sites files by chromosome. Helps parallelize some computations.
     """
     input:
         rules.select_random_degenerate_sites.output
@@ -200,8 +203,6 @@ rule angsd_gl_allSamples:
     resources:
         mem_mb = lambda wildcards, attempt: attempt * 30000,
         time = '12:00:00'
-    wildcard_constraints:
-        site='4fold'
     shell:
         """
         NUM_IND=$( wc -l < {input.bams} );
@@ -273,7 +274,7 @@ rule concat_angsd_mafs:
 
 rule angsd_allSamples_done:
     """
-    Generate empty flag file signalling successful completion of global SFS and GL estimation across all samples. 
+    Generate empty flag file signalling successful completion of GL estimation across all samples. 
     """
     input:
         expand(rules.concat_angsd_gl.output, site=['4fold']),
