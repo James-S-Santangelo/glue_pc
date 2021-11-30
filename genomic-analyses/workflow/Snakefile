@@ -18,7 +18,7 @@ configfile: '../config/graham.yaml'
 # Import rules from QC workflow
 # Use specific commit for QC pipeline in case it changes for future projects
 module glue_dnaSeqQC:
-    snakefile: github("James-S-Santangelo/glue_dnaSeqQC", path="workflow/Snakefile", commit="b987121")
+    snakefile: github("James-S-Santangelo/glue_dnaSeqQC", path="workflow/Snakefile", commit="b32ad85")
     config: config['glue_dnaSeqQC_workflow']
 
 use rule * from glue_dnaSeqQC as glue_dnaSeqQC_*
