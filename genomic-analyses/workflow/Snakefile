@@ -104,11 +104,3 @@ include: 'rules/angsd_byCity_byHabitat_permute.smk'
 include: 'rules/angsd_byCity.smk'
 include: 'rules/population_structure.smk'
 include: 'rules/hcn_loci_freqs.smk'
-
-# Rule to clean directory of all output files
-rule clean:
-    """Clean pipeline output files"""
-    params:
-        '{0}'.format(config['results_prefix'])
-    shell:
-        'rm -rfv {params}'
