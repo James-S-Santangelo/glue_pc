@@ -3,7 +3,6 @@ data/clean/*
 data/raw/*
 !data/raw/latLongs_cityCenters.csv
 !data/raw/johnson_2018_plantsPerPop.csv
-!data/raw/GLUE_collaborators.csv 
 !data/raw/mtjj_jss/
 data/raw/mtjj_jss/*
 !data/raw/mtjj_jss/mtjj_popMeans/
@@ -11,7 +10,7 @@ data/raw/mtjj_jss/*
 data/raw/environmental_data/README.md
 !data/raw/city_data/
 analysis/*
-!analysis/supplementary-tables/
+!analysis/tables/
 *.ipynb
 Rmarkdown/
 *.pyc

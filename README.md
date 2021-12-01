@@ -16,3 +16,5 @@ Here is a brief description of each subdirectory. Details and documentation can 
 - [genomic-analyses](./genomic-analyses): Contains the pipeline used to generate the genomic results derived from low-coverage (\~1X) whole-genome resequencing of 2,074 white clover plants. Uses Conda + Snakemake for reproducibility and pipeline management. 
 - [phenotypic-analyses](./phenotypic-analyses): Contains the code used to generate results from the environmental and phenotypic data (i.e., HCN frequencies). Uses Rproject + `renv` for project and dependency management.
 
+Note: The phenotypic analyses directory produces files used by the Jupyter Notebooks in the genomics analyses directory so it should be run first. However, all required files are present in the GitHub repo and archived data repositories. 
+
