@@ -8,4 +8,3 @@ In addition, this directory contains the following 2 files:
 
 - [latLongs_cityCenters](./latLongs_cityCenters.csv): Latitude and Longitudes for city centres for each city
 - [johnson_2018_plantsperPop.csv](./johnson_2018_plantsperPop.csv): Number of plants per population from [Johnson _et al._ 2018](https://royalsocietypublishing.org/doi/10.1098/rspb.2018.1019)
-- [Johnson et al_20_city_clover 07.12.16_RAW.csv](./Johnson&#32et&#32al_20_city_clover&#3207.12.16_RAW.csv): Raw indnividual-plant data from [Johnson _et al._ 2018](https://royalsocietypublishing.org/doi/10.1098/rspb.2018.1019)
