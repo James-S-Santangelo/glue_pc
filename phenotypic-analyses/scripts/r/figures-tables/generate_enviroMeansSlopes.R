@@ -42,5 +42,5 @@ enviroMeansSlopes_merged <- cityEnviroMeans %>%
   left_join(., cityEnviroSlopesRLM, by = "city") %>%
   mutate_if(is.numeric, round, 3)
 
-write_csv(enviroMeansSlopes_merged, "analysis/supplementary-tables/eniroMeansSlopes.csv", col_names = TRUE)
+write_csv(enviroMeansSlopes_merged, "analysis/tables/eniroMeansSlopes.csv", col_names = TRUE)
 

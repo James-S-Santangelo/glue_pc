@@ -49,6 +49,6 @@ linearClineTable_mod <- log_reg_stats_distance %>%
   left_join(., logOdds_fromGlobalModel_forSupMat, by = 'city')
 
 # Write cline model summary to disk
-outpath <- "analysis/supplementary-tables/allCities_logisticReg_coefs.csv"
+outpath <- "analysis/tables/allCities_logisticReg_coefs.csv"
 write_csv(linearClineTable_mod, outpath, col_names = TRUE)
 

@@ -7,8 +7,8 @@
 ############################################
 
 # Load in Elastic Net coefficients and results
-elasticNet_obs_coefs <- read_csv('analysis/supplementary-tables/elasticNet_obs_coefs.csv')
-elasticNet_obs_results <- read_csv('analysis/supplementary-tables/elasticNet_obs_result.csv')
+elasticNet_obs_coefs <- read_csv('analysis/tables/elasticNet_obs_coefs.csv')
+elasticNet_obs_results <- read_csv('analysis/tables/elasticNet_obs_result.csv')
 
 # Extract nonzero coefficients
 elasticNet_obs_coefs_nonZeroOnly <- elasticNet_obs_coefs %>% 
@@ -25,4 +25,4 @@ elasticNet_coefSummary <- elasticNet_obs_coefs_nonZeroOnly %>%
             non_zero = sum(is_non_zero)) %>% 
   arrange(desc(non_zero))
 
-write_csv(elasticNet_coefSummary, 'analysis/supplementary-tables/elasticNet_coefSummary.csv')
+write_csv(elasticNet_coefSummary, 'analysis/tables/elasticNet_coefSummary.csv')

@@ -29,8 +29,9 @@ The following steps are performed using rules in this repo's Snakemake pipeline:
 ### Using the pipeline
 
 This pipeline requires `Conda` and `Singularity`:
-    - A minimal installation of `Conda` (i.e., Miniconda) can be installed by following the instructions for your platform [here](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html)
-    - Installation of `Singularity` requires Admin privileges, but using `Singularity` to run pre-created containers does not. Installation instructions can be found [here](https://sylabs.io/guides/3.5/admin-guide/installation.html). All `Singularity` containers used in this pipeline are avalaible in [this public reposity](https://cloud.sylabs.io/library/james-s-santangelo), though they will be automatically pulled and executed by the pipeline. 
+
+- A minimal installation of `Conda` (i.e., Miniconda) can be installed by following the instructions for your platform [here](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html)
+- Installation of `Singularity` requires Admin privileges, but using `Singularity` to run pre-created containers does not. Installation instructions can be found [here](https://sylabs.io/guides/3.5/admin-guide/installation.html). All `Singularity` containers used in this pipeline are avalaible in [this public reposity](https://cloud.sylabs.io/library/james-s-santangelo), though they will be automatically pulled and executed by the pipeline. 
 
 Assuming `Conda` is installed, the this repository's `Conda` environment can be replicated by running the following command:
 

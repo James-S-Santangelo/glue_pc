@@ -22,7 +22,7 @@ city_stats <- read_csv("data/raw/city_data/City_characteristics.csv") %>%
   filter(!(city %in% exclude))
 
 # Cline summary
-cline_summary <- read_csv('analysis/supplementary-tables/allCities_logisticReg_coefs.csv') %>% 
+cline_summary <- read_csv('analysis/tables/allCities_logisticReg_coefs.csv') %>% 
   dplyr::select(-continent) %>% 
   mutate(sigLog_Dist = ifelse(pvalLog_Dist < 0.05, "Yes", "No"),
          sigLog_GMIS = ifelse(pvalLog_GMIS < 0.05, "Yes", "No"),
@@ -82,4 +82,4 @@ final_table <- cline_summary %>%
                 meanHCN, sampled_by) %>% 
   mutate_if(is.numeric, round, 3)
 
-write_csv(final_table, path = "analysis/supplementary-tables/allCities_stats.csv")
+write_csv(final_table, path = "analysis/tables/allCities_stats.csv")

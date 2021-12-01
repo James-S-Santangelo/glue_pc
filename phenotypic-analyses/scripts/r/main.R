@@ -1,4 +1,4 @@
-# Step-by-step execution of scripts to reproduce results for GLUE's phenotypic data
+# Step-by-step execution of scripts to reproduce results for GLUE_PC environmental and phenotypic analyses
 #
 # Author: James S. Santangelo
 
@@ -58,12 +58,11 @@ paths <- c("data/clean/environmental_data/annualAI",
            "data/clean/popMeans_allCities_withEnviro/",
            "analysis/figures/cline_biplots/",
            "analysis/figures/environmental_biplots/",
-           "analysis/figures/manuscript-panels/",
-           "analysis/figures/manuscript-panels/figure-2/",
-           "analysis/figures/manuscript-panels/figure-3/",
-           "analysis/figures/manuscript-panels/figure-6/",
+           "analysis/figures/main_text/",
+           "analysis/figures/main_text/figure2/",
+           "analysis/figures/main_text/figure4/",
            "analysis/figures/supplemental/",
-           "analysis/supplementary-tables/")
+           "analysis/tables/")
 
 purrr::walk(paths, dir.create, recursive = T, showWarnings = T)
 
@@ -88,8 +87,9 @@ source("scripts/r/data-processing/generatePopMeans.R")
 
 # This step used a series of custom Python scripts to interface with ArcMap (v. 10.6.1)
 # and extract environmental data from Landsat 7/8 images and publicly curated databases
-# (e.g., CGIAR) for each population sampled by collaborators. Scripts are not shown here.
-# These scripts were written by Alex Tong. 
+# (e.g., CGIAR) for each population sampled by collaborators. These scripts are messy and likely 
+# difficult to run on other machines. Nonetheless, we provide them for transparency in 
+# scripts/python/gis_enviro_data_extraction
 
 # There are two exceptions: Impervious surface (GMIS) and Human Influence Index (HII), which are  
 # extracted using the scripts below. We provide the raw data from these analyses to prevent users 
@@ -127,8 +127,8 @@ source("scripts/r/data-processing/popMeans_addEnviroData.R")
 ## Step 4.1: Environmental analyses
 # Does urbanization lead to convergent environmental change in cities throughout the world? (Question 1)
 
-# Note: Permutations in this script will take a while to run
-n_perm = 1  # Number of permutations testing for urban/rural difference in mean multivariate environments
+# Note: Permutations in this script will take 20 minutes or so
+n_perm = 100  # Number of permutations testing for urban/rural difference in mean multivariate environments
 source("scripts/r/analyses/enviroAnalyses.R")
 
 # Summary of urban/rural multivariate environment PCA

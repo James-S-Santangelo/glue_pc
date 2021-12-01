@@ -7,6 +7,7 @@ inpath <- "data/clean/popMeans_allCities/"
 popMeans_dfList <- create_df_list(inpath)
 
 # Write population mean datasets with enviro data to disk
+# Additionally writes text file with missing data by city (if any)
 outpath = "data/clean/popMeans_allCities_withEnviro/"
 err_file = paste0(outpath, "missingEnviroData.txt")
 file.create(err_file)

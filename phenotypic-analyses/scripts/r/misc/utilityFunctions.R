@@ -60,39 +60,6 @@ std_var_zero_one <- function(df, var){
   return(df_out)
 }
 
-#' Generates biplot of with response variable against predictor variable
-#'     Writes biplot to disk in outpath.
-#'
-#' @param df Dataframe containing variables that will be plotted as columns
-#' @param response_var Variable to be plotted on y-axis
-#' @param predictor_var Variable to be plotted on x-axis
-#' @param outpath Path to which plot will be written
-#' 
-#' @return None. Writes plot to disk.
-create_Biplot <- function(df, outpath){
-  
-  # Get city name
-  city_name <- df$city[1]
-  
-  plot <- df %>%
-    ggplot(., aes(x = std_distance, y = freqHCN)) +
-    geom_point(colour = "black", size = 3.5) +
-    geom_line(stat = "smooth", 
-              formula = y ~ x, 
-              method=function(formula,data,weights=weight) rlm(formula,data, weights=weight,maxit=200)) + 
-    ylab("HCN frequency") + xlab("Standardized distance") +
-    ng1
-      
-    path <- paste0(outpath, city_name, "_", "std_distance", "_", "by", 
-                   "_", "freqHCN", ".pdf")
-    # print(path)
-    
-    # Write dataframe
-    ggsave(filename = path, plot = plot, device = "pdf",
-           width = 5, height = 5, dpi = 300)
-}
-
-
 #' Creates list with dataframes as elements for all CSVs in inpath
 #' 
 #' @param inpath Path to directory containing CSVs to load
@@ -239,7 +206,6 @@ generate_popMeans <- function(df, city_centers, outpath){
       write_csv(df_popMeans, path = path, col_names = TRUE)
   }
 }
-
 
 #' Clean MTJJ dataframes and standardize to GLUE dataset format
 #' 
@@ -412,164 +378,6 @@ calculate_city_eviro_means <- function(df){
   return(enviro_summary)
 } 
 
-
-#' Calculates the urban-rural difference in environmental variable
-#' 
-#' From a regression of the environmental variable against standardized distance,
-#'     calulates the difference as the predicted environmental variable when 
-#'     standardized distance equals 1 (i.e., rural) minus the y-intercept 
-#'     (i.e., urban).
-#'     
-#' @param df Dataframe for which environmental differences should be calculated
-#' 
-#' @return Dataframe with difference for each environmental variable
-#'     as a column.
-get_enviro_diff <- function(df){
-  
-  # Initialize dataset that will hold model outputs
-  modelOutputData <- data.frame(
-    city = character(),
-    annualAI_pred = numeric(),
-    annualAI_yint = numeric(),
-    annualAI_diff = numeric(),
-    annualPET_pred = numeric(),
-    annualPET_yint = numeric(),
-    annualPET_diff = numeric(),
-    DEM_pred = numeric(),
-    DEM_yint = numeric(),
-    DEM_diff = numeric(),
-    GMIS_pred = numeric(),
-    GMIS_yint = numeric(),
-    GMIS_diff = numeric(),
-    summerLST_pred = numeric(),
-    summerLST_yint = numeric(),
-    summerLST_diff = numeric(),
-    summerNDVI_pred = numeric(),
-    summerNDVI_yint = numeric(),
-    summerNDVI_diff = numeric(),
-    winterLST_pred = numeric(),
-    winterLST_yint = numeric(),
-    winterLST_diff = numeric(),
-    winterNDVI_pred = numeric(),
-    winterNDVI_yint = numeric(),
-    winterNDVI_diff = numeric(),
-    NDSI_pred = numeric(),
-    NDSI_yint = numeric(),
-    NDSI_diff = numeric(),
-    stringsAsFactors = FALSE
-  )
-  
-  # Get city
-  city = df$city[[1]]
-  
-  # Vars for which urban-rural differences will be calculated
-  vars <- c("annualAI_Mean", "annualPET_Mean", "DEM_Mean", "GMIS_Mean", "summerLST_Mean",
-            "summerNDVI_Mean", "winterLST_Mean", "winterNDVI_Mean", "NDSI_Mean")
-  
-  results <- c()
-  
-  # Loop over variables
-  for(var in vars){
-    
-    # If the variable coltains data
-    if(!all(is.na(df[, var]))){
-      
-      # Model the environmental variable as response against standardized distance
-      response_var <- df %>% pull(var)
-      std_distance <- df %>% pull(std_distance)
-      std_distance_squared <- df %>% 
-        mutate(std_distance_squared = std_distance^2) %>% 
-        pull(std_distance_squared)
-      
-      quadratic_model = lm(response_var ~ std_distance + std_distance_squared) # Specify quadratic model
-      linear_model = update(quadratic_model, ~ . - std_distance_squared) # Specify linear model
-      
-      AIC_quad = AIC(quadratic_model) # Get AIC of quadratic model
-      AIC_lin = AIC(linear_model) # Get AIC of linear model
-      
-      if (abs(AIC_quad) - abs(AIC_lin) > 2) {
-        # If quadratic model AIC is > 2 from linear model AIC
-        # Get y-intercept
-        yIntBestFit <- round(summary(quadratic_model)$coefficients["(Intercept)", "Estimate"], 3)
-        
-        # Get prediction when standardized distance equals 1
-        predictedBestFit <- round(predict(quadratic_model, data.frame(std_distance = c(1), std_distance_squared = c(1))), 3)
-        
-        # Calculate difference and add to results. 
-        diff <- predictedBestFit - yIntBestFit
-        # print(predictedBestFit, yIntBestFit, diff)
-        results <- append(results, c(predictedBestFit, yIntBestFit, diff), after = length(results))
-        # order = "quadratic"
-      } else {
-        # Otherwise (i.e. quadratic model is not better fit)
-        # Get y-intercept
-        yIntBestFit <- round(summary(linear_model)$coefficients["(Intercept)", "Estimate"], 3)
-        
-        # Get prediction when standardized distance equals 1
-        predictedBestFit <- round(predict(linear_model, data.frame(std_distance = c(1))), 3)
-        
-        # Calculate difference and add to results. 
-        diff <- predictedBestFit - yIntBestFit
-        # print(predictedBestFit, yIntBestFit, diff)
-        results <- append(results, c(predictedBestFit, yIntBestFit, diff), after = length(results))
-        # order = "linear"
-      }
-    
-      
-    # If there is no environmental data, insert NA
-    }else{
-      diff <- NA
-      predictedBestFit <- NA
-      yIntBestFit <- NA
-      results <- append(results, c(predictedBestFit, yIntBestFit, diff), after = length(results))
-      
-    }
-  }
-  
-  # Append results to dataframe.
-  modelOutputData[1, ] <- c(city, results)
-  return(modelOutputData)
-}
-
-#' Summarise univariate regressions and writes dataframe
-#' 
-#' @param df Dataframe with at least two columns for regression
-#' @param predictor_var Variable to use as predictor (i.e., independent variable)
-#' @param response_var Variable to use as response (i.e., dependent variable)
-#' 
-#' @return Dataframe with summary of model output
-getModelSummary <- function(df, predictor_var, response_var){
-  
-  # Initialize dataset that will hold model outputs
-  modelOutputData <- data.frame(
-    city = character(),
-    response_var = character(),
-    predictor_var = character(),
-    beta = numeric(),
-    pval = numeric(),
-    r_squared = numeric(),
-    stringsAsFactors = FALSE
-  )
-  
-  # Run model
-  mod <- sprintf("%s ~ %s", response_var, predictor_var)
-  model <- lm(as.formula(mod), data = df)
-  # print(summary(model))
-  
-  #Extract relavent coeficient
-  beta <-
-    round(summary(model)$coefficients[predictor_var, "Estimate"], 3)
-  # print(beta)
-  pval <-
-    round(summary(model)$coefficients[predictor_var, "Pr(>|t|)"], 3)
-  # print(pval)
-  r_squared <- round(summary(model)$r.squared, 5)
-  # print(rSquareBestFit)
-  results <- c(response_var, predictor_var, beta, pval, r_squared)
-  # print(beta, pval, rSquareBestFit)
-  return(results)
-}
-
 #' Calculate length of transect (in km)
 #' 
 #' @param df Population-mean HCN frequency dataset for city
@@ -586,53 +394,6 @@ transect_length <- function(df){
   
   return(df_out)
   
-}
-
-#' Run first-order OLS regression for each city in GLUE
-#'   Response: population-mean HCN frequency
-#'   Predictor: standardized distance to the urban core
-#' 
-#' @param df Population-mean HCN frequency dataset for city
-#' 
-#' @return Dataframe with summary of model output
-linearSlopesOnly <- function(df){
-
-  # Slope and p-value for main effect
-  df_out1 <- df %>%  
-    group_by(city) %>% 
-    do(modlm = lm(freqHCN ~ std_distance, data = .)) %>% 
-    tidy(modlm, df) %>% 
-    filter(term != "(Intercept)") %>%
-    dplyr::select(city, estimate, p.value, 3) %>%
-    rename("betaLinOnly" = estimate,
-           "pvalLinOnly" = p.value) %>%
-    mutate(pvalLinOnly = round(pvalLinOnly, 3),
-           sigLinOnly = ifelse(pvalLinOnly < 0.05, "Yes", "No"),
-           direction = case_when(betaLinOnly > 0 ~ "positive",
-                                 betaLinOnly < 0 ~ "negative"))
-  
-  # R squared
-  df_out2 <- df %>%
-    group_by(city) %>%
-    do(modlm = lm(freqHCN ~ std_distance, data = .)) %>%
-    glance(modlm, df) %>%
-    dplyr::select(city, r.squared) %>%
-    rename("rSquaredLinOnly" = "r.squared") %>%
-    mutate(rSquaredLinOnly = round(rSquaredLinOnly, 3)) %>%
-    left_join(., df_out1, by = "city")
-  
-  # Intercept
-  df_out3 <- df %>%
-    group_by(city) %>%
-    do(modlm = lm(freqHCN ~ std_distance, data = .)) %>%
-    tidy(modlm, df) %>% 
-    filter(term == "(Intercept)") %>% 
-    dplyr::select(city, estimate) %>% 
-    rename("interceptLinOnly" = "estimate") %>% 
-    mutate(interceptLinOnly = round(interceptLinOnly, 3)) %>% 
-    left_join(., df_out2)
-    
-  return(df_out3)
 }
 
 #' Run first-order robust regression for each city in GLUE
@@ -724,47 +485,44 @@ panel.cor <- function(x, y){
   cex.cor <- 0.8/strwidth(txt)
   text(0.5, 0.5, txt)
 }
+
 # Customize upper panel
 upper.panel<-function(x, y){
   points(x,y, pch = 19)
   abline(lm(y~x), col='red', lwd = 2)
 }
 
+#' Function to plot panels C, D, and E for figure 3
+#' 
+#' @param df Population-mean HCN frequency dataframe
+#' 
+#' @return ggplot object
+fig2_hij <- function(df){
+  
+  city <- df %>% pull(city) %>% unique()
+  col <- case_when(city == 'Muenster' ~ pal[3],
+                   city == 'Freehold' ~ pal[2])
+  
+  plot <- ggplot(df, aes(x = std_distance, y = freqHCN, weight = total_plants)) +
+    geom_point(size = 3.5) +
+    geom_smooth(method = 'glm', 
+                color = ifelse(city == "Temuco", "black", col),
+                fill = ifelse(city == "Temuco", "grey", col),
+                method.args = list(family = "binomial"),
+                size = 1.5) +
+    xlab("Standardized distance") +
+    ylab("Frequency of HCN") +
+    scale_y_continuous(breaks = seq(from = 0, to = 1, by = 0.1)) +
+    coord_cartesian(ylim = c(-0.01, 1.01), xlim = c(0, 1)) +
+    ng1
+  
+  return(plot)
+}
+
 #### FROM PEDRO ####
 
 # Functions below were written by Pedro Peres-Neto for environmental analyses
 # Function documentation my own
-
-dist.based.RDA <- function(D, X){
-  D <- as.matrix(D)
-  X <- as.matrix(X)
-  n <- nrow(D)
-  # Gower centring:
-  One <- matrix(1,n,n)
-  mat <- diag(n) - One/n
-  G <- -0.5 * mat %*% (D^2) %*% mat
-  SSY <- sum(diag(G))
-  # Principal coordinate analysis
-  eig <- eigen(G, symmetric=TRUE)
-  values <- eig$values     # All eigenvalues
-  nonzero.PCoA.eig <- which(abs(values/SSY) > sqrt(.Machine$double.eps))
-  values <- values[nonzero.PCoA.eig]
-  vectors <- eig$vectors   # All eigenvectors, scaled to lengths 1
-  select <- which(values > 0)
-  princ.coord <- vectors[,select] %*% diag(sqrt(values[select]))
-  
-  # Projector matrix H
-  X.c <- scale(X, center=TRUE, scale=FALSE)   # Centre matrix X
-  m <- qr(X.c, tol=1e-6)$rank
-  # F statistic
-  H <- (X.c[,1] %*% t(X.c[,1]))/((t(X.c[,1]) %*% X.c[,1])[1,1])
-  HGH <- H %*% G %*% H
-  SSYhat <- sum(diag(HGH))
-  F <- SSYhat/(SSY-SSYhat)
-  Rsquare <- SSYhat/SSY
-  RsqAdj <- 1-((1-Rsquare)*(n-1)/(n-1-m))
-  list(F=F*(n-m-1)/m, Rsquare=c(Rsquare,RsqAdj), PCoA.vectors=princ.coord)
-}
 
 P.Coord.A <- function(D){
   D <- as.matrix(D)
@@ -1284,153 +1042,3 @@ parallel.line.plot <- function(X1,X2,xlab="PC-1",ylab="PC-2"){
     segments(X1[i,1],X1[i,2],X2[i,1],X2[i,2])
   }
 }
-
-pca.plots <- function(all.data,number.extreme.sites=1){
-  result.pred <- generate.pred.values(all.data,permute=FALSE)
-  
-  Predicted.Values <- result.pred$Predicted.Values %>% dplyr::select(-contains("freqHCN"))
-  Original.Values <- result.pred$Original.Values %>% dplyr::select(-contains("freqHCN"))
-  
-  ExtreValues <- pick.extreme.values(Predicted.Values,Original.Values,number.extreme.sites=number.extreme.sites)
-  UrbanPredExtremes <- as.matrix(ExtreValues$UrbanPredExtremes)
-  RuralPredExtremes <- as.matrix(ExtreValues$RuralPredExtremes)
-  UrbanOriginalExtremes <- as.matrix(ExtreValues$UrbanExtremes)
-  RuralOriginalExtremes <- as.matrix(ExtreValues$RuralExtremes)
-  
-  # PCA based on the predicted values
-  city.names <- unique(ExtreValues$city.names)
-  n.cities <- length(unique(city.names))
-  pca.res <- princomp(scale(rbind(UrbanPredExtremes,RuralPredExtremes)))
-  Urban.pca <- pca.res$scores[1:n.cities,1:2]
-  Rural.pca <- pca.res$scores[(n.cities+1):(2*n.cities),1:2]
-  par(mfrow=c(1,2))
-  parallel.line.plot(Urban.pca,Rural.pca)
-  
-  # PCA based on the original values
-  pca.res <- princomp(scale(rbind(UrbanOriginalExtremes,RuralOriginalExtremes)))
-  Urban.pca <- pca.res$scores[1:n.cities,1:2]
-  Rural.pca <- pca.res$scores[(n.cities+1):(2*n.cities),1:2]
-  parallel.line.plot(Urban.pca,Rural.pca)
-  
-  PCA.result<-princomp(rbind(UrbanOriginalExtremes,RuralOriginalExtremes),cor=TRUE)
-  pdf("PCApbiplot.pdf",width=12,height=6,paper='special')
-  biplot(PCA.result,xlabs=c(city.names,city.names))
-  dev.off()
-  
-  valuesUrban <- data.frame(UrbanPredExtremes)
-  valuesRural <- data.frame(RuralPredExtremes)
-  rownames(valuesUrban)=as.character(city.names)
-  #rownames(valuesRural)=as.character(rep("",n.cities))
-  valuesUrbanRural <- rbind(valuesUrban,valuesRural)
-  res.pca <- princomp(valuesUrbanRural, cor = TRUE)
-  pdf("PCApbiplot1.pdf",width=12,height=6,paper='special')
-  fviz_eig(res.pca)
-  dev.off()
-  pdf("PCApbiplot2.pdf",width=12,height=6,paper='special')
-  fviz_pca_ind(res.pca,label=c("ind",city.labels),col.ind = "cos2",gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), repel = TRUE)
-  
-  fviz_pca_ind(res.pca,col.ind = "cos2",gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), repel = TRUE)
-  
-  dev.off()
-  pdf("PCApbiplot3.pdf",width=12,height=6,paper='special')
-  fviz_pca_var(res.pca,col.var = "contrib",gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),repel = TRUE)
-  dev.off()
-  pdf("PCApbiplot4.pdf",width=12,height=6,paper='special')
-  fviz_pca_biplot(res.pca, repel = TRUE,col.var = "#2E9FDF",col.ind = "#696969")
-  dev.off()
-  
-  groups <- as.factor(c(rep("Urban",each=n.cities),rep("Rural",each=n.cities)))
-  
-  pdf("PCApbiplot5.pdf",width=12,height=6,paper='special')
-  fviz_pca_ind(res.pca,col.ind = groups,palette = c("#00AFBB",  "#FC4E07","#E7B800"),addEllipses = TRUE, ellipse.type = "convex", legend.title = "Groups",repel = TRUE)
-  dev.off()
-}
-
-slope.freqHCN <- function(all.data,number.extreme.sites=1){
-  # to make is compatible with number of complete environmental variable cases
-  result.pred <- generate.pred.values(all.data,permute=FALSE)
-  Predicted.Values <- result.pred$Predicted.Values
-  Original.Values <- result.pred$Original.Values
-  ExtreValues <- pick.extreme.values(Predicted.Values,Original.Values,number.extreme.sites=number.extreme.sites)
-  city.names <- unique(ExtreValues$city.names)
-  n.cities <- length(city.names)
-  slopes <- matrix(0,n.cities,2) # 1: regular OLS slope & 2: robust slope
-  # Loops over cities
-  is.sign <- matrix(0,n.cities,1)
-  for (i in 1:n.cities){
-    pick.city.rows <- as.integer(which(all.data[,"city"]==city.names[i]))
-    lm.res <- lm(scale(all.data[pick.city.rows,"freqHCN"])~scale(all.data[pick.city.rows,"std_distance"]))
-    slopes[i,1] <- coefficients(lm.res)[2]
-    slopes[i,2] <- run.rlm(scale(all.data[pick.city.rows,"freqHCN"]),scale(all.data[pick.city.rows,"std_distance"]))$slope
-    if (anova(lm.res)$"Pr(>F)"[1] < 0.05) {is.sign[i] <- 1}
-  }
-  colnames(slopes) <- c("ols","rlm")
-  result <- list(city=city.names,slopes=slopes,is.sign=is.sign)
-  return(result)
-  
-  data.frame(cbind(city.names,slopes))
-}
-
-extreme.freqHCN <- function(all.data,number.extreme.sites=1){
-  result.pred <- generate.pred.values(all.data,permute=FALSE)
-  Predicted.Values <- result.pred$Predicted.Values
-  Original.Values <- result.pred$Original.Values
-  
-  ExtreValues <- pick.extreme.values(Predicted.Values,Original.Values,number.extreme.sites=number.extreme.sites)
-  UrbanPredExtremes <- ExtreValues$UrbanPredExtremes[,"freqHCN"]
-  RuralPredExtremes <- ExtreValues$RuralPredExtremes[,"freqHCN"]
-  UrbanOriginalExtremes <- ExtreValues$UrbanExtremes[,"freqHCN"]
-  RuralOriginalExtremes <- ExtreValues$RuralExtremes[,"freqHCN"]
-  
-  result <- list(UrbanOriginalExtremes=UrbanOriginalExtremes,RuralOriginalExtremes=RuralOriginalExtremes,pred.diff=UrbanPredExtremes-RuralPredExtremes,obs.diff=UrbanOriginalExtremes-RuralOriginalExtremes)
-  return(result)
-}
-
-perm.std_dist.within.cities <- function(all.data){
-  cities <- unique(all.data$city)
-  n.cities <- length(cities)
-  std_dist.perm <- all.data
-  for (i in 1:n.cities){
-    pick.city <- which(all.data$city==cities[i])
-    std_dist.perm[pick.city,"std_distance"] <- sample(all.data[pick.city,"std_distance"])
-  }
-  return(std_dist.perm)
-}
-
-ReactionNorm.line.plot <- function(Urban,Rural){
-  xlab="Urban -----> Rural"
-  ylab="freqHCN"
-  n <- length(Urban)
-  X <- c(rep(1,n),rep(2,n))
-  plot(X,c(Urban,Rural), xlab = xlab, ylab = ylab,
-       pch = 21, bg = c(rep("red",n),rep("green",n)), col = "black",
-       lwd = 1, cex = 0.75,xaxt="n")
-  Y2 <- matrix(0,n,2)
-  X2[1:n,1] <- X[1:n]
-  X2[1:n,2] <- X[(n+1):(2*n)]
-  Y2[1:n,1] <- Urban
-  Y2[1:n,2] <- Rural
-  for (i in 1:n){
-    segments(X2[i,1],Y2[i,1],X2[i,2],Y2[i,2])
-  }
-}
-
-avg.env.per.city <- function(all.data){
-  # too keep the same cities used to general predictions and slopes
-  result.pred <- generate.pred.values(all.data,permute=FALSE)
-  Predicted.Values <- result.pred$Predicted.Values 
-  Original.Values <- result.pred$Predicted.Values 
-  ExtreValues <- pick.extreme.values(Predicted.Values,Original.Values,number.extreme.sites=1)
-  city.names <- ExtreValues$city.names
-  sub.set.data <- filter(all.data, city %in% city.names)
-  var.names <- names(sub.set.data %>% dplyr::select(contains("Mean")))
-  mean.per.group <- sub.set.data %>% group_by(city) %>%
-    summarise_at(vars(var.names), list(mean),na.rm=TRUE)
-  mean.per.group <- data.frame(mean.per.group)
-  return(mean.per.group)
-}
-
-
-
-
-
