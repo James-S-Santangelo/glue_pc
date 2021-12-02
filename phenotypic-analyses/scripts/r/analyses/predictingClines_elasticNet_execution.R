@@ -2,7 +2,7 @@
 #
 # Author: James Santangelo
 
-#' Estimate Elastic Net model on resampled model matrix
+#' Estimate Elastic Net model from model matrix
 #' 
 #' @param i Iteration index
 #' @param model_matrix Expanded model matrix with log odds and expanded, standardized predictors
