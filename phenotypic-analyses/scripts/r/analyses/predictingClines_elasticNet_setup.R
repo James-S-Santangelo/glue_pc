@@ -7,7 +7,7 @@
 ###############
 
 # Create dataframe with population-mean HCN and environmental variables for every city
-# Needs to be created using `read.csv()` for Pedro's code to work...
+# Needs to be created using `read.csv()` for some reason... create_df_list() breaks stuff. Doesn't matter anyways
 inpath <- "data/clean/popMeans_allCities_withEnviro/"
 csv.files <- list.files(path = inpath, pattern="*.csv")
 df_all_popMeans <- c()
