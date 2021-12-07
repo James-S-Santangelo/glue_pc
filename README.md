@@ -1,7 +1,7 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5765252.svg)](https://doi.org/10.5281/zenodo.5765252)
 
 ## Global Urban Evolution Project – Parallel Clines (GLUE_PC)
-### Manuscript: Global urbanization drives parallel evolution in a cosmopolitan plant
+### Manuscript: Global urban environmental change drives parallel evolution in a cosmopolitan plant
 
 ### Abstract
 
