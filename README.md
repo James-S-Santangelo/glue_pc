@@ -1,5 +1,5 @@
-# Global urban environmental change drives parallel evolution in a cosmopolitan plant
-## Authors: XXX
+## Global Urban Evolution Project – Parallel Clines (GLUE_PC)
+### Manuscript: Global urbanization drives parallel evolution in a cosmopolitan plant
 
 ### Abstract
 
