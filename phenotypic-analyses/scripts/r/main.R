@@ -216,9 +216,9 @@ print(pc_reg_topModel_rsquared)
 # Step 4.4: Predict clines from city characteristics
 source('scripts/r/analyses/predictingClines_cityCharacteristics.R')
 
-print(finalModel_cityStats)
-plot(modlog_popout)
-hist(residuals(modlog_popout))
+print(tableS7A_model)
+print(tableS7B_model)
+print(tableS7C_model)
 
 #####################################
 #### STEP 5: FIGURES AND TABLES  ####
