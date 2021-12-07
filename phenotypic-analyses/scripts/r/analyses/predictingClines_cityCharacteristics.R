@@ -28,7 +28,6 @@ city_stats <- city_stats %>%
   mutate(log_area = log(area),
          log_pop_size = log(pop_size),
          log_density = log(density),
-         log_no_cities = log(no_cities),
          log_city_age = log(city_age + 1))
 
 # Look at correlations of raw and log transformed variables
@@ -48,7 +47,7 @@ pairs(rawVarsMat,
 # Model with log-transformed predictors
 modlog_all <- lm(betaLog_Dist ~ scale(log_area) + 
                scale(log_density) + 
-               scale(log_no_cities) + 
+               scale(no_cities) + 
                scale(log_city_age) +
                scale(log_pop_size), 
              data = city_stats)
@@ -61,7 +60,7 @@ summary(modlog_all)
 # Diagnostics look good
 modlog_popout<-lm(betaLog_Dist ~ scale(log_area) + 
                     scale(log_density) + 
-                    scale(log_no_cities) + 
+                    scale(no_cities) + 
                     scale(log_city_age), 
                   data = city_stats)
 # plot(modlog_popout)
@@ -71,7 +70,7 @@ summary(modlog_popout)
 # Remove log_area because colinear with age
 # Diagnostics look good
 modlog_popout_areaout <- lm(betaLog_Dist ~ scale(log_density) + 
-                    scale(log_no_cities) + 
+                    scale(no_cities) + 
                     scale(log_city_age), 
                   data = city_stats)
 # plot(modlog_popout)
@@ -82,7 +81,7 @@ tableS7A_model <- summary(modlog_popout_areaout)
 # Diagnostics look good
 modlog_popout_ageout <- lm(betaLog_Dist ~ scale(log_area) + 
                     scale(log_density) + 
-                    scale(log_no_cities), 
+                    scale(no_cities), 
                   data = city_stats)
 # plot(modlog_popout)
 # hist(residuals(modlog_popout))
@@ -95,8 +94,8 @@ city_stats_ageAboveZero <- city_stats %>%
   filter(city_age > 0)
 
 # Model with denisty, no_cities, and age, excluding cities with estimated age = 0
-modlog_ageAboveZero_areaout_popout <- lm(betaLog_Dist ~ scale(log_density) + 
-                                           scale(log_no_cities) + 
+modlog_ageAboveZero_areaout_popout <- lm(betaLog_Dist ~ log_density + 
+                                           scale(no_cities) + 
                                            scale(log_city_age), 
                                          data = city_stats_ageAboveZero)
 tableS7C_model <- summary(modlog_ageAboveZero_areaout_popout)
