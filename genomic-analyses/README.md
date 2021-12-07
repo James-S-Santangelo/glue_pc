@@ -2,7 +2,7 @@
 
 ### Description of repository
 
-This repository contains code necessary to reproduce the genomic analyses in the GLUE_PC manuscript. BAM files have been deposited on the European Nucleotide Archive (ENA, Study accession #PRJEB48967). The pipeline in this repository can be used to generate all of the genomic results directly from the BAM files. Read trimming, mapping, and QC were performed from the raw reads using a separate pipeline that is additionally being used for ongoing projects. The pipeline can be found [HERE](https://github.com/James-S-Santangelo/glue_dnaSeqQC) but is automatically incorporated here as a Snakemake module. The pipeline uses `Conda`, `Snakemake`, and `Singularity` for workflow management and reproducibility. All Snakefiles and directories are well-documented, but here is a brief overview of the pipeline and directories in this repository:
+This repository contains code necessary to reproduce the genomic analyses in the GLUE_PC manuscript. BAM files have been deposited on the European Nucleotide Archive (ENA, Study accession #PRJEB48967). The *from_bams* branch in this repository can be used to reproduce the manuscript's results from these BAM files. The _master_ branch runs instead from the raw reads and includes read trimming, mapping, and QC which are largely performed by a [separate pipeline](https://github.com/James-S-Santangelo/glue_dnaSeqQC) that is automatically incorporated here as a Snakemake module. The raw reads are still being used for multiple ongoing projects associated with GLUE but are available upon request. The pipeline uses `Conda`, `Snakemake`, and `Singularity` for workflow management and reproducibility. All Snakefiles and directories are well-documented, but here is a brief overview of the pipeline and directories in this repository:
 
 #### Overview of pipeline
 
@@ -13,7 +13,7 @@ The following steps are perfomed using rules from the separate [dnaSeqQC pipelin
 3. Map reads with [`bwa`](https://github.com/lh3/bwa) and sort, index, and mark duplicates using [`SAMtools`](https://github.com/samtools)
 4. QC mapped reads using [`bamtools`](https://github.com/pezmaster31/bamtools), [`Qualimap`](http://qualimap.conesalab.org/), [`bamUtil`](https://github.com/statgen/bamUtil), and [`multiQC`](https://github.com/ewels/MultiQC).
 
-The following steps are performed using rules in this repo's Snakemake pipeline:
+The following steps are performed using rules in this repo's Snakemake pipeline. If using the pipeline on the *from_bams* branch, these are the steps that will run.
 
 1. Estimate urban and rural diversity, differentiation, and population structure using [`ANGSD`](https://github.com/ANGSD/angsd) and [`PCAngsd`](https://github.com/Rosemeis/pcangsd).
 2. Estimate differentiation of HCN and underlying loci relative to neutral expectations
@@ -50,5 +50,10 @@ For execution on a SLURM cluster, the pipeline can be executed by running:
 `snakemake --profile compute-canada --configfile ../config/<configfile>`
 
 Note that the YAML configfiles in the [compute-canada](./workflow/compute-canada/) directory will likely need to be modified to accomodate the paths on your cluster.
+
+If the entire repository has been cloned by running `git clone https://github.com/James-S-Santangelo/glue_pc.git`, the *from_bams* branch can be retrieved by running:
+
+1. `git fetch origin from_bams`
+2. `git checkout from_bams`
 
 Because it can take a long time to run the pipeline from the BAM files through to all of the analyses, we've included [summary datasets](./analyses/tables/) for all major analyses. These summary datasets are used in the Jupyter notebooks, and the code that was used to generate them is also provided therein for transparency. 
