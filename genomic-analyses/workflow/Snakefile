@@ -15,14 +15,6 @@ min_version('6.9.1')
 # Defailt configfile. Can be changed at command-line (--configfile)
 configfile: '../config/graham.yaml'
 
-# Import rules from QC workflow
-# Use specific commit for QC pipeline in case it changes for future projects
-module glue_dnaSeqQC:
-    snakefile: github("James-S-Santangelo/glue_dnaSeqQC", path="workflow/Snakefile", commit="b32ad85")
-    config: config['glue_dnaSeqQC_workflow']
-
-use rule * from glue_dnaSeqQC as glue_dnaSeqQC_*
-
 # Load sample sheet
 SAMPLE_SHEET_DF = pd.read_table(config['samples'], sep='\t')
 
@@ -34,12 +26,9 @@ HABITATS = SAMPLE_SHEET_DF['site'].unique().tolist()
 CHROMOSOMES = pd.read_table(config['chromosomes'], header=None).iloc[:,0].tolist()
 GFF_FILE = ancient(config['gff'])
 
-# Path to results from glue_dnaSeqQC workflow
-QC_DIR = '{0}/qc'.format(config['glue_dnaSeqQC_workflow']['results_prefix'])
-
 # Paths for output files
 TMPDIR = config['temp_dir']
-BAM_DIR = '{0}/bam'.format(config['results_prefix'])
+BAM_DIR = config['bam_path'] 
 PROGRAM_RESOURCE_DIR = '{0}/program_resources'.format(config['results_prefix'])
 ANGSD_DIR = '{0}/angsd'.format(config['results_prefix'])
 POP_STRUC_DIR = '{0}/population_structure'.format(config['results_prefix'])
@@ -70,7 +59,7 @@ wildcard_constraints:
     site='0fold|4fold'
 
 # Rules to be run locally on as single process
-localrules: create_tmp_dir, index_degenerate_bam, create_samples_to_remove, create_bam_list_finalSamples, convert_sites_for_angsd, angsd_index_allDegenerateSites, select_random_degenerate_sites, angsd_index_random_degen_sites, split_random_angsd_sites_byChrom, index_random_chromosomal_angsd_sites, angsd_index_sites, angsd_allSamples_done, create_bam_list_byCity_byHabitat, select_random_degenerate_sites, angsd_fst_readable, create_random_bam_list_byCity_byHabitat, snps_forAlleleFreqs_byCity_byHabitat, angsd_index_city_snps, angsd_permuted_fst_readable, angsd_byCity_byHabitat_done, angsd_byCity_byHabitat_permuted_done, concat_habitat_bamLists_withinCities, remove_lowCovSamples_forPCA_byCity, angsd_byCity_done, split_angsd_sites_byChrom, index_chromosomal_angsd_sites, angsd_fst_readable_snps_hcn_chroms, hcn_loci_freq_done
+localrules: create_tmp_dir, create_samples_to_remove, create_bam_list_finalSamples, convert_sites_for_angsd, angsd_index_allDegenerateSites, select_random_degenerate_sites, angsd_index_random_degen_sites, split_random_angsd_sites_byChrom, index_random_chromosomal_angsd_sites, angsd_index_sites, angsd_allSamples_done, create_bam_list_byCity_byHabitat, select_random_degenerate_sites, angsd_fst_readable, create_random_bam_list_byCity_byHabitat, snps_forAlleleFreqs_byCity_byHabitat, angsd_index_city_snps, angsd_permuted_fst_readable, angsd_byCity_byHabitat_done, angsd_byCity_byHabitat_permuted_done, concat_habitat_bamLists_withinCities, remove_lowCovSamples_forPCA_byCity, angsd_byCity_done, split_angsd_sites_byChrom, index_chromosomal_angsd_sites, angsd_fst_readable_snps_hcn_chroms, hcn_loci_freq_done
 
 # Pipeline targets
 # Each step generates an empty flagfile as its final target
