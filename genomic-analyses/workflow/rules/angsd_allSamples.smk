@@ -5,39 +5,6 @@
 #### SETUP ####
 ###############
 
-rule subset_bams_degeneracy:
-    """
-    Subset BAMs for all samples around 4fold sites to speed up ANGSD computations.
-    """
-    input:
-        unpack(get_subset_bams_degeneracy_input)
-    output:
-        '{0}/{{site}}/{{sample}}_{{site}}.bam'.format(BAM_DIR)
-    log: 'logs/subset_bams_degenerate/{sample}_{site}_subset.log'
-    conda: '../envs/degeneracy.yaml'
-    resources:
-        mem_mb = lambda wildcards, attempt: attempt * 2000,
-        time = '01:00:00'
-    shell:
-        """
-        samtools view -bh -L {input.regions} {input.bam} > {output} 2> {log}
-        """
-
-rule index_degenerate_bam:
-    """
-    Index BAM subsetted around 4fold sites
-    """
-    input:
-        rules.subset_bams_degeneracy.output
-    output:
-        '{0}/{{site}}/{{sample}}_{{site}}.bam.bai'.format(BAM_DIR)
-    log: 'logs/index_degenerate_bam/{sample}_{site}_index.log'
-    conda: '../envs/degeneracy.yaml'
-    shell:
-        """
-        samtools index {input} 2> {log}
-        """
-
 rule create_samples_to_remove:
     """
     Writes file with sample names for those with high alignment error rates.
@@ -45,7 +12,7 @@ rule create_samples_to_remove:
     """
     input:
         flag = rules.glue_dnaSeqQC_multiqc.output,
-        qc_data = '{0}/multiqc/multiqc_data/multiqc_qualimap_bamqc_genome_results_qualimap_bamqc.txt'.format(QC_DIR)
+        qc_data = config['qualimap_bamqc'] 
     output: 
         error_df = '{0}/highErrorRate_toRemove.txt'.format(PROGRAM_RESOURCE_DIR)
     run:

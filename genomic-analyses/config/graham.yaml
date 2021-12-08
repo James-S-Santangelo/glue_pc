@@ -2,6 +2,7 @@
 samples: ../resources/glue_pc_sampleSheet.txt 
 chromosomes: ../resources/chromosome_file.txt
 gff: ../resources/TrR.v5.renamed_reformated.gtf.gz
+qualimap_bamqc: ../resources/multiqc_qualimap_bamqc_genome_results_qualimap_bamqc.txt
 
 bam_path: /scratch/projects/trifolium/glue/pc/results/bam/4fold
 
