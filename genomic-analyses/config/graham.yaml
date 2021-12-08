@@ -10,6 +10,16 @@ bam_path: /scratch/projects/trifolium/glue/pc/results/bam/4fold
 results_prefix: /home/santang3/scratch/glue/pc/results
 temp_dir: /home/santang3/scratch/glue/tmp
 
+# Path prefixes required by dnaSeqQC pipeline that is imported as Snakemake module
+# Some of these may be the same
+glue_dnaSeqQC_workflow: 
+  results_prefix: /home/santang3/scratch/glue/pc/results
+  samples: ../resources/glue_pc_sampleSheet.txt
+  chromosomes: ../resources/chromosome_file.txt
+  gff: ../resources/TrR.v5.renamed_reformated.gtf.gz
+  raw_read_prefix: /research/projects/trifolium/glue_raw_data/
+  temp_dir: /home/santang3/scratch/glue/tmp
+
 # Parameters for variant calling and SFS estimation with ANGSD
 # TODO: Some other parameters are hardcoded in the Snakefiles. Should probably move them here or move this to the Snakefile for consistency
 angsd:

@@ -1,24 +1,10 @@
 # Python functions used throughout snakemake workflow
 
-def get_subset_bams_degeneracy_input(wildcards):
-    """
-    Returns the correct GLUE or Toronto BAM file
-    """
-    all_degen_bed_files = expand(rules.get_fourfold_zerofold.output, site=['0fold', '4fold'])
-    regions = [x for x in all_degen_bed_files if wildcards.site in os.path.basename(x)]
-    if wildcards.sample.startswith('s_'):
-        bam = expand(rules.glue_dnaSeqQC_downsample_toronto_bam.output, sample=wildcards.sample)
-        idx = expand(rules.glue_dnaSeqQC_index_toronto_bam.output, sample = wildcards.sample)
-    else:
-        bam = expand(rules.glue_dnaSeqQC_samtools_markdup.output.bam, sample=wildcards.sample)
-        idx = expand(rules.glue_dnaSeqQC_index_bam.output, sample = wildcards.sample)
-    return { 'bam' : bam, 'idx' : idx, 'regions' : regions }
-
-def get_all_bams(wildcards):
+def get_all_bams(BAM_DIR):
     """
     Returns list with paths to GLUE bams 
     """
-    bams = expand(rules.subset_bams_degeneracy.output, sample=SAMPLES, site=wildcards.site)
+    bams = expand(BAM_DIR + '/{sample}_{site}.bam', sample=SAMPLES, site='4fold') 
     return bams
 
 def get_bed(wildcards):
