@@ -1,5 +1,5 @@
 # Sample IDs as list
-samples: ../resources/glue_pc_sampleSheet.txt 
+samples: ../resources/test_ss.txt 
 chromosomes: ../resources/chromosome_file.txt
 gff: ../resources/TrR.v5.renamed_reformated.gtf.gz
 qualimap_bamqc: ../resources/multiqc_qualimap_bamqc_genome_results_qualimap_bamqc.txt
@@ -13,8 +13,8 @@ temp_dir: /home/santang3/scratch/glue/tmp
 # Path prefixes required by dnaSeqQC pipeline that is imported as Snakemake module
 # Some of these may be the same
 glue_dnaSeqQC_workflow: 
-  results_prefix: /home/santang3/scratch/glue/pc/results
-  samples: ../resources/glue_pc_sampleSheet.txt
+  results_prefix: /home/santang3/scratch/glue/dnaSeqQC/results
+  samples: ../resources/test_ss.txt
   chromosomes: ../resources/chromosome_file.txt
   gff: ../resources/TrR.v5.renamed_reformated.gtf.gz
   raw_read_prefix: /research/projects/trifolium/glue_raw_data/

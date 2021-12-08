@@ -45,7 +45,7 @@ rule read_count_data:
     Calculate number of reads overlapping target region in Ac or Li locus for each sample
     """
     input:
-        get_bams_for_read_counts
+        ancient(get_all_bams(BAM_DIR))
     output:
         '{0}/{{gene}}_read_counts.txt'.format(HCN_LOCI_DIR)
     log: 'logs/read_count_data/{gene}_counts.log'

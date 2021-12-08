@@ -94,15 +94,6 @@ def get_bamLists_toConcat(wildcards):
     all_bam_lists = expand(rules.create_bam_list_byCity_byHabitat.output, city = wildcards.city, habitat = HABITATS, site = wildcards.site)
     return all_bam_lists
 
-def get_bams_for_read_counts(wildcards):
-    """
-    Returns the correct GLUE or Toronto BAM file
-    """
-    tor_bams = expand(rules.glue_dnaSeqQC_downsample_toronto_bam.output, sample=TOR_SAMPLES)
-    glue_bams = expand(rules.glue_dnaSeqQC_samtools_markdup.output.bam, sample=SAMPLES)
-    glue_bams = [bam for bam in glue_bams if not os.path.basename(bam).startswith('s_')]
-    return tor_bams + glue_bams
-
 def get_files_for_saf_estimation_snps_hcn_chroms(wildcards):
     """
     Get files to estimate SAF likelihhods for urban and rural habitats by city.
