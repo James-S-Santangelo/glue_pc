@@ -69,8 +69,7 @@ rule calculate_hcn_loci_frequencies:
     at Ac or Li locus. Writes two dataframes to disk per locus.
     """
     input:
-        multiqc = rules.glue_dnaSeqQC_multiqc.output,
-        qual_datafile = '{0}/multiqc/multiqc_data/multiqc_bamtools_stats_bamtools_stats.txt'.format(QC_DIR),
+        qual_datafile = ancient(config['bamtools_stats']), 
         counts = rules.read_count_data.output
     output:
         freqs = '{0}/{{gene}}_freqs.txt'.format(HCN_LOCI_DIR),

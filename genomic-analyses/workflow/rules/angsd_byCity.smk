@@ -26,7 +26,7 @@ rule remove_lowCovSamples_forPCA_byCity:
     """
     input:
         bams = rules.concat_habitat_bamLists_withinCities.output,
-        qc_data = '{0}/multiqc/multiqc_data/multiqc_qualimap_bamqc_genome_results_qualimap_bamqc.txt'.format(QC_DIR)
+        qc_data = config['qualimap_bamqc'] 
     output:
         '{0}/bam_lists/by_city/{{city}}/{{city}}_{{site}}_lowCovRemoved_bams.list'.format(PROGRAM_RESOURCE_DIR)
     log: 'logs/remove_lowCovSamples_forPCA_byCity/{city}_{site}_remove_lowCovSamples.log'
