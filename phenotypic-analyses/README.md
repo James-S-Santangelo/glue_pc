@@ -15,8 +15,10 @@ The analyses can be run by following these steps:
 1. Open RStudio, navitate to `File` > `Open Project`, and open the `.Rproj` file in this repository.
 
 	- This will load the R project into Rstudio and install the `renv` package if it is not already installed. `renv` is used to manage R pacakge dependencies as part of this project.
+
+2. Run `renv::restore()` to install required packages
  
-2. Run [main.R](./scripts/r/main.R). This will create any necessary directories, run analyses, and generate tables and figures. 
+3. Run [main.R](./scripts/r/main.R). This will create any necessary directories, run analyses, and generate tables and figures. 
 This script just calls other scripts that are doing the actual work. Feel free to navigate through these scripts to get a sense of what
 they are doing. They should be sufficiently documented to provide an overview of functionality. Briefly, here are the steps in the analysis
 pipeline:
