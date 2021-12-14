@@ -3,16 +3,7 @@
 # Author: James S. Santangelo
 
 ###################
-#### FIGURE SX ####
-###################
-
-## BoxM plot with log determinant
-pdf('analysis/figures/supplemental/figureSX_boxM.pdf', width = 6, height = 6, useDingbats = FALSE)
-plot(enviroVariance_boxM)
-dev.off()
-
-###################
-#### FIGURE SX ####
+#### FIGURE S2 ####
 ###################
 
 ## Environmental variable against distance
@@ -90,7 +81,7 @@ h <- plot_envar_vs_dist(df_all_popMeans, 'winterLST_Mean')
 i <- plot_envar_vs_dist(df_all_popMeans, 'winterNDVI_Mean')
 
 ### Combine panels for figure 2
-figureSX <- (a | b | c) / (d | e | f) / (h | g | i) +
+figureS2 <- (a | b | c) / (d | e | f) / (h | g | i) +
   plot_layout(guides = "collect") &
   plot_annotation(tag_levels = 'A') &
   theme(legend.position = 'bottom', 
@@ -102,19 +93,112 @@ figureSX <- (a | b | c) / (d | e | f) / (h | g | i) +
         legend.spacing.x = unit(0.5, "cm"),
         plot.tag.position = c(0.1, 1.1),
         plot.tag = element_text(size = 20)) 
-figureSX
+figureS2
 
-ggsave(filename = "analysis/figures/supplemental/figSX_enVar_vs_distance.pdf", plot = figureSX, 
+ggsave(filename = "analysis/figures/supplemental/figS2_enVar_vs_distance.pdf", plot = figureS2, 
        device = "pdf", width = 16, height = 15, units = "in", dpi = 600, useDingbats = FALSE) 
   
 ###################
-#### FIGURE SX ####
+#### FIGURE S3 ####
+###################
+
+### Figure S3A
+
+# Extract PCA object from multi-dispersion analysis
+# PCA is performed on the mean multivariate environmental dispersion among urban and rural pops across all cities
+enviroVariancePCA <- enviroVariance$pca_stand
+PC1_enviroVariance_varEx <- round(enviroVariancePCA$eig[1, 2], 1)  # Percent variance explained by PC1
+PC2_enviroVariance_varEx <- round(enviroVariancePCA$eig[2, 2], 1)  # Percent variance explained by PC2
+
+enviroVariancePCA_sites  <- data.frame(enviroVariancePCA$ind$coord) %>%
+  dplyr::select(Dim.1, Dim.2) %>% 
+  mutate(habitat = enviroVariancePCA$groups,
+         city = enviroVariancePCA$city)
+
+# Colors for PCA biplot
+pal <- wes_palette('Darjeeling1', 5, type = 'discrete')
+urban_col <- pal[4]
+rural_col <- pal[2]
+cols <- c(urban_col, rural_col)
+
+# Create PCA biplot. grouped by habitat
+enviroVariance_PCA_plot <- ggplot(enviroVariancePCA_sites, aes(x = Dim.1, y = Dim.2)) + 
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  geom_line(aes(group = city), alpha = 0.7) +
+  geom_point(size = 2.75, shape = 21, colour = "black", aes(fill =  habitat)) +
+  stat_ellipse(aes(colour = habitat), size = 1.5, level = 0.95) +
+  xlab(sprintf("PC1 (%.1f%%)", PC1_enviroVariance_varEx)) + ylab(sprintf("PC1 (%.1f%%)", PC2_enviroVariance_varEx)) +
+  scale_x_continuous(breaks = seq(from = -600, to = 1400, by = 400)) +
+  scale_y_continuous(breaks = seq(from = -400, to = 800, by = 200)) +
+  scale_colour_manual(values = rev(cols)) +
+  scale_fill_manual(values = rev(cols)) +
+  ng1 + theme(legend.position = "top", 
+              legend.direction="horizontal",
+              legend.text = element_text(size=15), 
+              legend.key = element_rect(fill = "white"),
+              legend.title = element_blank(),
+              legend.key.size = unit(0.5, "cm"),
+              legend.spacing.x = unit(0.1, "cm"))
+enviroVariance_PCA_plot
+
+ggsave(filename = "analysis/figures/supplemental/figureS3A_enviroVariancePCA_withLinesAndHulls.pdf", 
+       plot = enviroVariance_PCA_plot, device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
+
+
+### Figure S3B
+
+## Eigenvectors of how environmental factors are associated with urban/rural habitats
+
+# Extract RDA1 and PC1 species scores
+enviroVariancePCA_vars  <- data.frame(enviroVariancePCA$var$coord) %>% 
+  dplyr::select(Dim.1, Dim.2) %>% 
+  cbind(., enviroVariancePCA$var$contrib %>% 
+          as.data.frame() %>% 
+          dplyr::select(Dim.1) %>% 
+          rename("contrib" = "Dim.1"))
+
+pal <- wes_palette("Darjeeling1", 3, type = "continuous")
+enviroVariancePCA_variableContrib <- ggplot() +
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  geom_segment(data = enviroVariancePCA_vars, aes(x = 0, xend = Dim.1, y=0, yend = Dim.2, color = contrib), 
+               size = 2, arrow = arrow(length = unit(0.02, "npc")), alpha = 1) +
+  geom_text(data = enviroVariancePCA_vars,
+            aes(x = Dim.1, y = Dim.2, label = rownames(enviroVariancePCA_vars),
+                hjust = "inward", vjust =  0.5 * (1 - sign(Dim.1))),
+            color = "black", size = 3.5) + 
+  xlab(sprintf("PC1 (%.1f%%)", PC1_enviroVariance_varEx)) + ylab(sprintf("PC2 (%.1f%%)", PC2_enviroVariance_varEx)) +
+  scale_colour_gradientn(colours = rev(pal), breaks = seq(from = 5, to = 25, by = 5)) +
+  scale_x_continuous(breaks = seq(from = 0, to = 200, by = 50)) +
+  scale_y_continuous(breaks = seq(from = -50, to = 100, by = 25)) +
+  ng1 + theme(legend.position = "top",
+              legend.direction="horizontal",
+              # legend.title = element_blank(),
+              legend.key.size = unit(0.5, "cm"),
+              legend.spacing.x = unit(0.1, "cm"),
+              legend.text = element_text(size=10)) +
+  guides(color = guide_colourbar(barwidth = 10, barheight = 0.5))
+enviroVariancePCA_variableContrib
+
+ggsave(filename = "analysis/figures/supplemental/figureS3B_enviroVariancePCA_eigenvectorsOnly.pdf", 
+       plot = enviroVariancePCA_variableContrib, device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
+
+## Figure S3C
+
+# BoxM plot with log determinant
+pdf('analysis/figures/supplemental/figureS3C_boxM.pdf', width = 6, height = 6, useDingbats = FALSE)
+plot(enviroVariance_boxM)
+dev.off()
+
+###################
+#### FIGURE S7 ####
 ###################
 
 # Byplots showing variable loadings on first two PCs for emvironmental mean PCA (A) and 
 # environmental slopes PCA (B)
 
-## Figure SX
+## Figure S7A
 
 # Get percent variance of first two PCs
 pca_enviroMeans_eig <- pca_enviroMeans$CA$eig
@@ -156,7 +240,7 @@ pca_enviroMeans_variableContrib <- ggplot() +
   guides(color = guide_colourbar(barwidth = 10, barheight = 0.5))
 pca_enviroMeans_variableContrib
 
-## Figure SX
+## Figure S7B
 
 # Get percent variance of first two PCs
 pca_enviroSlopes_eig <- pca_enviroSlopes$CA$eig
@@ -199,101 +283,11 @@ pca_enviroSlopes_variableContrib <- ggplot() +
 pca_enviroSlopes_variableContrib
 
 # Combine figures
-figureSX <- pca_enviroMeans_variableContrib + pca_enviroSlopes_variableContrib +
+figureS7 <- pca_enviroMeans_variableContrib + pca_enviroSlopes_variableContrib +
   plot_annotation(tag_levels = 'A') &
   theme(plot.tag.position = c(0.1, 0.95),
         plot.tag = element_text(size = 20))
-figureSX
+figureS7
 
-ggsave(filename = "analysis/figures/supplemental/figSX_enviroPCAs_loadings.pdf", plot = figureSX, 
+ggsave(filename = "analysis/figures/supplemental/figS7_enviroPCAs_loadings.pdf", plot = figureS7, 
        device = "pdf", width = 16, height = 7, units = "in", dpi = 600, useDingbats = FALSE)
-
-###################
-#### FIGURE SX ####
-###################
-
-### Figure SX
-
-# Extract PCA object from multi-dispersion analysis
-# PCA is performed on the mean multivariate environmental dispersion among urban and rural pops across all cities
-enviroVariancePCA <- enviroVariance$pca_stand
-PC1_enviroVariance_varEx <- round(enviroVariancePCA$eig[1, 2], 1)  # Percent variance explained by PC1
-PC2_enviroVariance_varEx <- round(enviroVariancePCA$eig[2, 2], 1)  # Percent variance explained by PC2
-
-enviroVariancePCA_sites  <- data.frame(enviroVariancePCA$ind$coord) %>%
-  dplyr::select(Dim.1, Dim.2) %>% 
-  mutate(habitat = enviroVariancePCA$groups,
-         city = enviroVariancePCA$city)
-
-# Create PCA biplot. grouped by habitat
-enviroVariance_PCA_plot <- ggplot(enviroVariancePCA_sites, aes(x = Dim.1, y = Dim.2)) + 
-  geom_hline(yintercept = 0, linetype = "dotted") +
-  geom_vline(xintercept = 0, linetype = "dotted") +
-  geom_line(aes(group = city), alpha = 0.7) +
-  geom_point(size = 2.75, shape = 21, colour = "black", aes(fill =  habitat)) +
-  stat_ellipse(aes(colour = habitat), size = 1.5, level = 0.95) +
-  xlab(sprintf("PC1 (%.1f%%)", PC1_enviroVariance_varEx)) + ylab(sprintf("PC1 (%.1f%%)", PC2_enviroVariance_varEx)) +
-  scale_x_continuous(breaks = seq(from = -600, to = 1400, by = 400)) +
-  scale_y_continuous(breaks = seq(from = -400, to = 800, by = 200)) +
-  scale_colour_manual(values = rev(cols)) +
-  scale_fill_manual(values = rev(cols)) +
-  ng1 + theme(legend.position = "top", 
-              legend.direction="horizontal",
-              legend.text = element_text(size=15), 
-              legend.key = element_rect(fill = "white"),
-              legend.title = element_blank(),
-              legend.key.size = unit(0.5, "cm"),
-              legend.spacing.x = unit(0.1, "cm"))
-enviroVariance_PCA_plot
-
-ggsave(filename = "analysis/figures/supplemental/figureSX_enviroVariancePCA_withLinesAndHulls.pdf", 
-       plot = enviroVariance_PCA_plot, device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
-
-
-### Figure SX
-
-## Eigenvectors of how environmental factors are associated with urban/rural habitats
-
-# Extract RDA1 and PC1 species scores
-enviroVariancePCA_vars  <- data.frame(enviroVariancePCA$var$coord) %>% 
-  dplyr::select(Dim.1, Dim.2) %>% 
-  cbind(., enviroVariancePCA$var$contrib %>% 
-          as.data.frame() %>% 
-          dplyr::select(Dim.1) %>% 
-          rename("contrib" = "Dim.1"))
-
-pal <- wes_palette("Darjeeling1", 3, type = "continuous")
-enviroVariancePCA_variableContrib <- ggplot() +
-  geom_hline(yintercept = 0, linetype = "dotted") +
-  geom_vline(xintercept = 0, linetype = "dotted") +
-  geom_segment(data = enviroVariancePCA_vars, aes(x = 0, xend = Dim.1, y=0, yend = Dim.2, color = contrib), 
-               size = 2, arrow = arrow(length = unit(0.02, "npc")), alpha = 1) +
-  geom_text(data = enviroVariancePCA_vars,
-            aes(x = Dim.1, y = Dim.2, label = rownames(enviroVariancePCA_vars),
-                hjust = "inward", vjust =  0.5 * (1 - sign(Dim.1))),
-            color = "black", size = 3.5) + 
-  xlab(sprintf("PC1 (%.1f%%)", PC1_enviroVariance_varEx)) + ylab(sprintf("PC2 (%.1f%%)", PC2_enviroVariance_varEx)) +
-  scale_colour_gradientn(colours = rev(pal), breaks = seq(from = 5, to = 25, by = 5)) +
-  scale_x_continuous(breaks = seq(from = 0, to = 200, by = 50)) +
-  scale_y_continuous(breaks = seq(from = -50, to = 100, by = 25)) +
-  ng1 + theme(legend.position = "top",
-              legend.direction="horizontal",
-              # legend.title = element_blank(),
-              legend.key.size = unit(0.5, "cm"),
-              legend.spacing.x = unit(0.1, "cm"),
-              legend.text = element_text(size=10)) +
-  guides(color = guide_colourbar(barwidth = 10, barheight = 0.5))
-enviroVariancePCA_variableContrib
-
-ggsave(filename = "analysis/figures/supplemental/figureSX_enviroVariancePCA_eigenvectorsOnly.pdf", 
-       plot = enviroVariancePCA_variableContrib, device = "pdf", width = 8, height = 8, units = "in", dpi = 600, useDingbats = FALSE)
-
-### Combine panels for figure 2
-figureSX <- enviroPCA_plot + enviroPCA_variableContrib + enviroVariance_PCA_plot + enviroVariancePCA_variableContrib +
-  plot_annotation(tag_levels = 'A') &
-  theme(plot.tag.position = c(0.05, 0.95),
-        plot.tag = element_text(size = 20))
-figureSX
-
-ggsave(filename = "analysis/figures/supplemental/figureSX.pdf", plot = figure2, 
-       device = "pdf", width = 16, height = 14, units = "in", dpi = 600, useDingbats = FALSE)
