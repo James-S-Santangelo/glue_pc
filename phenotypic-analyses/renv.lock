@@ -366,6 +366,13 @@
       "Repository": "CRAN",
       "Hash": "f697db7d92b7028c4b3436e9603fb636"
     },
+    "doParallel": {
+      "Package": "doParallel",
+      "Version": "1.0.16",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "2dc413572eb42475179bfe0afabd2adf"
+    },
     "dotCall64": {
       "Package": "dotCall64",
       "Version": "1.0-0",
@@ -553,13 +560,6 @@
       "Repository": "CRAN",
       "Hash": "f43e0d5e85ccb0a4045670c0607ee504"
     },
-    "goftest": {
-      "Package": "goftest",
-      "Version": "1.2-2",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "3c9209bce1b10900155ea37ce954cf30"
-    },
     "gower": {
       "Package": "gower",
       "Version": "0.2.2",
@@ -639,10 +639,10 @@
     },
     "insight": {
       "Package": "insight",
-      "Version": "0.13.2",
+      "Version": "0.15.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "b83ce8d0ff3ae0cb853f662f20e2f6c3"
+      "Hash": "c114a97acd6ee93c14b22512fa1ed3c5"
     },
     "interactions": {
       "Package": "interactions",
@@ -854,26 +854,12 @@
       "Repository": "CRAN",
       "Hash": "68287aec1f476c41d16ce1ace445800c"
     },
-    "nortest": {
-      "Package": "nortest",
-      "Version": "1.0-4",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "e587e7a30c737ad415590976481332e4"
-    },
     "numDeriv": {
       "Package": "numDeriv",
       "Version": "2016.8-1.1",
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "df58958f293b166e4ab885ebcad90e02"
-    },
-    "olsrr": {
-      "Package": "olsrr",
-      "Version": "0.5.3",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "d38dd43ced77b593d88d61a4eda270ba"
     },
     "openssl": {
       "Package": "openssl",
@@ -921,13 +907,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "e82f00720ce2bf002222c623ca5458c3"
-    },
-    "pbmcapply": {
-      "Package": "pbmcapply",
-      "Version": "1.5.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "4332529a23c4995d743ef489be54a839"
     },
     "permute": {
       "Package": "permute",
