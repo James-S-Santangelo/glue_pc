@@ -1,7 +1,9 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5765252.svg)](https://doi.org/10.5281/zenodo.5765252)
 
 ## Global Urban Evolution Project – Parallel Clines (GLUE_PC)
-### Manuscript: Global urban environmental change drives parallel evolution in a cosmopolitan plant
+### Manuscript: Global urban environmental change drives adaptation in white clover
+
+This manuscript has been published in [Science](https://www.science.org/doi/10.1126/science.abk0989)
 
 ### Abstract
 
